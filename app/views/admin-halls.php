@@ -31,7 +31,7 @@
                                 <input type="hidden" name="sort_order[]" value="<?= e((string) $member['sort_order']) ?>">
 
                                 <div class="hall-photo-preview">
-                                    <img src="<?= !empty($member['photo_path']) ? '/uploads/' . e($member['photo_path']) : '/assets/samgyeong-emblem.png' ?>" alt="">
+                                    <img src="<?= !empty($member['photo_path']) ? '/uploads/' . e($member['photo_path']) : '/assets/samgyeong-emblem.png' ?>" alt="" onerror="this.src='/assets/samgyeong-emblem.png'">
                                 </div>
                                 <label class="field-name">
                                     이름
@@ -51,7 +51,7 @@
                                 </label>
                                 <label class="field-photo">
                                     사진
-                                    <input type="file" name="photo_<?= e((string) $member['id']) ?>" accept="image/*">
+                                    <input type="file" name="photo_<?= e((string) $member['id']) ?>" accept="image/*" data-hall-photo-input>
                                 </label>
                                 <button class="danger-button" type="submit" form="delete-hall-member-<?= e((string) $member['id']) ?>">삭제</button>
                             </div>
@@ -90,7 +90,7 @@
                 </label>
                 <label>
                     사진
-                    <input type="file" name="new_photo" accept="image/*">
+                    <input type="file" name="new_photo" accept="image/*" data-hall-photo-input>
                 </label>
                 <input type="hidden" name="new_sort_order" value="99">
             </div>
@@ -109,3 +109,19 @@
         </form>
     <?php endforeach; ?>
 </section>
+
+<div class="photo-crop-modal" data-photo-modal hidden>
+    <div class="photo-crop-dialog">
+        <h2>앨범 사진 미리보기</h2>
+        <p>앨범 카드에 보이는 4:5 비율로 중앙을 맞춰 저장합니다.</p>
+        <div class="photo-crop-frame">
+            <img alt="" data-photo-preview>
+        </div>
+        <div class="photo-crop-actions">
+            <button type="button" class="ghost-button" data-photo-cancel>취소</button>
+            <button type="button" data-photo-apply>이대로 사용</button>
+        </div>
+    </div>
+</div>
+
+<script src="/hall-photos.js"></script>

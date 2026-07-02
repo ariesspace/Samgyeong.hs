@@ -64,7 +64,7 @@
                             <?php $student = $studentsByYear[$year][$slot] ?? null; ?>
                             <article class="hall-album-card <?= e($hall['color']) ?> <?= $student ? '' : 'is-vacant' ?>">
                                 <div class="hall-album-symbol" aria-hidden="true">
-                                    <img src="<?= $student && !empty($student['photo_path']) ? '/uploads/' . e($student['photo_path']) : '/assets/samgyeong-emblem.png' ?>" alt="">
+                                    <img src="<?= $student && !empty($student['photo_path']) ? '/uploads/' . e($student['photo_path']) : '/assets/samgyeong-emblem.png' ?>" alt="" onerror="this.src='/assets/samgyeong-emblem.png'">
                                 </div>
                                 <strong><?= $student ? e($student['student_name']) : '공석' ?></strong>
                                 <span><?= $year ?>학년</span>
