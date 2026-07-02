@@ -5,9 +5,9 @@ declare(strict_types=1);
 final class Board
 {
     private const BOARDS = [
-        'notice' => ['name' => '공지/게시판', 'write_roles' => ['council', 'admin']],
-        'resources' => ['name' => '학생 자료실', 'write_roles' => ['council', 'admin']],
-        'council' => ['name' => '학생회 게시판', 'write_roles' => ['council', 'admin']],
+        'notice' => ['name' => '공지사항', 'badge' => '공지', 'read_roles' => [], 'write_roles' => ['council', 'admin']],
+        'resources' => ['name' => '자료실', 'badge' => '자료', 'read_roles' => ['student', 'council', 'admin'], 'write_roles' => ['council', 'admin']],
+        'council' => ['name' => '자유게시판(학생회)', 'badge' => '의견', 'read_roles' => ['council', 'admin'], 'write_roles' => ['council', 'admin']],
     ];
 
     public static function fromSlug(string $slug): array

@@ -25,13 +25,23 @@ $routes = [
     '/history' => fn () => view('page', ['title' => '학교 연혁', 'body' => "학교 연혁을 정리하는 페이지입니다. 설립, 주요 행사, 교육과정 변화 등을 순서대로 게시할 수 있습니다."]),
     '/location' => fn () => view('page', ['title' => '오시는 길', 'body' => "주소, 교통편, 문의처를 정리하는 페이지입니다."]),
     '/admissions' => fn () => view('page', ['title' => '모집요강', 'body' => "입학 전형 일정, 지원 자격, 제출 서류, 문의처를 안내하는 페이지입니다."]),
-    '/rules' => fn () => view('page', ['title' => '학교생활 규정', 'body' => '학교 생활 규정과 학생회 운영 규정을 게시하는 공간입니다.']),
+    '/rules' => function () use ($auth) {
+        if (!$auth->user()) {
+            return view('access-denied', ['title' => '권한 없음', 'message' => '재학생 이상 로그인 후 접근이 가능한 메뉴입니다.']);
+        }
+        return view('page', ['title' => '학교생활 규정', 'body' => '학교 생활 규정과 학생회 운영 규정을 게시하는 공간입니다.']);
+    },
     '/student-halls' => function () use ($db) {
         $rows = $db->query('SELECT * FROM hall_members ORDER BY hall_key, sort_order, id')->fetchAll();
         return view('student-halls', ['title' => '관별 명단', 'members' => $rows]);
     },
     '/council' => fn () => view('page', ['title' => '학생회 소개', 'body' => "학생회는 학생들의 의견을 모으고 학교 생활 개선을 함께 논의하는 자치기구입니다."]),
-    '/calendar' => fn () => view('calendar', ['title' => '일정 캘린더']),
+    '/calendar' => function () use ($auth) {
+        if (!$auth->hasRole(['council', 'admin'])) {
+            return view('access-denied', ['title' => '권한 없음', 'message' => '삼경원(학생회) 인원 및 관리자만 접근이 가능한 메뉴입니다.']);
+        }
+        return view('calendar', ['title' => '일정 캘린더']);
+    },
     '/login' => fn () => $auth->loginPage(),
     '/logout' => fn () => $auth->logout(),
 ];

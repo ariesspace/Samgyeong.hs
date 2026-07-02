@@ -38,6 +38,7 @@ final class Database
                 file_name TEXT,
                 file_path TEXT,
                 author_id INTEGER NOT NULL,
+                views INTEGER NOT NULL DEFAULT 0,
                 created_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP,
                 FOREIGN KEY(author_id) REFERENCES users(id)
             );
@@ -60,6 +61,34 @@ final class Database
         if ($count === 0) {
             $stmt = $pdo->prepare('INSERT INTO users (username, password_hash, role) VALUES (?, ?, ?)');
             $stmt->execute(['admin', password_hash('admin1234', PASSWORD_DEFAULT), 'admin']);
+        }
+
+        $columns = $pdo->query("PRAGMA table_info(posts)")->fetchAll();
+        $postColumns = array_column($columns, 'name');
+        if (!in_array('views', $postColumns, true)) {
+            $pdo->exec('ALTER TABLE posts ADD COLUMN views INTEGER NOT NULL DEFAULT 0');
+        }
+
+        $postCount = (int) $pdo->query('SELECT COUNT(*) FROM posts')->fetchColumn();
+        if ($postCount === 0) {
+            $adminId = (int) $pdo->query("SELECT id FROM users WHERE username = 'admin'")->fetchColumn();
+            $stmt = $pdo->prepare('
+                INSERT INTO posts (board, title, body, author_id, views, created_at)
+                VALUES (?, ?, ?, ?, ?, ?)
+            ');
+            $samples = [
+                ['notice', '2027학년도 삼경인문고등학교 신입생 모집 요강', '신입생 모집 일정과 제출 서류를 안내합니다.', 152, '2026-07-02 09:00:00'],
+                ['notice', '1학기 기말고사 시행 및 경천/경인/경물관 자습실 운영 안내', '기말고사 기간 중 자습실 운영 시간을 확인해 주세요.', 89, '2026-06-25 09:00:00'],
+                ['notice', '전통 예절 교육 주간 명사 특강 안내', '전통 예절 교육 주간 특강 일정을 안내합니다.', 45, '2026-06-10 09:00:00'],
+                ['resources', '학교생활 규정 개정본', '2026학년도 학교생활 규정 개정본입니다.', 320, '2026-03-02 09:00:00'],
+                ['resources', '관별 자습실 이용 안내', '경천관, 경인관, 경물관 자습실 이용 수칙입니다.', 215, '2026-03-02 09:00:00'],
+                ['council', '1학년 신입생 교육 진행 상황 공유', '학생회 신입생 교육 진행 상황을 공유합니다.', 12, '2026-07-01 09:00:00'],
+                ['council', '경물관 시설 보수 의견 처리 방안', '접수된 시설 보수 의견의 처리 방안을 논의합니다.', 8, '2026-06-28 09:00:00'],
+            ];
+
+            foreach ($samples as $sample) {
+                $stmt->execute([$sample[0], $sample[1], $sample[2], $adminId, $sample[3], $sample[4]]);
+            }
         }
 
         $hallCount = (int) $pdo->query('SELECT COUNT(*) FROM hall_members')->fetchColumn();
