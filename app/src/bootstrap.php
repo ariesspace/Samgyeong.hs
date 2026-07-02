@@ -73,7 +73,7 @@ function nav_groups(): array
     $groups = [
         '학교소개' => [
             ['label' => '학교소개 및 교훈', 'href' => '/about'],
-            ['label' => '삼경고 선서문', 'href' => '/pledge'],
+            ['label' => '삼경인 선서문', 'href' => '/pledge'],
             ['label' => '학교 연혁', 'href' => '/history'],
             ['label' => '오시는 길', 'href' => '/location'],
         ],
