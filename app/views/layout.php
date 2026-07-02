@@ -53,10 +53,11 @@
                 <h2><?= e($activeGroup) ?></h2>
                 <ul>
                     <?php foreach ($groups[$activeGroup] as $item): ?>
+                        <?php $isActiveItem = $requestPath === $item['href'] || str_starts_with($requestPath, $item['href'] . '/'); ?>
                         <li>
-                            <a class="<?= $requestPath === $item['href'] ? 'active' : '' ?>" href="<?= e($item['href']) ?>">
+                            <a class="<?= $isActiveItem ? 'active' : '' ?>" href="<?= e($item['href']) ?>">
                                 <?= e($item['label']) ?>
-                                <span><?= $requestPath === $item['href'] ? '-' : '+' ?></span>
+                                <span><?= $isActiveItem ? '-' : '+' ?></span>
                             </a>
                         </li>
                     <?php endforeach; ?>

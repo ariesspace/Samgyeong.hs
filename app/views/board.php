@@ -42,7 +42,9 @@
                         <span class="board-badge"><?= e($board['badge']) ?></span>
                     </td>
                     <td class="board-title-cell">
-                        <strong><?= e($post['title']) ?></strong>
+                        <a class="board-title-link" href="/board/<?= e($board['slug']) ?>/post/<?= e((string) $post['id']) ?>">
+                            <?= e($post['title']) ?>
+                        </a>
                         <?php if ($post['file_path']): ?>
                             <a class="file-link" href="/uploads/<?= e($post['file_path']) ?>" download>첨부</a>
                         <?php endif; ?>

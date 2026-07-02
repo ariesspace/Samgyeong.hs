@@ -53,6 +53,41 @@ final class BoardController
         return view('post-form', ['title' => $board['name'] . ' 글쓰기', 'board' => $board]);
     }
 
+    public function show(array $board, int $id): string
+    {
+        if ($board['read_roles'] !== [] && !$this->auth->hasRole($board['read_roles'])) {
+            return view('access-denied', [
+                'title' => '권한 없음',
+                'message' => $board['slug'] === 'council'
+                    ? '삼경원(학생회) 인원 및 관리자만 접근이 가능한 메뉴입니다.'
+                    : '재학생 이상 로그인 후 접근이 가능한 메뉴입니다.',
+            ]);
+        }
+
+        $this->db->prepare('UPDATE posts SET views = views + 1 WHERE board = ? AND id = ?')
+            ->execute([$board['slug'], $id]);
+
+        $stmt = $this->db->prepare('
+            SELECT posts.*, users.username
+            FROM posts
+            JOIN users ON users.id = posts.author_id
+            WHERE posts.board = ? AND posts.id = ?
+        ');
+        $stmt->execute([$board['slug'], $id]);
+        $post = $stmt->fetch();
+
+        if (!$post) {
+            http_response_code(404);
+            return view('page', ['title' => '404', 'body' => '게시글을 찾을 수 없습니다.']);
+        }
+
+        return view('post-detail', [
+            'title' => $post['title'],
+            'board' => $board,
+            'post' => $post,
+        ]);
+    }
+
     public function store(array $board): never
     {
         $this->auth->requireRole($board['write_roles']);

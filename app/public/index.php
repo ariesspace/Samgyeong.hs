@@ -137,6 +137,12 @@ if (preg_match('#^/board/([a-z-]+)$#', $path, $matches)) {
     exit;
 }
 
+if (preg_match('#^/board/([a-z-]+)/post/(\d+)$#', $path, $matches)) {
+    $board = Board::fromSlug($matches[1]);
+    echo (new BoardController($db, $auth))->show($board, (int) $matches[2]);
+    exit;
+}
+
 if (preg_match('#^/board/([a-z-]+)/new$#', $path, $matches)) {
     $board = Board::fromSlug($matches[1]);
     echo (new BoardController($db, $auth))->create($board);

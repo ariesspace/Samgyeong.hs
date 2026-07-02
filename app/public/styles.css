@@ -792,10 +792,18 @@ select {
     text-align: left;
 }
 
-.board-title-cell strong {
+.board-title-link {
     color: #344054;
     font-size: 16px;
     font-weight: 500;
+    line-height: 1.5;
+    text-decoration: none;
+}
+
+.board-title-link:hover {
+    color: var(--green);
+    text-decoration: underline;
+    text-underline-offset: 4px;
 }
 
 .board-badge {
@@ -823,6 +831,119 @@ select {
     height: 120px;
     color: var(--muted);
     text-align: center;
+}
+
+.post-detail {
+    color: #1f2937;
+}
+
+.post-detail-head {
+    padding-bottom: 22px;
+    border-bottom: 2px solid #1f2937;
+}
+
+.back-link {
+    display: inline-flex;
+    margin-bottom: 18px;
+    color: var(--green);
+    font-size: 14px;
+    font-weight: 700;
+    text-decoration: none;
+}
+
+.back-link:hover {
+    text-decoration: underline;
+    text-underline-offset: 4px;
+}
+
+.post-detail h1 {
+    margin: 0 0 24px;
+    color: #1f2937;
+    font-family: Georgia, "Times New Roman", serif;
+    font-size: clamp(30px, 4vw, 42px);
+    font-weight: 500;
+    line-height: 1.25;
+}
+
+.post-meta {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    margin: 0;
+    border: 1px solid #d8dee8;
+    border-width: 1px 0;
+}
+
+.post-meta div {
+    display: grid;
+    grid-template-columns: 72px 1fr;
+    align-items: center;
+    min-height: 54px;
+    padding: 10px 14px;
+    border-right: 1px solid #e5e9f0;
+}
+
+.post-meta div:last-child {
+    border-right: 0;
+}
+
+.post-meta dt,
+.post-meta dd {
+    margin: 0;
+    font-size: 14px;
+}
+
+.post-meta dt {
+    color: #667085;
+    font-weight: 700;
+}
+
+.post-meta dd {
+    color: #344054;
+}
+
+.post-body {
+    min-height: 220px;
+    padding: 34px 0 46px;
+    border-bottom: 1px solid #d8dee8;
+    color: #27364a;
+    font-size: 17px;
+    line-height: 1.9;
+    white-space: normal;
+}
+
+.post-file {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    padding: 18px 0;
+    border-bottom: 1px solid #d8dee8;
+}
+
+.post-file span {
+    color: #667085;
+    font-size: 14px;
+    font-weight: 700;
+}
+
+.post-file a {
+    color: var(--green);
+    font-weight: 700;
+    text-decoration: none;
+}
+
+.post-file a:hover {
+    text-decoration: underline;
+    text-underline-offset: 4px;
+}
+
+.post-detail-foot {
+    display: flex;
+    justify-content: flex-end;
+    padding-top: 22px;
+}
+
+.secondary-button {
+    background: #4b5563;
 }
 
 .access-denied {
@@ -1435,5 +1556,18 @@ select {
     .board-search input,
     .board-search select {
         width: 100%;
+    }
+
+    .post-meta {
+        grid-template-columns: 1fr;
+    }
+
+    .post-meta div {
+        border-right: 0;
+        border-bottom: 1px solid #e5e9f0;
+    }
+
+    .post-meta div:last-child {
+        border-bottom: 0;
     }
 }
