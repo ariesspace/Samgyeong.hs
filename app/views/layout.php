@@ -27,8 +27,11 @@
 
     <header class="site-header">
         <a class="brand-block" href="/">
-            <strong>삼경인문고등학교</strong>
-            <span>SAMGYEONG HUMANITIES HIGH SCHOOL</span>
+            <img src="/assets/samgyeong-emblem.png" alt="삼경인문고등학교 교표">
+            <span>
+                <strong>삼경인문고등학교</strong>
+                <em>SAMGYEONG HUMANITIES HIGH SCHOOL</em>
+            </span>
         </a>
         <nav class="primary-nav">
             <?php foreach ($groups as $group => $items): ?>
@@ -71,6 +74,7 @@
     <?php endif; ?>
 
     <footer class="site-footer">
+        <img src="/assets/samgyeong-emblem.png" alt="">
         <strong>삼경인문고등학교</strong>
         <span>SAMGYEONG HUMANITIES HIGH SCHOOL</span>
         <p>서울특별시 삼경구 삼경로 1 · 교무실 02-123-4567 · 행정실 02-123-4568</p>
