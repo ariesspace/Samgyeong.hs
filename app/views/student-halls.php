@@ -95,6 +95,13 @@
                 <span>최고 학생 자치기구</span>
             </div>
 
+            <div class="org-trunk" aria-hidden="true"></div>
+            <div class="org-split" aria-hidden="true">
+                <span></span>
+                <span></span>
+                <span></span>
+            </div>
+
             <div class="org-branches">
                 <?php foreach ($halls as $hall): ?>
                     <?php

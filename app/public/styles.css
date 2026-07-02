@@ -1251,6 +1251,7 @@ select {
 
 .hall-org-chart {
     position: relative;
+    overflow-x: auto;
     padding: 26px 0 8px;
 }
 
@@ -1260,9 +1261,9 @@ select {
     display: grid;
     justify-items: center;
     gap: 7px;
-    width: min(280px, 100%);
-    margin: 0 auto 92px;
-    padding: 22px 24px;
+    width: 280px;
+    margin: 0 auto;
+    padding: 20px 24px;
     color: white;
     background: var(--green);
     border-radius: 4px;
@@ -1270,14 +1271,11 @@ select {
     text-align: center;
 }
 
-.org-root::after {
-    position: absolute;
-    left: 50%;
-    top: 100%;
+.org-trunk {
     width: 1px;
-    height: 52px;
+    height: 40px;
+    margin: 5px auto 0;
     background: #cfd6df;
-    content: "";
 }
 
 .org-root strong {
@@ -1289,48 +1287,50 @@ select {
     font-size: 14px;
 }
 
+.org-split {
+    position: relative;
+    width: min(75%, 760px);
+    height: 34px;
+    margin: 0 auto;
+    border-top: 2px solid #cfd6df;
+}
+
+.org-split span {
+    position: absolute;
+    top: -2px;
+    width: 1px;
+    height: 34px;
+    background: #cfd6df;
+}
+
+.org-split span:nth-child(1) {
+    left: 0;
+}
+
+.org-split span:nth-child(2) {
+    left: 50%;
+    transform: translateX(-50%);
+}
+
+.org-split span:nth-child(3) {
+    right: 0;
+}
+
 .org-branches {
     position: relative;
     display: grid;
     grid-template-columns: repeat(3, minmax(0, 1fr));
-    gap: 38px;
-}
-
-.org-branches::before {
-    position: absolute;
-    left: 12.5%;
-    right: 12.5%;
-    top: -40px;
-    height: 1px;
-    background: #cfd6df;
-    content: "";
+    gap: 40px;
+    width: min(75%, 760px);
+    min-width: 700px;
+    margin: 0 auto;
 }
 
 .org-branch {
     position: relative;
     display: grid;
     justify-items: center;
-    gap: 40px;
-}
-
-.org-branch::before {
-    position: absolute;
-    left: 50%;
-    top: -40px;
-    width: 1px;
-    height: 40px;
-    background: #cfd6df;
-    content: "";
-}
-
-.org-branch::after {
-    position: absolute;
-    left: 50%;
-    top: 60px;
-    width: 1px;
-    height: 40px;
-    background: #cfd6df;
-    content: "";
+    gap: 0;
 }
 
 .org-hall-chief,
@@ -1343,10 +1343,19 @@ select {
 .org-hall-chief {
     display: grid;
     gap: 7px;
-    padding: 17px 18px;
+    padding: 15px 16px;
     color: white;
     border-radius: 4px;
     box-shadow: 0 7px 14px rgba(31, 41, 55, .16);
+}
+
+.org-hall-chief::after {
+    display: block;
+    width: 1px;
+    height: 32px;
+    margin: 15px auto -15px;
+    background: #cfd6df;
+    content: "";
 }
 
 .org-branch.blue .org-hall-chief {
@@ -1381,12 +1390,12 @@ select {
 }
 
 .org-sub-unit::after {
-    position: absolute;
-    left: 50%;
-    top: 100%;
+    display: block;
     width: 1px;
     height: 30px;
-    background: #cfd6df;
+    margin: 10px auto -10px;
+    background: linear-gradient(#cfd6df 45%, transparent 45%);
+    background-size: 1px 8px;
     content: "";
 }
 
@@ -2038,14 +2047,9 @@ select {
         flex-direction: column;
     }
 
-    .org-root {
-        margin-bottom: 42px;
-    }
-
-    .org-root::after,
-    .org-branches::before,
-    .org-branch::before,
-    .org-branch::after,
+    .org-trunk,
+    .org-split,
+    .org-hall-chief::after,
     .org-sub-unit::after {
         display: none;
     }
@@ -2053,10 +2057,12 @@ select {
     .org-branches {
         grid-template-columns: 1fr;
         gap: 22px;
+        width: 100%;
+        min-width: 0;
     }
 
     .org-branch {
-        gap: 12px;
+        gap: 14px;
         padding: 16px;
         border: 1px solid #e5e9f0;
         border-radius: 4px;
