@@ -22,8 +22,7 @@
                 교훈 <small>(校訓)</small>
                 <span></span>
             </h2>
-            <p class="motto-hanja">以敬天之心 仰天而行正道</p>
-            <p class="motto-korean">경천의 마음으로 하늘을 우러러 바르게 행동하라</p>
+            <p class="motto-korean">하늘을 우러러 이치를 깨닫고, 사람을 공경하며, 만물을 아끼는 참된 삼경인(三敬人)이 되자</p>
         </section>
     </div>
 </section>
