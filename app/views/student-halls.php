@@ -24,7 +24,11 @@
                 <ul>
                     <?php foreach ($hall['students'] as $student): ?>
                         <li>
-                            <span><?= e($student['role_label']) ?></span>
+                            <?php if (trim($student['role_label']) !== ''): ?>
+                                <span><?= e($student['role_label']) ?></span>
+                            <?php else: ?>
+                                <span class="empty-role"></span>
+                            <?php endif; ?>
                             <strong><?= e($student['student_name']) ?></strong>
                             <em><?= e((string) $student['year']) ?>학년</em>
                         </li>

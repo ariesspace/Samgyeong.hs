@@ -1,6 +1,6 @@
 <section class="page">
     <h1>관별 명단 관리</h1>
-    <p class="muted">관을 선택하고 학생 이름, 학년, 직책만 간단히 수정합니다.</p>
+    <p class="muted">학생 이름과 학년만 입력해도 저장됩니다. 직책은 필요한 학생에게만 적어 주세요.</p>
 
     <?php
         $halls = hall_definitions();
@@ -29,11 +29,11 @@
                                 <input type="hidden" name="id[]" value="<?= e((string) $member['id']) ?>">
                                 <input type="hidden" name="sort_order[]" value="<?= e((string) $member['sort_order']) ?>">
 
-                                <label>
+                                <label class="field-name">
                                     이름
                                     <input name="student_name[]" value="<?= e($member['student_name']) ?>" required>
                                 </label>
-                                <label>
+                                <label class="field-year">
                                     학년
                                     <select name="year[]">
                                         <?php for ($year = 1; $year <= 3; $year++): ?>
@@ -41,9 +41,9 @@
                                         <?php endfor; ?>
                                     </select>
                                 </label>
-                                <label>
+                                <label class="field-role">
                                     직책
-                                    <input name="role_label[]" value="<?= e($member['role_label']) ?>" required>
+                                    <input name="role_label[]" value="<?= e($member['role_label']) ?>" placeholder="없으면 비워둠">
                                 </label>
                                 <button class="danger-button" type="submit" form="delete-hall-member-<?= e((string) $member['id']) ?>">삭제</button>
                             </div>
@@ -78,7 +78,7 @@
                 </label>
                 <label>
                     직책
-                    <input name="new_role_label" value="대표">
+                    <input name="new_role_label" placeholder="없으면 비워둠">
                 </label>
                 <input type="hidden" name="new_sort_order" value="99">
             </div>

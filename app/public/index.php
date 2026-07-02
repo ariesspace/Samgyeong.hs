@@ -84,7 +84,7 @@ if ($path === '/admin/halls/save' && $method === 'POST') {
         $roleLabel = trim($_POST['role_label'][$index] ?? '');
         $sortOrder = (int) ($_POST['sort_order'][$index] ?? 0);
 
-        if ($studentName === '' || $roleLabel === '') {
+        if ($studentName === '') {
             continue;
         }
 
@@ -96,7 +96,7 @@ if ($path === '/admin/halls/save' && $method === 'POST') {
         $hallKey = $_POST['new_hall_key'] ?? 'gyeongcheon';
         $hall = $halls[$hallKey] ?? $halls['gyeongcheon'];
         $year = max(1, min(3, (int) ($_POST['new_year'] ?? 1)));
-        $roleLabel = trim($_POST['new_role_label'] ?? '대표');
+        $roleLabel = trim($_POST['new_role_label'] ?? '');
         $sortOrder = (int) ($_POST['new_sort_order'] ?? 99);
 
         $stmt = $db->prepare('
