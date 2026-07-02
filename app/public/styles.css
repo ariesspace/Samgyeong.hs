@@ -1251,6 +1251,21 @@ select {
     margin-top: 8px;
 }
 
+.hall-year-section {
+    margin-top: 30px;
+}
+
+.hall-year-section:first-of-type {
+    margin-top: 18px;
+}
+
+.hall-year-section h3 {
+    margin: 0 0 14px;
+    color: #1f2937;
+    font-size: 22px;
+    font-weight: 900;
+}
+
 .hall-album-grid {
     display: grid;
     grid-template-columns: repeat(3, minmax(0, 1fr));
@@ -1282,6 +1297,25 @@ select {
 
 .hall-album-card.green {
     border-top-color: #286f4b;
+}
+
+.hall-album-card.is-vacant {
+    background: #fbfcfe;
+    box-shadow: none;
+}
+
+.hall-album-card.is-vacant strong,
+.hall-album-card.is-vacant span {
+    color: #98a2b3;
+}
+
+.hall-album-card.is-vacant em {
+    color: #667085;
+    background: #eef2f6;
+}
+
+.hall-album-card.is-vacant .hall-album-symbol {
+    opacity: .55;
 }
 
 .hall-album-symbol {

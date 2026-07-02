@@ -40,29 +40,40 @@
     </header>
 
     <?php if ($selectedHall): ?>
-        <?php $hall = $halls[$selectedHall]; ?>
+        <?php
+            $hall = $halls[$selectedHall];
+            $studentsByYear = [3 => [], 2 => [], 1 => []];
+            foreach ($hall['students'] as $student) {
+                $year = (int) $student['year'];
+                if (isset($studentsByYear[$year])) {
+                    $studentsByYear[$year][] = $student;
+                }
+            }
+        ?>
         <section class="hall-album-section">
             <div class="section-title-row">
                 <h2><?= e($hall['name']) ?> 앨범</h2>
                 <span><?= e($hall['meaning']) ?>을 공경하는 관</span>
             </div>
 
-            <div class="hall-album-grid">
-                <?php if (!$hall['students']): ?>
-                    <p class="empty-board">등록된 학생이 없습니다.</p>
-                <?php endif; ?>
-
-                <?php foreach ($hall['students'] as $student): ?>
-                    <article class="hall-album-card <?= e($hall['color']) ?>">
-                        <div class="hall-album-symbol" aria-hidden="true">
-                            <img src="<?= !empty($student['photo_path']) ? '/uploads/' . e($student['photo_path']) : '/assets/samgyeong-emblem.png' ?>" alt="">
-                        </div>
-                        <strong><?= e($student['student_name']) ?></strong>
-                        <span><?= e((string) $student['year']) ?>학년</span>
-                        <em><?= trim($student['role_label']) !== '' ? e($student['role_label']) : '관원' ?></em>
-                    </article>
-                <?php endforeach; ?>
-            </div>
+            <?php foreach ([3, 2, 1] as $year): ?>
+                <section class="hall-year-section">
+                    <h3><?= $year ?>학년</h3>
+                    <div class="hall-album-grid">
+                        <?php for ($slot = 0; $slot < 3; $slot++): ?>
+                            <?php $student = $studentsByYear[$year][$slot] ?? null; ?>
+                            <article class="hall-album-card <?= e($hall['color']) ?> <?= $student ? '' : 'is-vacant' ?>">
+                                <div class="hall-album-symbol" aria-hidden="true">
+                                    <img src="<?= $student && !empty($student['photo_path']) ? '/uploads/' . e($student['photo_path']) : '/assets/samgyeong-emblem.png' ?>" alt="">
+                                </div>
+                                <strong><?= $student ? e($student['student_name']) : '공석' ?></strong>
+                                <span><?= $year ?>학년</span>
+                                <em><?= $student && trim($student['role_label']) !== '' ? e($student['role_label']) : '관원' ?></em>
+                            </article>
+                        <?php endfor; ?>
+                    </div>
+                </section>
+            <?php endforeach; ?>
         </section>
     <?php else: ?>
 
