@@ -52,3 +52,65 @@ function verify_csrf(): void
         exit;
     }
 }
+
+function current_user(): ?array
+{
+    return $_SESSION['user'] ?? null;
+}
+
+function role_label(?string $role): string
+{
+    return match ($role) {
+        'admin' => '관리자',
+        'council' => '학생회',
+        'student' => '학생',
+        default => '방문자',
+    };
+}
+
+function nav_groups(): array
+{
+    $groups = [
+        '학교소개' => [
+            ['label' => '학교소개 및 교훈', 'href' => '/about'],
+            ['label' => '삼경고 선서문', 'href' => '/pledge'],
+            ['label' => '학교 연혁', 'href' => '/history'],
+            ['label' => '오시는 길', 'href' => '/location'],
+        ],
+        '입학안내' => [
+            ['label' => '모집요강', 'href' => '/admissions'],
+            ['label' => '입학 게시판', 'href' => '/board/notice'],
+        ],
+        '학교생활' => [
+            ['label' => '관별 명단', 'href' => '/student-halls'],
+            ['label' => '학교생활 규정', 'href' => '/rules'],
+            ['label' => '자료실', 'href' => '/board/resources'],
+        ],
+        '학생 자치기구' => [
+            ['label' => '학생회 소개', 'href' => '/council'],
+            ['label' => '자유게시판', 'href' => '/board/council'],
+            ['label' => '일정 캘린더', 'href' => '/calendar'],
+        ],
+    ];
+
+    if ((current_user()['role'] ?? null) === 'admin') {
+        $groups['시스템 관리'] = [
+            ['label' => '계정 권한 관리', 'href' => '/admin/users'],
+        ];
+    }
+
+    return $groups;
+}
+
+function active_group(string $path): string
+{
+    foreach (nav_groups() as $group => $items) {
+        foreach ($items as $item) {
+            if ($path === $item['href'] || str_starts_with($path, $item['href'] . '/')) {
+                return $group;
+            }
+        }
+    }
+
+    return '학교소개';
+}

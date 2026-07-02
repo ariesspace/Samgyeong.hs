@@ -20,8 +20,15 @@ if ($path === '/login' && $method === 'POST') {
 
 $routes = [
     '/' => fn () => view('home', ['title' => '삼경고']),
-    '/about' => fn () => view('page', ['title' => '학교 소개', 'body' => '삼경고의 교육 목표, 연혁, 학교 현황을 정리하는 페이지입니다.']),
-    '/rules' => fn () => view('page', ['title' => '규정집', 'body' => '학교 생활 규정과 학생회 운영 규정을 게시하는 공간입니다.']),
+    '/about' => fn () => view('page', ['title' => '학교소개 및 교훈', 'body' => "삼경고는 전통과 자율을 바탕으로 서로를 존중하는 학교 문화를 세워가는 인문계 고등학교입니다.\n\n교훈: 바르게 생각하고, 따뜻하게 말하며, 책임 있게 행동한다."]),
+    '/pledge' => fn () => view('page', ['title' => '삼경고 선서문', 'body' => "나는 삼경고 학생으로서 학교의 명예를 나의 명예로 여기고, 공동체의 약속을 지키며, 배움과 실천으로 더 나은 사람이 되겠습니다."]),
+    '/history' => fn () => view('page', ['title' => '학교 연혁', 'body' => "학교 연혁을 정리하는 페이지입니다. 설립, 주요 행사, 교육과정 변화 등을 순서대로 게시할 수 있습니다."]),
+    '/location' => fn () => view('page', ['title' => '오시는 길', 'body' => "주소, 교통편, 문의처를 정리하는 페이지입니다."]),
+    '/admissions' => fn () => view('page', ['title' => '모집요강', 'body' => "입학 전형 일정, 지원 자격, 제출 서류, 문의처를 안내하는 페이지입니다."]),
+    '/rules' => fn () => view('page', ['title' => '학교생활 규정', 'body' => '학교 생활 규정과 학생회 운영 규정을 게시하는 공간입니다.']),
+    '/student-halls' => fn () => view('student-halls', ['title' => '관별 명단']),
+    '/council' => fn () => view('page', ['title' => '학생회 소개', 'body' => "학생회는 학생들의 의견을 모으고 학교 생활 개선을 함께 논의하는 자치기구입니다."]),
+    '/calendar' => fn () => view('calendar', ['title' => '일정 캘린더']),
     '/login' => fn () => $auth->loginPage(),
     '/logout' => fn () => $auth->logout(),
 ];
@@ -29,6 +36,26 @@ $routes = [
 if (isset($routes[$path])) {
     echo $routes[$path]();
     exit;
+}
+
+if ($path === '/admin/users') {
+    $auth->requireRole(['admin']);
+    $users = $db->query('SELECT id, username, role, created_at FROM users ORDER BY id ASC')->fetchAll();
+    echo view('admin-users', ['title' => '계정 권한 관리', 'users' => $users]);
+    exit;
+}
+
+if ($path === '/admin/users/role' && $method === 'POST') {
+    $auth->requireRole(['admin']);
+    $userId = (int) ($_POST['user_id'] ?? 0);
+    $role = $_POST['role'] ?? '';
+
+    if ($userId > 1 && in_array($role, ['student', 'council', 'admin'], true)) {
+        $stmt = $db->prepare('UPDATE users SET role = ? WHERE id = ?');
+        $stmt->execute([$role, $userId]);
+    }
+
+    redirect('/admin/users');
 }
 
 if (preg_match('#^/board/([a-z-]+)$#', $path, $matches)) {

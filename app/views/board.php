@@ -10,16 +10,37 @@
         <p class="muted">아직 게시글이 없습니다.</p>
     <?php endif; ?>
 
-    <div class="post-list">
-        <?php foreach ($posts as $post): ?>
-            <article class="post">
-                <h2><?= e($post['title']) ?></h2>
-                <p class="meta"><?= e($post['username']) ?> · <?= e($post['created_at']) ?></p>
-                <p><?= nl2br(e($post['body'])) ?></p>
-                <?php if ($post['file_path']): ?>
-                    <a href="/uploads/<?= e($post['file_path']) ?>" download><?= e($post['file_name']) ?></a>
-                <?php endif; ?>
-            </article>
-        <?php endforeach; ?>
-    </div>
+    <?php if ($posts): ?>
+        <table class="board-table">
+            <thead>
+                <tr>
+                    <th>번호</th>
+                    <th>제목</th>
+                    <th>작성자</th>
+                    <th>작성일</th>
+                    <th>첨부</th>
+                </tr>
+            </thead>
+            <tbody>
+                <?php foreach ($posts as $post): ?>
+                    <tr>
+                        <td><?= e((string) $post['id']) ?></td>
+                        <td class="title-cell">
+                            <strong><?= e($post['title']) ?></strong>
+                            <span><?= nl2br(e($post['body'])) ?></span>
+                        </td>
+                        <td><?= e($post['username']) ?></td>
+                        <td><?= e(substr($post['created_at'], 0, 10)) ?></td>
+                        <td>
+                            <?php if ($post['file_path']): ?>
+                                <a href="/uploads/<?= e($post['file_path']) ?>" download>다운로드</a>
+                            <?php else: ?>
+                                -
+                            <?php endif; ?>
+                        </td>
+                    </tr>
+                <?php endforeach; ?>
+            </tbody>
+        </table>
+    <?php endif; ?>
 </section>
