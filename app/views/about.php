@@ -1,7 +1,6 @@
 <section class="page">
     <header class="text-page-head">
         <h1>학교 소개</h1>
-        <p>삼경의 정신으로 배움과 품격을 함께 세웁니다.</p>
     </header>
 
     <div class="text-flow">
