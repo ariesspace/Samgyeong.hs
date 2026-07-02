@@ -1124,11 +1124,135 @@ select {
     color: var(--muted);
 }
 
+.hall-status-page {
+    color: #1f2937;
+}
+
+.hall-tabs {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    margin: 24px 0 34px;
+    border: 1px solid #cfd6df;
+}
+
+.hall-tabs a {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 58px;
+    padding: 14px;
+    color: #344054;
+    background: #f8fafc;
+    border-right: 1px solid #cfd6df;
+    font-size: 18px;
+    font-weight: 800;
+    text-decoration: none;
+}
+
+.hall-tabs a:last-child {
+    border-right: 0;
+}
+
+.hall-tabs a.active {
+    color: white;
+    background: #4b5568;
+}
+
+.hall-status-section,
+.hall-members-section {
+    margin-top: 34px;
+}
+
+.section-title-row {
+    display: flex;
+    align-items: end;
+    justify-content: space-between;
+    gap: 16px;
+    margin-bottom: 14px;
+}
+
+.section-title-row h2 {
+    margin: 0;
+    color: #1f2937;
+    font-size: 24px;
+}
+
+.section-title-row span {
+    color: #667085;
+    font-size: 14px;
+}
+
+.hall-status-table-wrap {
+    overflow-x: auto;
+}
+
+.hall-status-table {
+    width: 100%;
+    min-width: 720px;
+    border-collapse: collapse;
+    border-top: 2px solid #1f2937;
+    border-bottom: 2px solid #1f2937;
+}
+
+.hall-status-table th,
+.hall-status-table td {
+    height: 56px;
+    padding: 13px 14px;
+    border: 1px solid #cfd6df;
+    text-align: center;
+}
+
+.hall-status-table thead th {
+    color: #344054;
+    background: #f8fafc;
+    font-size: 16px;
+}
+
+.hall-status-table tbody th {
+    background: #fbfcfe;
+    font-size: 16px;
+}
+
+.hall-status-table .hall-name.blue {
+    color: #1d4f91;
+}
+
+.hall-status-table .hall-name.gold {
+    color: #a16207;
+}
+
+.hall-status-table .hall-name.green {
+    color: #166534;
+}
+
+.hall-status-table .hall-name span {
+    color: inherit;
+    opacity: .9;
+}
+
+.hall-status-table .total,
+.hall-status-table tfoot td:last-child {
+    color: var(--green);
+    background: #eef2f6;
+    font-weight: 900;
+}
+
+.hall-status-table tfoot th,
+.hall-status-table tfoot td {
+    background: #f1f3f7;
+    font-size: 17px;
+    font-weight: 900;
+}
+
 .hall-grid {
     display: grid;
     grid-template-columns: repeat(3, minmax(0, 1fr));
     gap: 18px;
     margin-top: 22px;
+}
+
+.hall-grid.compact {
+    margin-top: 0;
 }
 
 .hall-card {
@@ -1198,6 +1322,12 @@ select {
     font-size: 14px;
     font-style: normal;
     text-align: right;
+}
+
+.empty-hall-member {
+    display: block;
+    color: var(--muted);
+    font-size: 14px;
 }
 
 .calendar {
@@ -1723,6 +1853,24 @@ select {
 
     .post-manage-actions {
         justify-content: flex-end;
+    }
+
+    .hall-tabs {
+        grid-template-columns: 1fr;
+    }
+
+    .hall-tabs a {
+        border-right: 0;
+        border-bottom: 1px solid #cfd6df;
+    }
+
+    .hall-tabs a:last-child {
+        border-bottom: 0;
+    }
+
+    .section-title-row {
+        align-items: flex-start;
+        flex-direction: column;
     }
 
     .write-page {

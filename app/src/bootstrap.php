@@ -140,7 +140,7 @@ function nav_groups(): array
             ['label' => '입학 게시판', 'href' => '/board/notice'],
         ],
         '삼경마당' => [
-            ['label' => '관별 명단', 'href' => '/student-halls'],
+            ['label' => '관별 현황', 'href' => '/student-halls'],
             ['label' => '학교생활 규정', 'href' => '/rules'],
             ['label' => '자료실', 'href' => '/board/resources'],
         ],
