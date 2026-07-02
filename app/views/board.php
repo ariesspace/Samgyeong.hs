@@ -39,7 +39,7 @@
             <?php foreach ($posts as $post): ?>
                 <tr>
                     <td>
-                        <span class="board-badge"><?= e($board['badge']) ?></span>
+                        <span class="board-badge"><?= e($post['tag'] ?? $board['badge']) ?></span>
                     </td>
                     <td class="board-title-cell">
                         <a class="board-title-link" href="/board/<?= e($board['slug']) ?>/post/<?= e((string) $post['id']) ?>">

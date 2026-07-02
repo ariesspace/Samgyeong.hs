@@ -865,6 +865,24 @@ select {
     line-height: 1.25;
 }
 
+.post-manage-actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: 8px;
+    margin: -6px 0 18px;
+}
+
+.post-manage-actions form {
+    margin: 0;
+}
+
+.post-manage-actions .button,
+.post-manage-actions button {
+    min-height: 34px;
+    padding: 7px 12px;
+    font-size: 13px;
+}
+
 .post-meta {
     display: grid;
     grid-template-columns: repeat(4, minmax(0, 1fr));
@@ -995,6 +1013,15 @@ select {
     font-size: 18px;
 }
 
+.write-tag-select {
+    max-width: 180px;
+    height: 44px;
+    border-color: #cfd6df;
+    border-radius: 5px;
+    color: #344054;
+    font-size: 16px;
+}
+
 .editor-shell {
     overflow: hidden;
     border: 1px solid #cfd6df;
@@ -1073,6 +1100,12 @@ select {
     border-color: #cfd6df;
     border-radius: 5px;
     background: white;
+}
+
+.current-file {
+    color: #667085;
+    font-size: 13px;
+    font-weight: 500;
 }
 
 .write-actions {

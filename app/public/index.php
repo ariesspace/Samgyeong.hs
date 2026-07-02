@@ -149,9 +149,27 @@ if (preg_match('#^/board/([a-z-]+)/new$#', $path, $matches)) {
     exit;
 }
 
+if (preg_match('#^/board/([a-z-]+)/post/(\d+)/edit$#', $path, $matches)) {
+    $board = Board::fromSlug($matches[1]);
+    echo (new BoardController($db, $auth))->edit($board, (int) $matches[2]);
+    exit;
+}
+
 if (preg_match('#^/board/([a-z-]+)/store$#', $path, $matches) && $method === 'POST') {
     $board = Board::fromSlug($matches[1]);
     echo (new BoardController($db, $auth))->store($board);
+    exit;
+}
+
+if (preg_match('#^/board/([a-z-]+)/post/(\d+)/update$#', $path, $matches) && $method === 'POST') {
+    $board = Board::fromSlug($matches[1]);
+    echo (new BoardController($db, $auth))->update($board, (int) $matches[2]);
+    exit;
+}
+
+if (preg_match('#^/board/([a-z-]+)/post/(\d+)/delete$#', $path, $matches) && $method === 'POST') {
+    $board = Board::fromSlug($matches[1]);
+    echo (new BoardController($db, $auth))->delete($board, (int) $matches[2]);
     exit;
 }
 
