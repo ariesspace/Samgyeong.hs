@@ -19,7 +19,22 @@ if ($path === '/login' && $method === 'POST') {
 }
 
 $routes = [
-    '/' => fn () => view('home', ['title' => '삼경고']),
+    '/' => function () use ($db) {
+        $homeBoards = [];
+        foreach (Board::all() as $slug => $board) {
+            $stmt = $db->prepare('
+                SELECT id, title, tag, created_at
+                FROM posts
+                WHERE board = ?
+                ORDER BY id DESC
+                LIMIT 4
+            ');
+            $stmt->execute([$slug]);
+            $homeBoards[] = ['slug' => $slug] + $board + ['items' => $stmt->fetchAll()];
+        }
+
+        return view('home', ['title' => '삼경고', 'boards' => $homeBoards]);
+    },
     '/about' => fn () => view('about', ['title' => '학교소개 및 교훈']),
     '/pledge' => fn () => view('pledge', ['title' => '삼경인 선서문']),
     '/history' => fn () => view('page', ['title' => '학교 연혁', 'body' => "학교 연혁을 정리하는 페이지입니다. 설립, 주요 행사, 교육과정 변화 등을 순서대로 게시할 수 있습니다."]),

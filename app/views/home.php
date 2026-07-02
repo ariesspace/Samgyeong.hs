@@ -29,55 +29,28 @@
     </section>
 
     <section class="home-boards">
-        <?php
-            $boards = [
-                [
-                    'title' => '공지사항',
-                    'href' => '/board/notice',
-                    'items' => [
-                        ['title' => '2027학년도 대학수학능력시험 시행 계획 안내', 'date' => '2026-07-02', 'new' => true],
-                        ['title' => '2026학년도 삼경고 이동 수업 신청 공고', 'date' => '2026-06-29', 'new' => true],
-                        ['title' => '1학기 기말고사 시행 및 자습실 운영 안내', 'date' => '2026-06-15', 'new' => false],
-                        ['title' => '학교생활 기본 계획 안내', 'date' => '2026-02-23', 'new' => false],
-                    ],
-                ],
-                [
-                    'title' => '가정통신문',
-                    'href' => '/board/resources',
-                    'items' => [
-                        ['title' => '1학기 기말고사 실시 및 일과 운영 안내', 'date' => '2026-06-29', 'new' => true],
-                        ['title' => '생명존중 및 자살예방 교육 안내', 'date' => '2026-06-29', 'new' => true],
-                        ['title' => '2학년 방과후학교 신청 안내', 'date' => '2026-06-16', 'new' => false],
-                        ['title' => '선택과목 수요조사 안내', 'date' => '2026-06-12', 'new' => false],
-                    ],
-                ],
-                [
-                    'title' => '입학 게시판',
-                    'href' => '/admissions',
-                    'items' => [
-                        ['title' => '삼경인문고 진학 체험 캠프 안내', 'date' => '2026-06-05', 'new' => false],
-                        ['title' => '신입생 합격자 발표 및 등록 안내', 'date' => '2026-02-02', 'new' => false],
-                        ['title' => '추가 모집 합격자 안내', 'date' => '2026-01-19', 'new' => false],
-                        ['title' => '입학 설명회 자료집 배포', 'date' => '2026-01-06', 'new' => false],
-                    ],
-                ],
-            ];
-        ?>
-
         <?php foreach ($boards as $board): ?>
             <article class="home-board">
                 <div class="home-board-head">
-                    <h2><?= e($board['title']) ?></h2>
-                    <a href="<?= e($board['href']) ?>">모두보기</a>
+                    <h2><?= e($board['name']) ?></h2>
+                    <a href="/board/<?= e($board['slug']) ?>">모두보기</a>
                 </div>
                 <ul>
+                    <?php if (!$board['items']): ?>
+                        <li class="home-board-empty">등록된 게시글이 없습니다.</li>
+                    <?php endif; ?>
+
                     <?php foreach ($board['items'] as $item): ?>
+                        <?php
+                            $date = substr($item['created_at'], 0, 10);
+                            $isNew = strtotime($item['created_at']) >= strtotime('-7 days');
+                        ?>
                         <li>
-                            <a href="<?= e($board['href']) ?>">
+                            <a href="/board/<?= e($board['slug']) ?>/post/<?= e((string) $item['id']) ?>">
                                 <span><?= e($item['title']) ?></span>
-                                <?php if ($item['new']): ?><strong>NEW</strong><?php endif; ?>
+                                <?php if ($isNew): ?><strong>NEW</strong><?php endif; ?>
                             </a>
-                            <time><?= e($item['date']) ?></time>
+                            <time><?= e($date) ?></time>
                         </li>
                     <?php endforeach; ?>
                 </ul>

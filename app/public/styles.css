@@ -506,6 +506,12 @@ a {
     font-size: 12px;
 }
 
+.home-board-empty {
+    display: block;
+    color: #8a94ad;
+    font-size: 15px;
+}
+
 .home-services {
     display: grid;
     grid-template-columns: repeat(4, minmax(0, 1fr));
