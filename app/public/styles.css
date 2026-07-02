@@ -119,8 +119,8 @@ a {
     text-align: center;
     border-bottom: 4px solid var(--gold);
     background:
-        linear-gradient(rgba(26, 67, 49, .82), rgba(26, 67, 49, .82)),
-        url("https://images.unsplash.com/photo-1590240470766-3d75150e7b8c?auto=format&fit=crop&w=1920&q=80") center/cover;
+        linear-gradient(rgba(26, 67, 49, .55), rgba(26, 67, 49, .55)),
+        url("/assets/samgyeong.jpg") center/cover;
 }
 
 .site-hero h1 {

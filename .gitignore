@@ -2,3 +2,4 @@
 /app/storage/uploads/*
 !/app/storage/uploads/.gitkeep
 .env
+/samgyeong.jpg
