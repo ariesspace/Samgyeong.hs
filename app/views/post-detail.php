@@ -23,7 +23,7 @@
     </header>
 
     <div class="post-body">
-        <?= nl2br(e($post['body'])) ?>
+        <?= render_post_body($post['body']) ?>
     </div>
 
     <?php if ($post['file_path']): ?>

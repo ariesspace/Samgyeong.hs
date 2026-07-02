@@ -28,6 +28,64 @@ function e(?string $value): string
     return htmlspecialchars($value ?? '', ENT_QUOTES, 'UTF-8');
 }
 
+function sanitize_post_body(?string $html): string
+{
+    $html = trim($html ?? '');
+    $html = preg_replace('#<(script|style)\b[^>]*>.*?</\1>#is', '', $html) ?? '';
+    $html = strip_tags($html, '<p><div><br><strong><b><em><i><u><span><ul><ol><li>');
+    $html = preg_replace('/\s+on\w+\s*=\s*("[^"]*"|\'[^\']*\'|[^\s>]+)/i', '', $html) ?? '';
+    $html = preg_replace('/\s+(href|src)\s*=\s*("[^"]*"|\'[^\']*\'|[^\s>]+)/i', '', $html) ?? '';
+
+    $html = preg_replace_callback('/\s+style\s*=\s*("|\')([^"\']*)\1/i', function (array $match): string {
+        $allowed = [];
+        foreach (explode(';', $match[2]) as $declaration) {
+            [$property, $value] = array_pad(array_map('trim', explode(':', $declaration, 2)), 2, '');
+            $property = strtolower($property);
+            $value = trim($value, "\"' ");
+
+            if ($property === 'font-size' && preg_match('/^([1-2][0-9]|30)px$/', $value)) {
+                $allowed[] = 'font-size: ' . $value;
+            }
+
+            if ($property === 'font-family') {
+                $family = strtolower(str_replace(['"', "'"], '', $value));
+                $families = [
+                    'noto sans kr' => 'Noto Sans KR, sans-serif',
+                    'malgun gothic' => 'Malgun Gothic, sans-serif',
+                    'serif' => 'serif',
+                    'georgia' => 'Georgia, serif',
+                    'monospace' => 'monospace',
+                ];
+
+                if (isset($families[$family])) {
+                    $allowed[] = 'font-family: ' . $families[$family];
+                }
+            }
+        }
+
+        return $allowed === [] ? '' : ' style="' . e(implode('; ', $allowed)) . '"';
+    }, $html) ?? '';
+
+    $html = preg_replace('/<(?!span\b)([a-z0-9]+)\s+[^>]*>/i', '<$1>', $html) ?? '';
+    $html = preg_replace('/<span(?![^>]*style=)[^>]*>/i', '<span>', $html) ?? '';
+
+    return $html;
+}
+
+function render_post_body(?string $body): string
+{
+    $body = trim($body ?? '');
+    if ($body === '') {
+        return '';
+    }
+
+    if ($body !== strip_tags($body)) {
+        return sanitize_post_body($body);
+    }
+
+    return nl2br(e($body));
+}
+
 function redirect(string $path): never
 {
     header('Location: ' . $path);

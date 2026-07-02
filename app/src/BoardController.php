@@ -100,7 +100,7 @@ final class BoardController
         $stmt->execute([
             $board['slug'],
             trim($_POST['title'] ?? ''),
-            trim($_POST['body'] ?? ''),
+            sanitize_post_body($_POST['body'] ?? ''),
             $file['name'],
             $file['path'],
             $this->auth->user()['id'],
