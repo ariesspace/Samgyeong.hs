@@ -20,7 +20,7 @@ if ($path === '/login' && $method === 'POST') {
 
 $routes = [
     '/' => fn () => view('home', ['title' => '삼경고']),
-    '/about' => fn () => view('page', ['title' => '학교소개 및 교훈', 'body' => "삼경고는 전통과 자율을 바탕으로 서로를 존중하는 학교 문화를 세워가는 인문계 고등학교입니다.\n\n교훈: 바르게 생각하고, 따뜻하게 말하며, 책임 있게 행동한다."]),
+    '/about' => fn () => view('about', ['title' => '학교소개 및 교훈']),
     '/pledge' => fn () => view('pledge', ['title' => '삼경인 선서문']),
     '/history' => fn () => view('page', ['title' => '학교 연혁', 'body' => "학교 연혁을 정리하는 페이지입니다. 설립, 주요 행사, 교육과정 변화 등을 순서대로 게시할 수 있습니다."]),
     '/location' => fn () => view('page', ['title' => '오시는 길', 'body' => "주소, 교통편, 문의처를 정리하는 페이지입니다."]),
