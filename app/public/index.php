@@ -51,11 +51,25 @@ $routes = [
         return view('student-halls', ['title' => '관별 현황', 'members' => $rows]);
     },
     '/council' => fn () => view('page', ['title' => '학생회 소개', 'body' => "학생회는 학생들의 의견을 모으고 학교 생활 개선을 함께 논의하는 자치기구입니다."]),
-    '/calendar' => function () use ($auth) {
+    '/calendar' => function () use ($auth, $db) {
         if (!$auth->hasRole(['council', 'admin'])) {
             return view('access-denied', ['title' => '권한 없음', 'message' => '삼경원(학생회) 인원 및 관리자만 접근이 가능한 메뉴입니다.']);
         }
-        return view('calendar', ['title' => '일정 캘린더']);
+        $month = preg_match('/^\d{4}-\d{2}$/', $_GET['month'] ?? '') ? $_GET['month'] : date('Y-m');
+        $stmt = $db->prepare('
+            SELECT calendar_events.*, users.username
+            FROM calendar_events
+            JOIN users ON users.id = calendar_events.author_id
+            WHERE event_date BETWEEN ? AND ?
+            ORDER BY event_date ASC, id ASC
+        ');
+        $stmt->execute([$month . '-01', date('Y-m-t', strtotime($month . '-01'))]);
+
+        return view('calendar', [
+            'title' => '일정 캘린더',
+            'month' => $month,
+            'events' => $stmt->fetchAll(),
+        ]);
     },
     '/login' => fn () => $auth->loginPage(),
     '/logout' => fn () => $auth->logout(),
@@ -144,6 +158,42 @@ if ($path === '/admin/halls/delete' && $method === 'POST') {
     }
 
     redirect('/admin/halls');
+}
+
+if ($path === '/calendar/events/store' && $method === 'POST') {
+    $auth->requireRole(['council', 'admin']);
+    $date = $_POST['event_date'] ?? '';
+    $title = trim($_POST['title'] ?? '');
+    $category = $_POST['category'] ?? 'general';
+    $categories = ['general', 'important', 'check'];
+
+    if (preg_match('/^\d{4}-\d{2}-\d{2}$/', $date) && $title !== '') {
+        $stmt = $db->prepare('
+            INSERT INTO calendar_events (event_date, title, category, author_id)
+            VALUES (?, ?, ?, ?)
+        ');
+        $stmt->execute([
+            $date,
+            $title,
+            in_array($category, $categories, true) ? $category : 'general',
+            $auth->user()['id'],
+        ]);
+    }
+
+    redirect('/calendar?month=' . substr($date ?: date('Y-m-d'), 0, 7));
+}
+
+if ($path === '/calendar/events/delete' && $method === 'POST') {
+    $auth->requireRole(['council', 'admin']);
+    $id = (int) ($_POST['id'] ?? 0);
+    $month = preg_match('/^\d{4}-\d{2}$/', $_POST['month'] ?? '') ? $_POST['month'] : date('Y-m');
+
+    if ($id > 0) {
+        $stmt = $db->prepare('DELETE FROM calendar_events WHERE id = ?');
+        $stmt->execute([$id]);
+    }
+
+    redirect('/calendar?month=' . $month);
 }
 
 if (preg_match('#^/board/([a-z-]+)$#', $path, $matches)) {

@@ -56,6 +56,16 @@ final class Database
                 sort_order INTEGER NOT NULL DEFAULT 0,
                 created_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP
             );
+
+            CREATE TABLE IF NOT EXISTS calendar_events (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                event_date TEXT NOT NULL,
+                title TEXT NOT NULL,
+                category TEXT NOT NULL DEFAULT 'general',
+                author_id INTEGER NOT NULL,
+                created_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP,
+                FOREIGN KEY(author_id) REFERENCES users(id)
+            );
         ");
 
         $count = (int) $pdo->query('SELECT COUNT(*) FROM users')->fetchColumn();
@@ -117,6 +127,24 @@ final class Database
 
             foreach ($members as $member) {
                 $stmt->execute($member);
+            }
+        }
+
+        $eventCount = (int) $pdo->query('SELECT COUNT(*) FROM calendar_events')->fetchColumn();
+        if ($eventCount === 0) {
+            $adminId = (int) $pdo->query("SELECT id FROM users WHERE username = 'admin'")->fetchColumn();
+            $stmt = $pdo->prepare('
+                INSERT INTO calendar_events (event_date, title, category, author_id)
+                VALUES (?, ?, ?, ?)
+            ');
+            $events = [
+                ['2026-07-01', '학생회 회의', 'general'],
+                ['2026-07-15', '관장단 간담회', 'important'],
+                ['2026-07-25', '시설 보수 점검', 'check'],
+            ];
+
+            foreach ($events as $event) {
+                $stmt->execute([$event[0], $event[1], $event[2], $adminId]);
             }
         }
     }

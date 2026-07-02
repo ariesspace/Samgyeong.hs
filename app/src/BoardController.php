@@ -37,13 +37,21 @@ final class BoardController
             ORDER BY posts.id DESC
         ");
         $stmt->execute($params);
+        $posts = $stmt->fetchAll();
+        $user = $this->auth->user();
+
+        foreach ($posts as &$post) {
+            $post['can_manage'] = $user && ($user['role'] === 'admin' || (int) $user['id'] === (int) $post['author_id']);
+        }
+        unset($post);
 
         return view('board', [
             'title' => $board['name'],
             'board' => $board,
-            'posts' => $stmt->fetchAll(),
+            'posts' => $posts,
             'keyword' => $keyword,
             'canWrite' => $this->auth->hasRole($board['write_roles']),
+            'hasManageColumn' => array_reduce($posts, fn (bool $carry, array $post): bool => $carry || (bool) $post['can_manage'], false),
         ]);
     }
 

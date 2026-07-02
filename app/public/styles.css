@@ -669,8 +669,8 @@ select {
     display: flex;
     align-items: center;
     justify-content: space-between;
-    gap: 18px;
-    margin-bottom: 18px;
+    gap: 16px;
+    margin-bottom: 20px;
 }
 
 .board-tools p {
@@ -697,8 +697,8 @@ select {
 
 .board-search select,
 .board-search input {
-    height: 38px;
-    padding: 7px 10px;
+    height: 40px;
+    padding: 8px 10px;
     border-color: #cfd6df;
     border-radius: 5px;
     font-size: 15px;
@@ -713,8 +713,8 @@ select {
 }
 
 .board-search button {
-    min-height: 38px;
-    padding: 7px 18px;
+    min-height: 40px;
+    padding: 8px 20px;
     background: #4b5563;
     border-radius: 5px;
 }
@@ -724,9 +724,17 @@ select {
 }
 
 .board-write-button {
-    min-height: 38px;
-    padding: 7px 16px;
+    min-height: 40px;
+    padding: 8px 16px;
     border-radius: 5px;
+    gap: 6px;
+    white-space: nowrap;
+}
+
+.board-write-button::before {
+    content: "✎";
+    font-size: 15px;
+    line-height: 1;
 }
 
 .public-board-table {
@@ -735,7 +743,7 @@ select {
 
 .public-board-table th,
 .public-board-table td {
-    padding: 14px 14px;
+    padding: 13px 14px;
     font-size: 15px;
 }
 
@@ -743,6 +751,7 @@ select {
     color: #1f2937;
     background: #f8fafc;
     font-size: 16px;
+    font-weight: 800;
 }
 
 .public-board-table .col-no {
@@ -759,6 +768,19 @@ select {
 
 .public-board-table .col-views {
     width: 84px;
+}
+
+.public-board-table .col-manage {
+    width: 76px;
+    color: #b42318;
+}
+
+.public-board-table tbody tr {
+    transition: background-color .16s ease;
+}
+
+.public-board-table tbody tr:hover {
+    background: #f8fafc;
 }
 
 .board-title-cell {
@@ -798,6 +820,26 @@ select {
     font-size: 13px;
     font-weight: 800;
     text-decoration: none;
+}
+
+.board-row-delete {
+    display: flex;
+    justify-content: center;
+    margin: 0;
+}
+
+.board-row-delete button {
+    min-height: 28px;
+    padding: 4px 8px;
+    color: #98a2b3;
+    background: transparent;
+    border-radius: 4px;
+    font-size: 13px;
+}
+
+.board-row-delete button:hover {
+    color: white;
+    background: #b42318;
 }
 
 .empty-board {
@@ -1504,6 +1546,38 @@ select {
     font-size: 14px;
 }
 
+.calendar-page {
+    display: grid;
+    gap: 20px;
+}
+
+.calendar-event-form {
+    display: grid;
+    grid-template-columns: 170px minmax(220px, 1fr) 130px auto;
+    gap: 10px;
+    align-items: end;
+    padding: 16px;
+    background: #f8fafc;
+    border: 1px solid var(--line);
+    border-radius: 4px;
+}
+
+.calendar-event-form label {
+    gap: 5px;
+    font-size: 14px;
+}
+
+.calendar-event-form input,
+.calendar-event-form select {
+    height: 40px;
+    background: white;
+}
+
+.calendar-event-form button {
+    height: 40px;
+    white-space: nowrap;
+}
+
 .calendar {
     border: 1px solid var(--line);
     border-radius: 4px;
@@ -1541,11 +1615,15 @@ select {
 }
 
 .calendar-days strong,
-.calendar-days span {
+.calendar-event span {
     display: block;
 }
 
-.calendar-days span {
+.calendar-event {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto;
+    gap: 4px;
+    align-items: center;
     margin-top: 5px;
     padding: 3px 5px;
     color: #1d4ed8;
@@ -1554,14 +1632,34 @@ select {
     font-size: 12px;
 }
 
-.calendar-days span.red {
+.calendar-event.important {
     color: #b91c1c;
     background: #fee2e2;
 }
 
-.calendar-days span.green {
+.calendar-event.check {
     color: #166534;
     background: #dcfce7;
+}
+
+.calendar-event form {
+    margin: 0;
+}
+
+.calendar-event button {
+    min-height: 20px;
+    width: 20px;
+    padding: 0;
+    color: currentColor;
+    background: transparent;
+    border-radius: 999px;
+    font-size: 14px;
+    line-height: 1;
+}
+
+.calendar-event button:hover {
+    color: white;
+    background: rgba(0, 0, 0, .28);
 }
 
 .pledge-wrap {
@@ -2072,6 +2170,10 @@ select {
     .org-sub-unit,
     .org-members {
         width: 100%;
+    }
+
+    .calendar-event-form {
+        grid-template-columns: 1fr;
     }
 
     .write-page {
