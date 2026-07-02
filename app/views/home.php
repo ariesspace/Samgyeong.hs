@@ -57,23 +57,4 @@
             </article>
         <?php endforeach; ?>
     </section>
-
-    <section class="home-services">
-        <a href="/student-halls">
-            <strong>관별 명단</strong>
-            <span>경천관, 경인관, 경물관 학생 대표</span>
-        </a>
-        <a href="/rules">
-            <strong>학교생활 규정</strong>
-            <span>생활 규정과 학생 자치 약속</span>
-        </a>
-        <a href="/council">
-            <strong>학생회 소개</strong>
-            <span>학생 자치기구 안내</span>
-        </a>
-        <a href="/board/council">
-            <strong>학생회 게시판</strong>
-            <span>의견 공유와 회의 기록</span>
-        </a>
-    </section>
 </main>

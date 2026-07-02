@@ -432,7 +432,7 @@ a {
     gap: 34px;
     width: min(1120px, calc(100% - 32px));
     margin: 0 auto;
-    padding: 56px 0 34px;
+    padding: 56px 0 70px;
 }
 
 .home-board-head {
@@ -510,39 +510,6 @@ a {
     display: block;
     color: #8a94ad;
     font-size: 15px;
-}
-
-.home-services {
-    display: grid;
-    grid-template-columns: repeat(4, minmax(0, 1fr));
-    gap: 1px;
-    width: min(1120px, calc(100% - 32px));
-    margin: 0 auto 62px;
-    background: var(--line);
-    border: 1px solid var(--line);
-}
-
-.home-services a {
-    display: grid;
-    gap: 5px;
-    min-height: 112px;
-    padding: 20px;
-    background: #f8fafc;
-    text-decoration: none;
-}
-
-.home-services a:hover {
-    background: #eef7f2;
-}
-
-.home-services strong {
-    color: var(--green);
-    font-size: 18px;
-}
-
-.home-services span {
-    color: var(--muted);
-    font-size: 13px;
 }
 
 .intro-box {
@@ -1663,8 +1630,7 @@ select {
     .hall-grid,
     .hall-admin-grid,
     .quick-links,
-    .home-boards,
-    .home-services {
+    .home-boards {
         grid-template-columns: 1fr 1fr;
     }
 
@@ -1694,8 +1660,7 @@ select {
     .hall-grid,
     .hall-admin-grid,
     .quick-links,
-    .home-boards,
-    .home-services {
+    .home-boards {
         grid-template-columns: 1fr;
     }
 
