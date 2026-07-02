@@ -53,6 +53,7 @@ final class Database
                 student_name TEXT NOT NULL,
                 year INTEGER NOT NULL CHECK(year BETWEEN 1 AND 3),
                 role_label TEXT NOT NULL,
+                photo_path TEXT,
                 sort_order INTEGER NOT NULL DEFAULT 0,
                 created_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP
             );
@@ -81,6 +82,12 @@ final class Database
         }
         if (!in_array('tag', $postColumns, true)) {
             $pdo->exec("ALTER TABLE posts ADD COLUMN tag TEXT NOT NULL DEFAULT '공지'");
+        }
+
+        $columns = $pdo->query("PRAGMA table_info(hall_members)")->fetchAll();
+        $hallColumns = array_column($columns, 'name');
+        if (!in_array('photo_path', $hallColumns, true)) {
+            $pdo->exec('ALTER TABLE hall_members ADD COLUMN photo_path TEXT');
         }
 
         $postCount = (int) $pdo->query('SELECT COUNT(*) FROM posts')->fetchColumn();

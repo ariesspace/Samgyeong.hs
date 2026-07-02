@@ -15,7 +15,7 @@
         }
     ?>
 
-    <form method="post" action="/admin/halls/save" class="simple-hall-admin">
+    <form method="post" action="/admin/halls/save" enctype="multipart/form-data" class="simple-hall-admin">
         <input type="hidden" name="csrf" value="<?= e(csrf_token()) ?>">
 
         <div class="hall-admin-grid">
@@ -27,8 +27,12 @@
                         <?php foreach ($hall['members'] as $member): ?>
                             <div class="hall-admin-row">
                                 <input type="hidden" name="id[]" value="<?= e((string) $member['id']) ?>">
+                                <input type="hidden" name="current_photo_path[]" value="<?= e($member['photo_path'] ?? '') ?>">
                                 <input type="hidden" name="sort_order[]" value="<?= e((string) $member['sort_order']) ?>">
 
+                                <div class="hall-photo-preview">
+                                    <img src="<?= !empty($member['photo_path']) ? '/uploads/' . e($member['photo_path']) : '/assets/samgyeong-emblem.png' ?>" alt="">
+                                </div>
                                 <label class="field-name">
                                     이름
                                     <input name="student_name[]" value="<?= e($member['student_name']) ?>" required>
@@ -44,6 +48,10 @@
                                 <label class="field-role">
                                     직책
                                     <input name="role_label[]" value="<?= e($member['role_label']) ?>" placeholder="없으면 비워둠">
+                                </label>
+                                <label class="field-photo">
+                                    사진
+                                    <input type="file" name="photo_<?= e((string) $member['id']) ?>" accept="image/*">
                                 </label>
                                 <button class="danger-button" type="submit" form="delete-hall-member-<?= e((string) $member['id']) ?>">삭제</button>
                             </div>
@@ -79,6 +87,10 @@
                 <label>
                     직책
                     <input name="new_role_label" placeholder="없으면 비워둠">
+                </label>
+                <label>
+                    사진
+                    <input type="file" name="new_photo" accept="image/*">
                 </label>
                 <input type="hidden" name="new_sort_order" value="99">
             </div>

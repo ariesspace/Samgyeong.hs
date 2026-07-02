@@ -119,21 +119,28 @@ if ($path === '/admin/halls/save' && $method === 'POST') {
     $ids = $_POST['id'] ?? [];
     $stmt = $db->prepare('
         UPDATE hall_members
-        SET student_name = ?, year = ?, role_label = ?, sort_order = ?
+        SET student_name = ?, year = ?, role_label = ?, photo_path = ?, sort_order = ?
         WHERE id = ?
     ');
 
     foreach ($ids as $index => $id) {
+        $id = (int) $id;
         $studentName = trim($_POST['student_name'][$index] ?? '');
         $year = max(1, min(3, (int) ($_POST['year'][$index] ?? 1)));
         $roleLabel = trim($_POST['role_label'][$index] ?? '');
+        $photoPath = $_POST['current_photo_path'][$index] ?? null;
         $sortOrder = (int) ($_POST['sort_order'][$index] ?? 0);
+        $uploadedPhoto = save_hall_photo('photo_' . $id);
+        if ($uploadedPhoto) {
+            delete_upload($photoPath);
+            $photoPath = $uploadedPhoto;
+        }
 
         if ($studentName === '') {
             continue;
         }
 
-        $stmt->execute([$studentName, $year, $roleLabel, $sortOrder, (int) $id]);
+        $stmt->execute([$studentName, $year, $roleLabel, $photoPath, $sortOrder, $id]);
     }
 
     $newName = trim($_POST['new_student_name'] ?? '');
@@ -143,13 +150,14 @@ if ($path === '/admin/halls/save' && $method === 'POST') {
         $year = max(1, min(3, (int) ($_POST['new_year'] ?? 1)));
         $roleLabel = trim($_POST['new_role_label'] ?? '');
         $sortOrder = (int) ($_POST['new_sort_order'] ?? 99);
+        $photoPath = save_hall_photo('new_photo');
 
         $stmt = $db->prepare('
             INSERT INTO hall_members
-            (hall_key, hall_name, hall_meaning, hall_color, student_name, year, role_label, sort_order)
-            VALUES (?, ?, ?, ?, ?, ?, ?, ?)
+            (hall_key, hall_name, hall_meaning, hall_color, student_name, year, role_label, photo_path, sort_order)
+            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
         ');
-        $stmt->execute([$hallKey, $hall['name'], $hall['meaning'], $hall['color'], $newName, $year, $roleLabel, $sortOrder]);
+        $stmt->execute([$hallKey, $hall['name'], $hall['meaning'], $hall['color'], $newName, $year, $roleLabel, $photoPath, $sortOrder]);
     }
 
     redirect('/admin/halls');
@@ -159,11 +167,55 @@ if ($path === '/admin/halls/delete' && $method === 'POST') {
     $auth->requireRole(['admin']);
     $id = (int) ($_POST['id'] ?? 0);
     if ($id > 0) {
+        $stmt = $db->prepare('SELECT photo_path FROM hall_members WHERE id = ?');
+        $stmt->execute([$id]);
+        delete_upload($stmt->fetchColumn() ?: null);
+
         $stmt = $db->prepare('DELETE FROM hall_members WHERE id = ?');
         $stmt->execute([$id]);
     }
 
     redirect('/admin/halls');
+}
+
+function save_hall_photo(string $field): ?string
+{
+    if (empty($_FILES[$field]['tmp_name']) || ($_FILES[$field]['error'] ?? UPLOAD_ERR_NO_FILE) !== UPLOAD_ERR_OK) {
+        return null;
+    }
+
+    $mime = mime_content_type($_FILES[$field]['tmp_name']) ?: '';
+    $extensions = [
+        'image/jpeg' => 'jpg',
+        'image/png' => 'png',
+        'image/webp' => 'webp',
+        'image/gif' => 'gif',
+    ];
+
+    if (!isset($extensions[$mime])) {
+        return null;
+    }
+
+    $stored = 'hall_' . date('YmdHis') . '_' . bin2hex(random_bytes(4)) . '.' . $extensions[$mime];
+    $target = __DIR__ . '/../storage/uploads/' . $stored;
+
+    if (!move_uploaded_file($_FILES[$field]['tmp_name'], $target)) {
+        return null;
+    }
+
+    return $stored;
+}
+
+function delete_upload(?string $path): void
+{
+    if (!$path) {
+        return;
+    }
+
+    $target = __DIR__ . '/../storage/uploads/' . basename($path);
+    if (is_file($target)) {
+        unlink($target);
+    }
 }
 
 if ($path === '/calendar/events/store' && $method === 'POST') {

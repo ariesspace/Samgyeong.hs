@@ -55,7 +55,7 @@
                 <?php foreach ($hall['students'] as $student): ?>
                     <article class="hall-album-card <?= e($hall['color']) ?>">
                         <div class="hall-album-symbol" aria-hidden="true">
-                            <img src="/assets/samgyeong-emblem.png" alt="">
+                            <img src="<?= !empty($student['photo_path']) ? '/uploads/' . e($student['photo_path']) : '/assets/samgyeong-emblem.png' ?>" alt="">
                         </div>
                         <strong><?= e($student['student_name']) ?></strong>
                         <span><?= e((string) $student['year']) ?>학년</span>
