@@ -884,9 +884,7 @@ select {
 }
 
 .text-page-head {
-    margin-bottom: 28px;
-    padding-bottom: 14px;
-    border-bottom: 1px solid #d8dee6;
+    margin-bottom: 26px;
 }
 
 .text-page-head h1 {
