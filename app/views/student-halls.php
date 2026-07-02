@@ -62,13 +62,14 @@
                     <div class="hall-album-grid">
                         <?php for ($slot = 0; $slot < 3; $slot++): ?>
                             <?php $student = $studentsByYear[$year][$slot] ?? null; ?>
+                            <?php $roleLabel = $student ? trim($student['role_label']) : ''; ?>
                             <article class="hall-album-card <?= e($hall['color']) ?> <?= $student ? '' : 'is-vacant' ?>">
                                 <div class="hall-album-symbol" aria-hidden="true">
                                     <img src="<?= $student && !empty($student['photo_path']) ? '/uploads/' . e($student['photo_path']) : '/assets/samgyeong-emblem.png' ?>" alt="" onerror="this.src='/assets/samgyeong-emblem.png'">
                                 </div>
                                 <strong><?= $student ? e($student['student_name']) : '공석' ?></strong>
                                 <span><?= $year ?>학년</span>
-                                <em><?= $student && trim($student['role_label']) !== '' ? e($student['role_label']) : '관원' ?></em>
+                                <em class="<?= $roleLabel !== '' ? 'has-role' : '' ?>"><?= $roleLabel !== '' ? e($roleLabel) : '관원' ?></em>
                             </article>
                         <?php endfor; ?>
                     </div>
