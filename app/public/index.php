@@ -70,55 +70,41 @@ if ($path === '/admin/halls') {
 
 if ($path === '/admin/halls/save' && $method === 'POST') {
     $auth->requireRole(['admin']);
-    $allowedColors = ['blue', 'gold', 'green'];
+    $halls = hall_definitions();
     $ids = $_POST['id'] ?? [];
     $stmt = $db->prepare('
         UPDATE hall_members
-        SET hall_key = ?, hall_name = ?, hall_meaning = ?, hall_color = ?, student_name = ?, year = ?, role_label = ?, sort_order = ?
+        SET student_name = ?, year = ?, role_label = ?, sort_order = ?
         WHERE id = ?
     ');
 
     foreach ($ids as $index => $id) {
-        $hallKey = trim($_POST['hall_key'][$index] ?? '');
-        $hallName = trim($_POST['hall_name'][$index] ?? '');
-        $hallMeaning = trim($_POST['hall_meaning'][$index] ?? '');
-        $hallColor = $_POST['hall_color'][$index] ?? 'green';
         $studentName = trim($_POST['student_name'][$index] ?? '');
         $year = max(1, min(3, (int) ($_POST['year'][$index] ?? 1)));
         $roleLabel = trim($_POST['role_label'][$index] ?? '');
         $sortOrder = (int) ($_POST['sort_order'][$index] ?? 0);
 
-        if ($hallKey === '' || $hallName === '' || $studentName === '' || $roleLabel === '') {
+        if ($studentName === '' || $roleLabel === '') {
             continue;
         }
 
-        if (!in_array($hallColor, $allowedColors, true)) {
-            $hallColor = 'green';
-        }
-
-        $stmt->execute([$hallKey, $hallName, $hallMeaning, $hallColor, $studentName, $year, $roleLabel, $sortOrder, (int) $id]);
+        $stmt->execute([$studentName, $year, $roleLabel, $sortOrder, (int) $id]);
     }
 
     $newName = trim($_POST['new_student_name'] ?? '');
     if ($newName !== '') {
-        $hallKey = trim($_POST['new_hall_key'] ?? 'gyeongcheon');
-        $hallName = trim($_POST['new_hall_name'] ?? '경천관');
-        $hallMeaning = trim($_POST['new_hall_meaning'] ?? '');
-        $hallColor = $_POST['new_hall_color'] ?? 'blue';
+        $hallKey = $_POST['new_hall_key'] ?? 'gyeongcheon';
+        $hall = $halls[$hallKey] ?? $halls['gyeongcheon'];
         $year = max(1, min(3, (int) ($_POST['new_year'] ?? 1)));
         $roleLabel = trim($_POST['new_role_label'] ?? '대표');
         $sortOrder = (int) ($_POST['new_sort_order'] ?? 99);
-
-        if (!in_array($hallColor, $allowedColors, true)) {
-            $hallColor = 'green';
-        }
 
         $stmt = $db->prepare('
             INSERT INTO hall_members
             (hall_key, hall_name, hall_meaning, hall_color, student_name, year, role_label, sort_order)
             VALUES (?, ?, ?, ?, ?, ?, ?, ?)
         ');
-        $stmt->execute([$hallKey, $hallName, $hallMeaning, $hallColor, $newName, $year, $roleLabel, $sortOrder]);
+        $stmt->execute([$hallKey, $hall['name'], $hall['meaning'], $hall['color'], $newName, $year, $roleLabel, $sortOrder]);
     }
 
     redirect('/admin/halls');

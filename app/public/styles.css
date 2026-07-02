@@ -861,6 +861,110 @@ select {
     background: var(--green);
 }
 
+.simple-hall-admin {
+    display: grid;
+    gap: 22px;
+}
+
+.hall-admin-grid {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 16px;
+}
+
+.hall-admin-card {
+    border: 1px solid var(--line);
+    border-top: 4px solid var(--green);
+    border-radius: 4px;
+    background: #fff;
+}
+
+.hall-admin-card.blue {
+    border-top-color: #2563eb;
+}
+
+.hall-admin-card.gold {
+    border-top-color: var(--gold);
+}
+
+.hall-admin-card.green {
+    border-top-color: #15803d;
+}
+
+.hall-admin-card h2 {
+    margin: 0;
+    padding: 16px;
+    border-bottom: 1px solid var(--line);
+    font-size: 20px;
+    text-align: center;
+}
+
+.hall-admin-card h2 span {
+    color: var(--muted);
+    font-size: 14px;
+}
+
+.hall-admin-list {
+    display: grid;
+    gap: 14px;
+    padding: 16px;
+}
+
+.hall-admin-row {
+    display: grid;
+    grid-template-columns: 1fr 88px 92px;
+    gap: 10px;
+    align-items: end;
+    padding-bottom: 14px;
+    border-bottom: 1px solid #edf0f4;
+}
+
+.hall-admin-row:last-child {
+    padding-bottom: 0;
+    border-bottom: 0;
+}
+
+.hall-admin-row label,
+.add-member-row label {
+    gap: 4px;
+    color: var(--muted);
+    font-size: 12px;
+}
+
+.hall-admin-row input,
+.hall-admin-row select,
+.add-member-row input,
+.add-member-row select {
+    padding: 8px 9px;
+    font-size: 14px;
+}
+
+.hall-admin-row .danger-button {
+    grid-column: 1 / -1;
+    width: fit-content;
+    justify-self: end;
+}
+
+.add-member-panel {
+    padding: 18px;
+    background: #f8faf9;
+    border: 1px solid var(--line);
+    border-radius: 4px;
+}
+
+.add-member-panel h2 {
+    margin: 0 0 14px;
+    color: var(--green);
+    font-size: 20px;
+}
+
+.add-member-row {
+    display: grid;
+    grid-template-columns: 160px 1fr 120px 140px;
+    gap: 12px;
+    align-items: end;
+}
+
 .role-badge {
     display: inline-flex;
     padding: 3px 8px;
@@ -926,6 +1030,7 @@ select {
     }
 
     .hall-grid,
+    .hall-admin-grid,
     .quick-links,
     .home-boards,
     .home-services {
@@ -956,9 +1061,15 @@ select {
     }
 
     .hall-grid,
+    .hall-admin-grid,
     .quick-links,
     .home-boards,
     .home-services {
+        grid-template-columns: 1fr;
+    }
+
+    .hall-admin-row,
+    .add-member-row {
         grid-template-columns: 1fr;
     }
 

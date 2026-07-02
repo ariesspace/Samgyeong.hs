@@ -115,3 +115,12 @@ function active_group(string $path): string
 
     return '학교소개';
 }
+
+function hall_definitions(): array
+{
+    return [
+        'gyeongcheon' => ['name' => '경천관', 'meaning' => '하늘', 'color' => 'blue'],
+        'gyeongin' => ['name' => '경인관', 'meaning' => '사람', 'color' => 'gold'],
+        'gyeongmul' => ['name' => '경물관', 'meaning' => '만물', 'color' => 'green'],
+    ];
+}
