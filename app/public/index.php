@@ -163,12 +163,14 @@ if ($path === '/admin/halls/save' && $method === 'POST') {
     $ids = $_POST['id'] ?? [];
     $stmt = $db->prepare('
         UPDATE hall_members
-        SET student_name = ?, year = ?, role_label = ?, photo_path = ?, sort_order = ?
+        SET hall_key = ?, hall_name = ?, hall_meaning = ?, hall_color = ?, student_name = ?, year = ?, role_label = ?, photo_path = ?, sort_order = ?
         WHERE id = ?
     ');
 
     foreach ($ids as $index => $id) {
         $id = (int) $id;
+        $hallKey = $_POST['hall_key'][$index] ?? 'gyeongcheon';
+        $hall = $halls[$hallKey] ?? $halls['gyeongcheon'];
         $studentName = trim($_POST['student_name'][$index] ?? '');
         $year = max(1, min(3, (int) ($_POST['year'][$index] ?? 1)));
         $roleLabel = trim($_POST['role_label'][$index] ?? '');
@@ -184,7 +186,7 @@ if ($path === '/admin/halls/save' && $method === 'POST') {
             continue;
         }
 
-        $stmt->execute([$studentName, $year, $roleLabel, $photoPath, $sortOrder, $id]);
+        $stmt->execute([$hallKey, $hall['name'], $hall['meaning'], $hall['color'], $studentName, $year, $roleLabel, $photoPath, $sortOrder, $id]);
     }
 
     $newName = trim($_POST['new_student_name'] ?? '');

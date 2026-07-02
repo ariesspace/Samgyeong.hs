@@ -26,7 +26,7 @@
     }
 
     function updateRowPreview(input, url) {
-        const row = input.closest('.hall-admin-row');
+        const row = input.closest('.hall-admin-row, .hall-list-row, .add-member-panel');
         const image = row ? row.querySelector('.hall-photo-preview img') : null;
         if (image) {
             image.src = url;

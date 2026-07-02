@@ -2058,6 +2058,62 @@ select {
     gap: 22px;
 }
 
+.hall-admin-page .muted {
+    word-break: keep-all;
+}
+
+.hall-add-panel {
+    display: grid;
+    gap: 16px;
+    margin-top: 26px;
+}
+
+.hall-add-panel p {
+    margin: 6px 0 0;
+    font-size: 14px;
+}
+
+.hall-admin-toolbar {
+    display: flex;
+    justify-content: flex-end;
+    gap: 8px;
+}
+
+.hall-list-wrap {
+    overflow-x: auto;
+}
+
+.hall-admin-table {
+    min-width: 1080px;
+    border-top-color: #1f2937;
+}
+
+.hall-admin-table th {
+    color: var(--ink);
+    background: #f8fafc;
+}
+
+.hall-admin-table td {
+    vertical-align: middle;
+}
+
+.hall-admin-table input,
+.hall-admin-table select {
+    min-width: 0;
+    padding: 8px 9px;
+    font-size: 14px;
+}
+
+.hall-admin-table input[type="number"] {
+    width: 72px;
+}
+
+.hall-admin-table input[type="file"] {
+    width: 170px;
+    padding: 7px;
+    font-size: 13px;
+}
+
 .hall-admin-grid {
     display: grid;
     grid-template-columns: 1fr;
@@ -2115,12 +2171,12 @@ select {
 
 .hall-photo-preview {
     align-self: center;
-    width: 54px;
-    height: 54px;
+    width: 58px;
+    height: 72px;
     overflow: hidden;
     background: white;
     border: 1px solid #d8dee8;
-    border-radius: 999px;
+    border-radius: 4px;
 }
 
 .hall-photo-preview img {
