@@ -157,6 +157,20 @@ if ($path === '/admin/halls') {
     exit;
 }
 
+if ($path === '/admin/halls/edit' && $method === 'GET') {
+    $auth->requireRole(['admin']);
+    $id = (int) ($_GET['id'] ?? 0);
+    $stmt = $db->prepare('SELECT * FROM hall_members WHERE id = ?');
+    $stmt->execute([$id]);
+    $member = $stmt->fetch();
+    if (!$member) {
+        redirect('/admin/halls');
+    }
+
+    echo view('admin-hall-edit', ['title' => '관별 명단 수정', 'member' => $member]);
+    exit;
+}
+
 if ($path === '/admin/halls/save' && $method === 'POST') {
     $auth->requireRole(['admin']);
     $halls = hall_definitions();
@@ -204,6 +218,41 @@ if ($path === '/admin/halls/save' && $method === 'POST') {
             VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
         ');
         $stmt->execute([$hallKey, $hall['name'], $hall['meaning'], $hall['color'], $newName, $year, $roleLabel, $photoPath, $sortOrder]);
+    }
+
+    redirect('/admin/halls');
+}
+
+if ($path === '/admin/halls/update' && $method === 'POST') {
+    $auth->requireRole(['admin']);
+    $halls = hall_definitions();
+    $id = (int) ($_POST['id'] ?? 0);
+    $stmt = $db->prepare('SELECT photo_path FROM hall_members WHERE id = ?');
+    $stmt->execute([$id]);
+    $currentPhotoPath = $stmt->fetchColumn();
+
+    if ($id > 0 && $currentPhotoPath !== false) {
+        $hallKey = $_POST['hall_key'] ?? 'gyeongcheon';
+        $hall = $halls[$hallKey] ?? $halls['gyeongcheon'];
+        $studentName = trim($_POST['student_name'] ?? '');
+        $year = max(1, min(3, (int) ($_POST['year'] ?? 1)));
+        $roleLabel = trim($_POST['role_label'] ?? '');
+        $sortOrder = (int) ($_POST['sort_order'] ?? 0);
+        $photoPath = $currentPhotoPath ?: null;
+        $uploadedPhoto = save_hall_photo('photo');
+        if ($uploadedPhoto) {
+            delete_upload($photoPath);
+            $photoPath = $uploadedPhoto;
+        }
+
+        if ($studentName !== '') {
+            $stmt = $db->prepare('
+                UPDATE hall_members
+                SET hall_key = ?, hall_name = ?, hall_meaning = ?, hall_color = ?, student_name = ?, year = ?, role_label = ?, photo_path = ?, sort_order = ?
+                WHERE id = ?
+            ');
+            $stmt->execute([$hallKey, $hall['name'], $hall['meaning'], $hall['color'], $studentName, $year, $roleLabel, $photoPath, $sortOrder, $id]);
+        }
     }
 
     redirect('/admin/halls');
