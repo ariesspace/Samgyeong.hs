@@ -3,20 +3,22 @@
 
     <div class="about-stack">
         <section class="about-intro">
+            <div class="about-label">School Identity</div>
             <h2>학교 소개</h2>
-            <p>
-                삼경인문고등학교는 <strong>전통 명문 사립학교</strong>로서,
-                미래 사회를 이끌어갈 엘리트 양성을 목표로 합니다.
-            </p>
-            <p>
-                '삼경(三敬)'의 숭고한 정신을 바탕으로, 단순한 지식 전달을 넘어
-                철저한 예절 교육과 공동체 의식을 함양하여 하늘, 사람, 만물을
-                공경하는 참된 지식인을 길러냅니다.
-            </p>
+            <div class="about-copy">
+                <p>
+                    삼경인문고등학교는 <strong>전통 명문 사립학교</strong>로서,
+                    미래 사회를 이끌어갈 엘리트 양성을 목표로 합니다.
+                </p>
+                <p>
+                    '삼경(三敬)'의 숭고한 정신을 바탕으로, 단순한 지식 전달을 넘어
+                    철저한 예절 교육과 공동체 의식을 함양하여 하늘, 사람, 만물을
+                    공경하는 참된 지식인을 길러냅니다.
+                </p>
+            </div>
         </section>
 
         <section class="motto-card">
-            <div class="motto-line"></div>
             <h2>
                 <span></span>
                 교훈 <small>(校訓)</small>
