@@ -89,18 +89,51 @@ if (isset($routes[$path])) {
 if ($path === '/admin/users') {
     $auth->requireRole(['admin']);
     $users = $db->query('SELECT id, username, role, created_at FROM users ORDER BY id ASC')->fetchAll();
-    echo view('admin-users', ['title' => '계정 권한 관리', 'users' => $users]);
+    echo view('admin-users', ['title' => '계정 관리', 'users' => $users]);
     exit;
 }
 
-if ($path === '/admin/users/role' && $method === 'POST') {
+if ($path === '/admin/users/create' && $method === 'POST') {
     $auth->requireRole(['admin']);
-    $userId = (int) ($_POST['user_id'] ?? 0);
+    $username = trim($_POST['username'] ?? '');
+    $password = (string) ($_POST['password'] ?? '');
     $role = $_POST['role'] ?? '';
 
-    if ($userId > 1 && in_array($role, ['student', 'council', 'admin'], true)) {
-        $stmt = $db->prepare('UPDATE users SET role = ? WHERE id = ?');
-        $stmt->execute([$role, $userId]);
+    if ($username !== '' && $password !== '' && in_array($role, ['student', 'council', 'admin'], true)) {
+        $stmt = $db->prepare('INSERT OR IGNORE INTO users (username, password_hash, role) VALUES (?, ?, ?)');
+        $stmt->execute([$username, password_hash($password, PASSWORD_DEFAULT), $role]);
+    }
+
+    redirect('/admin/users');
+}
+
+if ($path === '/admin/users/update' && $method === 'POST') {
+    $auth->requireRole(['admin']);
+    $userId = (int) ($_POST['user_id'] ?? 0);
+    $username = trim($_POST['username'] ?? '');
+    $password = (string) ($_POST['password'] ?? '');
+    $role = $_POST['role'] ?? '';
+
+    if ($userId > 1 && $userId !== (int) ($auth->user()['id'] ?? 0) && $username !== '' && in_array($role, ['student', 'council', 'admin'], true)) {
+        if ($password !== '') {
+            $stmt = $db->prepare('UPDATE users SET username = ?, password_hash = ?, role = ? WHERE id = ?');
+            $stmt->execute([$username, password_hash($password, PASSWORD_DEFAULT), $role, $userId]);
+        } else {
+            $stmt = $db->prepare('UPDATE users SET username = ?, role = ? WHERE id = ?');
+            $stmt->execute([$username, $role, $userId]);
+        }
+    }
+
+    redirect('/admin/users');
+}
+
+if ($path === '/admin/users/delete' && $method === 'POST') {
+    $auth->requireRole(['admin']);
+    $userId = (int) ($_POST['user_id'] ?? 0);
+
+    if ($userId > 1 && $userId !== (int) ($auth->user()['id'] ?? 0)) {
+        $stmt = $db->prepare('DELETE FROM users WHERE id = ?');
+        $stmt->execute([$userId]);
     }
 
     redirect('/admin/users');

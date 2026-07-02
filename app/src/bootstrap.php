@@ -161,7 +161,7 @@ function nav_groups(): array
 
     if ((current_user()['role'] ?? null) === 'admin') {
         $groups['시스템 관리'] = [
-            ['label' => '계정 권한 관리', 'href' => '/admin/users'],
+            ['label' => '계정 관리', 'href' => '/admin/users'],
             ['label' => '관별 명단 관리', 'href' => '/admin/halls'],
         ];
     }
