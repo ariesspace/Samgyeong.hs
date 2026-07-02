@@ -10,8 +10,8 @@
     <?php
         $requestPath = parse_url($_SERVER['REQUEST_URI'] ?? '/', PHP_URL_PATH) ?: '/';
         $groups = nav_groups();
-        $activeGroup = active_group($requestPath);
         $isHome = $requestPath === '/';
+        $activeGroup = $isHome ? '' : active_group($requestPath);
     ?>
     <div class="utility-bar">
         <span>삼경인문고등학교 공식 사이트</span>
@@ -32,7 +32,7 @@
         </a>
         <nav class="primary-nav">
             <?php foreach ($groups as $group => $items): ?>
-                <a class="<?= $activeGroup === $group ? 'active' : '' ?>" href="<?= e($items[0]['href']) ?>"><?= e($group) ?></a>
+                <a class="<?= !$isHome && $activeGroup === $group ? 'active' : '' ?>" href="<?= e($items[0]['href']) ?>"><?= e($group) ?></a>
             <?php endforeach; ?>
         </nav>
     </header>
@@ -40,9 +40,10 @@
     <?php if ($isHome): ?>
         <?= $content ?>
     <?php else: ?>
-        <section class="site-hero">
+        <section class="site-hero sub-hero">
             <div>
-                <h1>삼경인문고등학교</h1>
+                <span><?= e($activeGroup) ?></span>
+                <h1><?= e($title ?? $activeGroup) ?></h1>
                 <p>SAMGYEONG HUMANITIES HIGH SCHOOL</p>
             </div>
         </section>
