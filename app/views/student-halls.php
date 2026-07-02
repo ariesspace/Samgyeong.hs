@@ -30,12 +30,41 @@
         }
         $grandTotal += $hall['total'];
     }
+
+    $selectedHall = $selectedHall ?? '';
 ?>
 
 <section class="page hall-status-page">
     <header class="text-page-head">
-        <h1>관별 현황</h1>
+        <h1><?= $selectedHall ? e($halls[$selectedHall]['name']) : '관별 현황' ?></h1>
     </header>
+
+    <?php if ($selectedHall): ?>
+        <?php $hall = $halls[$selectedHall]; ?>
+        <section class="hall-album-section">
+            <div class="section-title-row">
+                <h2><?= e($hall['name']) ?> 앨범</h2>
+                <span><?= e($hall['meaning']) ?>을 공경하는 관</span>
+            </div>
+
+            <div class="hall-album-grid">
+                <?php if (!$hall['students']): ?>
+                    <p class="empty-board">등록된 학생이 없습니다.</p>
+                <?php endif; ?>
+
+                <?php foreach ($hall['students'] as $student): ?>
+                    <article class="hall-album-card <?= e($hall['color']) ?>">
+                        <div class="hall-album-symbol" aria-hidden="true">
+                            <img src="/assets/samgyeong-emblem.png" alt="">
+                        </div>
+                        <strong><?= e($student['student_name']) ?></strong>
+                        <span><?= e((string) $student['year']) ?>학년</span>
+                        <em><?= trim($student['role_label']) !== '' ? e($student['role_label']) : '관원' ?></em>
+                    </article>
+                <?php endforeach; ?>
+            </div>
+        </section>
+    <?php else: ?>
 
     <nav class="hall-tabs" aria-label="관별 현황 보기">
         <button class="active" type="button" data-hall-tab="hall-status">관별 인원현황</button>
@@ -122,6 +151,9 @@
             </div>
         </div>
     </section>
+    <?php endif; ?>
 </section>
 
-<script src="/hall-tabs.js"></script>
+<?php if (!$selectedHall): ?>
+    <script src="/hall-tabs.js"></script>
+<?php endif; ?>

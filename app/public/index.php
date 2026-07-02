@@ -48,7 +48,13 @@ $routes = [
     },
     '/student-halls' => function () use ($db) {
         $rows = $db->query('SELECT * FROM hall_members ORDER BY hall_key, sort_order, id')->fetchAll();
-        return view('student-halls', ['title' => '관별 현황', 'members' => $rows]);
+        $halls = hall_definitions();
+        $selectedHall = $_GET['hall'] ?? '';
+        return view('student-halls', [
+            'title' => '관별 현황',
+            'members' => $rows,
+            'selectedHall' => isset($halls[$selectedHall]) ? $selectedHall : '',
+        ]);
     },
     '/council' => fn () => view('page', ['title' => '학생회 소개', 'body' => "학생회는 학생들의 의견을 모으고 학교 생활 개선을 함께 논의하는 자치기구입니다."]),
     '/calendar' => function () use ($auth, $db) {

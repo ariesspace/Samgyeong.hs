@@ -8,7 +8,8 @@
 </head>
 <body>
     <?php
-        $requestPath = parse_url($_SERVER['REQUEST_URI'] ?? '/', PHP_URL_PATH) ?: '/';
+        $requestUri = $_SERVER['REQUEST_URI'] ?? '/';
+        $requestPath = parse_url($requestUri, PHP_URL_PATH) ?: '/';
         $groups = nav_groups();
         $isHome = $requestPath === '/';
         $activeGroup = $isHome ? '' : active_group($requestPath);
@@ -56,12 +57,33 @@
                 <h2><?= e($activeGroup) ?></h2>
                 <ul>
                     <?php foreach ($groups[$activeGroup] as $item): ?>
-                        <?php $isActiveItem = $requestPath === $item['href'] || str_starts_with($requestPath, $item['href'] . '/'); ?>
+                        <?php
+                            $itemPath = parse_url($item['href'], PHP_URL_PATH) ?: $item['href'];
+                            $isActiveItem = $requestPath === $itemPath || str_starts_with($requestPath, $itemPath . '/');
+                            foreach ($item['children'] ?? [] as $child) {
+                                $childPath = parse_url($child['href'], PHP_URL_PATH) ?: $child['href'];
+                                if ($requestUri === $child['href'] || $requestPath === $childPath) {
+                                    $isActiveItem = true;
+                                }
+                            }
+                        ?>
                         <li>
                             <a class="<?= $isActiveItem ? 'active' : '' ?>" href="<?= e($item['href']) ?>">
                                 <?= e($item['label']) ?>
                                 <span><?= $isActiveItem ? '-' : '+' ?></span>
                             </a>
+                            <?php if ($isActiveItem && !empty($item['children'])): ?>
+                                <ul class="sidebar-submenu">
+                                    <?php foreach ($item['children'] as $child): ?>
+                                        <?php $isActiveChild = $requestUri === $child['href']; ?>
+                                        <li>
+                                            <a class="<?= $isActiveChild ? 'active' : '' ?>" href="<?= e($child['href']) ?>">
+                                                <?= e($child['label']) ?>
+                                            </a>
+                                        </li>
+                                    <?php endforeach; ?>
+                                </ul>
+                            <?php endif; ?>
                         </li>
                     <?php endforeach; ?>
                 </ul>
