@@ -2307,6 +2307,11 @@ select {
     margin-bottom: 12px;
 }
 
+.admin-users-page .small-note {
+    margin-top: -4px;
+    font-size: 14px;
+}
+
 .admin-create-panel {
     margin: 28px 0;
     padding: 22px 24px;
@@ -2322,14 +2327,13 @@ select {
     font-size: 20px;
 }
 
-.admin-user-form {
+.admin-create-form {
     display: grid;
-    grid-template-columns: 1.2fr 1.2fr 150px auto auto;
-    align-items: end;
-    gap: 14px;
+    max-width: 560px;
+    gap: 18px;
 }
 
-.admin-user-form label {
+.admin-create-form label {
     display: grid;
     gap: 7px;
     color: #526174;
@@ -2337,11 +2341,11 @@ select {
     font-weight: 700;
 }
 
-.admin-user-form input,
-.admin-user-form select {
+.admin-create-form input,
+.admin-create-form select {
     width: 100%;
-    min-height: 38px;
-    padding: 8px 10px;
+    min-height: 42px;
+    padding: 9px 11px;
     color: var(--ink);
     background: white;
     border: 1px solid #cfd8e3;
@@ -2349,62 +2353,82 @@ select {
     font: inherit;
 }
 
-.admin-user-form input[readonly],
-.admin-user-form input:disabled,
-.admin-user-form select:disabled {
-    color: #8290a3;
-    background: #eef2f6;
+.admin-create-actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: 8px;
+    margin-top: 6px;
 }
 
-.admin-user-form button {
-    min-height: 38px;
-    padding: 0 17px;
-    background: var(--green);
-    border: 0;
-    border-radius: 4px;
-    color: white;
-    font-weight: 800;
-    cursor: pointer;
+.admin-create-actions .secondary {
+    color: var(--green);
+    background: white;
+    border: 1px solid var(--green);
 }
 
-.admin-user-form .danger-button {
+.admin-user-table {
+    margin-top: 18px;
+    border-top-color: #1f2937;
+    font-size: 15px;
+}
+
+.admin-user-table th {
+    color: var(--ink);
+    background: #f8fafc;
+}
+
+.admin-user-table td {
+    vertical-align: middle;
+}
+
+.admin-user-id {
+    color: #4b5563;
+    font-weight: 700;
+}
+
+.admin-role-form {
+    justify-content: center;
+}
+
+.admin-role-form select {
+    width: 180px;
+    padding: 7px 9px;
+    font-size: 14px;
+}
+
+.admin-role-form button,
+.admin-row-actions button {
+    min-height: 32px;
+    padding: 6px 10px;
+    font-size: 13px;
+}
+
+.admin-row-actions {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 8px;
+}
+
+.admin-row-actions .danger-button {
     background: #b42318;
 }
 
-.admin-user-list {
-    display: grid;
-    gap: 12px;
+.role-badge-admin {
+    color: #b42318;
+    background: #fff1f1;
+    border-color: #f4b4ad;
 }
 
-.admin-user-card {
-    padding: 18px;
-    background: white;
-    border: 1px solid #d9e1ea;
-    border-radius: 4px;
+.role-badge-council {
+    color: #1d4ed8;
+    background: #eff6ff;
+    border-color: #bfdbfe;
 }
 
-.admin-user-meta {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    min-height: 38px;
-}
-
-.admin-user-meta small {
-    color: #7b8797;
-}
-
-.admin-user-actions {
-    display: flex;
-    justify-content: flex-end;
-    align-items: center;
-    gap: 8px;
-    min-height: 38px;
-}
-
-.admin-user-actions .muted {
-    padding: 8px 0;
-    font-size: 14px;
+.role-badge-student {
+    color: #374151;
+    background: #f9fafb;
 }
 
 @media (max-width: 900px) {
@@ -2430,7 +2454,6 @@ select {
 
     .hall-grid,
     .hall-admin-grid,
-    .admin-user-form,
     .quick-links,
     .hall-album-grid,
     .home-boards {
@@ -2462,7 +2485,6 @@ select {
 
     .hall-grid,
     .hall-admin-grid,
-    .admin-user-form,
     .quick-links,
     .hall-album-grid,
     .home-boards {
