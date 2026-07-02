@@ -184,19 +184,36 @@ function save_hall_photo(string $field): ?string
         return null;
     }
 
-    $mime = mime_content_type($_FILES[$field]['tmp_name']) ?: '';
     $extensions = [
         'image/jpeg' => 'jpg',
         'image/png' => 'png',
         'image/webp' => 'webp',
         'image/gif' => 'gif',
     ];
+    $extension = null;
 
-    if (!isset($extensions[$mime])) {
+    if (function_exists('finfo_open')) {
+        $finfo = finfo_open(FILEINFO_MIME_TYPE);
+        $mime = $finfo ? finfo_file($finfo, $_FILES[$field]['tmp_name']) : '';
+        if ($finfo) {
+            finfo_close($finfo);
+        }
+        $extension = $extensions[$mime] ?? null;
+    }
+
+    if ($extension === null) {
+        $originalExtension = strtolower(pathinfo((string) $_FILES[$field]['name'], PATHINFO_EXTENSION));
+        $allowedExtensions = ['jpg', 'jpeg', 'png', 'webp', 'gif'];
+        if (in_array($originalExtension, $allowedExtensions, true)) {
+            $extension = $originalExtension === 'jpeg' ? 'jpg' : $originalExtension;
+        }
+    }
+
+    if ($extension === null) {
         return null;
     }
 
-    $stored = 'hall_' . date('YmdHis') . '_' . bin2hex(random_bytes(4)) . '.' . $extensions[$mime];
+    $stored = 'hall_' . date('YmdHis') . '_' . bin2hex(random_bytes(4)) . '.' . $extension;
     $target = __DIR__ . '/../storage/uploads/' . $stored;
 
     if (!move_uploaded_file($_FILES[$field]['tmp_name'], $target)) {
