@@ -2098,13 +2098,14 @@ select {
 
 .hall-admin-row {
     display: grid;
-    grid-template-columns: 64px minmax(150px, 1fr) 110px minmax(140px, 200px) minmax(150px, 220px) auto;
+    grid-template-columns: 64px repeat(4, minmax(120px, 1fr)) auto;
     gap: 12px;
     align-items: end;
     padding: 14px;
     background: #f8fafc;
     border-bottom: 1px solid #edf0f4;
     border-radius: 6px;
+    max-width: 100%;
 }
 
 .hall-photo-preview {
@@ -2139,6 +2140,7 @@ select {
 .hall-admin-row select,
 .add-member-row input,
 .add-member-row select {
+    min-width: 0;
     padding: 10px 11px;
     background: white;
     font-size: 15px;
@@ -2163,9 +2165,28 @@ select {
 
 .add-member-row {
     display: grid;
-    grid-template-columns: 150px minmax(170px, 1fr) 110px minmax(150px, 220px) minmax(150px, 220px);
+    grid-template-columns: repeat(5, minmax(120px, 1fr));
     gap: 12px;
     align-items: end;
+}
+
+@media (max-width: 1100px) {
+    .hall-admin-row {
+        grid-template-columns: 64px repeat(2, minmax(0, 1fr));
+    }
+
+    .hall-admin-row .field-photo {
+        grid-column: 2 / span 2;
+    }
+
+    .hall-admin-row .danger-button {
+        grid-column: 3;
+        justify-self: end;
+    }
+
+    .add-member-row {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
 }
 
 .role-badge {
