@@ -1244,6 +1244,166 @@ select {
     font-weight: 900;
 }
 
+.hall-org-chart {
+    position: relative;
+    padding: 26px 0 8px;
+}
+
+.org-root {
+    position: relative;
+    z-index: 1;
+    display: grid;
+    justify-items: center;
+    gap: 7px;
+    width: min(280px, 100%);
+    margin: 0 auto 92px;
+    padding: 22px 24px;
+    color: white;
+    background: var(--green);
+    border-radius: 4px;
+    box-shadow: 0 5px 0 rgba(197, 168, 105, .85), 0 10px 18px rgba(31, 41, 55, .12);
+    text-align: center;
+}
+
+.org-root::after {
+    position: absolute;
+    left: 50%;
+    top: 100%;
+    width: 1px;
+    height: 52px;
+    background: #cfd6df;
+    content: "";
+}
+
+.org-root strong {
+    font-size: 22px;
+}
+
+.org-root span {
+    color: #d6bd79;
+    font-size: 14px;
+}
+
+.org-branches {
+    position: relative;
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 38px;
+}
+
+.org-branches::before {
+    position: absolute;
+    left: 12.5%;
+    right: 12.5%;
+    top: -40px;
+    height: 1px;
+    background: #cfd6df;
+    content: "";
+}
+
+.org-branch {
+    position: relative;
+    display: grid;
+    justify-items: center;
+    gap: 40px;
+}
+
+.org-branch::before {
+    position: absolute;
+    left: 50%;
+    top: -40px;
+    width: 1px;
+    height: 40px;
+    background: #cfd6df;
+    content: "";
+}
+
+.org-branch::after {
+    position: absolute;
+    left: 50%;
+    top: 60px;
+    width: 1px;
+    height: 40px;
+    background: #cfd6df;
+    content: "";
+}
+
+.org-hall-chief,
+.org-sub-unit,
+.org-members {
+    width: min(200px, 100%);
+    text-align: center;
+}
+
+.org-hall-chief {
+    display: grid;
+    gap: 7px;
+    padding: 17px 18px;
+    color: white;
+    border-radius: 4px;
+    box-shadow: 0 7px 14px rgba(31, 41, 55, .16);
+}
+
+.org-branch.blue .org-hall-chief {
+    background: #315d94;
+}
+
+.org-branch.gold .org-hall-chief {
+    background: #bd7c17;
+}
+
+.org-branch.green .org-hall-chief {
+    background: #286f4b;
+}
+
+.org-hall-chief strong {
+    font-size: 19px;
+}
+
+.org-hall-chief span {
+    color: rgba(255, 255, 255, .82);
+    font-size: 13px;
+}
+
+.org-sub-unit {
+    position: relative;
+    display: grid;
+    gap: 6px;
+    padding: 16px 14px;
+    background: white;
+    border: 1px solid #cfd6df;
+    border-radius: 4px;
+}
+
+.org-sub-unit::after {
+    position: absolute;
+    left: 50%;
+    top: 100%;
+    width: 1px;
+    height: 30px;
+    background: #cfd6df;
+    content: "";
+}
+
+.org-sub-unit strong {
+    color: #344054;
+    font-size: 16px;
+}
+
+.org-sub-unit span {
+    color: #667085;
+    font-size: 13px;
+}
+
+.org-members {
+    padding: 10px 12px;
+    color: #475467;
+    background: #fbfcfe;
+    border: 1px dashed #98a2b3;
+    border-radius: 4px;
+    font-size: 14px;
+}
+
 .hall-grid {
     display: grid;
     grid-template-columns: repeat(3, minmax(0, 1fr));
@@ -1871,6 +2031,36 @@ select {
     .section-title-row {
         align-items: flex-start;
         flex-direction: column;
+    }
+
+    .org-root {
+        margin-bottom: 42px;
+    }
+
+    .org-root::after,
+    .org-branches::before,
+    .org-branch::before,
+    .org-branch::after,
+    .org-sub-unit::after {
+        display: none;
+    }
+
+    .org-branches {
+        grid-template-columns: 1fr;
+        gap: 22px;
+    }
+
+    .org-branch {
+        gap: 12px;
+        padding: 16px;
+        border: 1px solid #e5e9f0;
+        border-radius: 4px;
+    }
+
+    .org-hall-chief,
+    .org-sub-unit,
+    .org-members {
+        width: 100%;
     }
 
     .write-page {

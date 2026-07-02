@@ -85,33 +85,60 @@
 
     <section id="hall-members" class="hall-members-section">
         <div class="section-title-row">
-            <h2>관장단 및 자치기구 명단</h2>
+            <h2>관장단 및 자치기구 조직도</h2>
             <span>관리자 입력 명단 기준</span>
         </div>
 
-        <div class="hall-grid compact">
-            <?php foreach ($halls as $hall): ?>
-                <article class="hall-card <?= e($hall['color']) ?>">
-                    <h2><?= e($hall['name']) ?> <span><?= e($hall['meaning']) ?></span></h2>
-                    <ul>
-                        <?php if (!$hall['students']): ?>
-                            <li class="empty-hall-member">등록된 학생이 없습니다.</li>
-                        <?php endif; ?>
+        <div class="hall-org-chart">
+            <div class="org-root">
+                <strong>삼경원 (三敬院)</strong>
+                <span>최고 학생 자치기구</span>
+            </div>
 
-                        <?php foreach ($hall['students'] as $student): ?>
-                            <li>
-                                <?php if (trim($student['role_label']) !== ''): ?>
-                                    <span><?= e($student['role_label']) ?></span>
+            <div class="org-branches">
+                <?php foreach ($halls as $hall): ?>
+                    <?php
+                        $chief = null;
+                        $viceChiefs = [];
+                        foreach ($hall['students'] as $student) {
+                            $role = trim($student['role_label']);
+                            if ($role === '관장' && $chief === null) {
+                                $chief = $student;
+                            }
+                            if ($role === '부관장') {
+                                $viceChiefs[] = $student;
+                            }
+                        }
+                    ?>
+                    <article class="org-branch <?= e($hall['color']) ?>">
+                        <div class="org-hall-chief">
+                            <strong><?= e($hall['name']) ?>장</strong>
+                            <span>
+                                <?php if ($chief): ?>
+                                    <?= e($chief['student_name']) ?> · <?= e((string) $chief['year']) ?>학년
                                 <?php else: ?>
-                                    <span class="empty-role"></span>
+                                    관리자 지정 대기
                                 <?php endif; ?>
-                                <strong><?= e($student['student_name']) ?></strong>
-                                <em><?= e((string) $student['year']) ?>학년</em>
-                            </li>
-                        <?php endforeach; ?>
-                    </ul>
-                </article>
-            <?php endforeach; ?>
+                            </span>
+                        </div>
+
+                        <div class="org-sub-unit">
+                            <strong><?= e($hall['name']) ?> 자치부</strong>
+                            <span>
+                                <?php if ($viceChiefs): ?>
+                                    <?php foreach ($viceChiefs as $index => $viceChief): ?><?= $index > 0 ? ', ' : '' ?><?= e((string) $viceChief['year']) ?>학년 <?= e($viceChief['student_name']) ?><?php endforeach; ?>
+                                <?php else: ?>
+                                    1, 2학년 부관장
+                                <?php endif; ?>
+                            </span>
+                        </div>
+
+                        <div class="org-members">
+                            <?= e($hall['name']) ?> 소속 관원
+                        </div>
+                    </article>
+                <?php endforeach; ?>
+            </div>
         </div>
     </section>
 </section>
