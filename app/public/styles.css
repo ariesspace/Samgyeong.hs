@@ -1135,7 +1135,7 @@ select {
     border: 1px solid #cfd6df;
 }
 
-.hall-tabs a {
+.hall-tabs button {
     display: flex;
     align-items: center;
     justify-content: center;
@@ -1143,19 +1143,24 @@ select {
     padding: 14px;
     color: #344054;
     background: #f8fafc;
+    border: 0;
     border-right: 1px solid #cfd6df;
     font-size: 18px;
     font-weight: 800;
-    text-decoration: none;
+    cursor: pointer;
 }
 
-.hall-tabs a:last-child {
+.hall-tabs button:last-child {
     border-right: 0;
 }
 
-.hall-tabs a.active {
+.hall-tabs button.active {
     color: white;
     background: #4b5568;
+}
+
+.hall-tab-panel[hidden] {
+    display: none;
 }
 
 .hall-status-section,
@@ -2019,12 +2024,12 @@ select {
         grid-template-columns: 1fr;
     }
 
-    .hall-tabs a {
+    .hall-tabs button {
         border-right: 0;
         border-bottom: 1px solid #cfd6df;
     }
 
-    .hall-tabs a:last-child {
+    .hall-tabs button:last-child {
         border-bottom: 0;
     }
 

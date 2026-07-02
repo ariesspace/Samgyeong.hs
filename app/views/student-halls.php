@@ -38,11 +38,11 @@
     </header>
 
     <nav class="hall-tabs" aria-label="관별 현황 보기">
-        <a class="active" href="#hall-status">관별 인원현황</a>
-        <a href="#hall-members">관장단 및 자치기구 명단</a>
+        <button class="active" type="button" data-hall-tab="hall-status">관별 인원현황</button>
+        <button type="button" data-hall-tab="hall-members">관장단 및 자치기구 명단</button>
     </nav>
 
-    <section id="hall-status" class="hall-status-section">
+    <section id="hall-status" class="hall-status-section hall-tab-panel active">
         <div class="section-title-row">
             <h2>관별 인원현황</h2>
             <span><?= e(date('Y.m.d.')) ?> 기준</span>
@@ -83,7 +83,7 @@
         </div>
     </section>
 
-    <section id="hall-members" class="hall-members-section">
+    <section id="hall-members" class="hall-members-section hall-tab-panel" hidden>
         <div class="section-title-row">
             <h2>관장단 및 자치기구 조직도</h2>
             <span>관리자 입력 명단 기준</span>
@@ -142,3 +142,5 @@
         </div>
     </section>
 </section>
+
+<script src="/hall-tabs.js"></script>
