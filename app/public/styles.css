@@ -805,6 +805,62 @@ select {
     align-items: center;
 }
 
+.admin-editor {
+    display: grid;
+    gap: 18px;
+}
+
+.admin-table-wrap {
+    overflow-x: auto;
+}
+
+.admin-table {
+    min-width: 980px;
+}
+
+.admin-table input,
+.admin-table select {
+    min-width: 92px;
+    padding: 7px 8px;
+    font-size: 13px;
+}
+
+.admin-table input[type="number"] {
+    min-width: 62px;
+}
+
+.admin-table .new-row td {
+    background: #f8faf9;
+}
+
+.form-actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: 10px;
+}
+
+.danger-button {
+    min-height: 34px;
+    padding: 7px 10px;
+    background: #b42318;
+    font-size: 13px;
+}
+
+.danger-button:hover {
+    background: #912018;
+}
+
+.ghost-button {
+    color: var(--green);
+    background: white;
+    border: 1px solid var(--green);
+}
+
+.ghost-button:hover {
+    color: white;
+    background: var(--green);
+}
+
 .role-badge {
     display: inline-flex;
     padding: 3px 8px;

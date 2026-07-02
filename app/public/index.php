@@ -26,7 +26,10 @@ $routes = [
     '/location' => fn () => view('page', ['title' => '오시는 길', 'body' => "주소, 교통편, 문의처를 정리하는 페이지입니다."]),
     '/admissions' => fn () => view('page', ['title' => '모집요강', 'body' => "입학 전형 일정, 지원 자격, 제출 서류, 문의처를 안내하는 페이지입니다."]),
     '/rules' => fn () => view('page', ['title' => '학교생활 규정', 'body' => '학교 생활 규정과 학생회 운영 규정을 게시하는 공간입니다.']),
-    '/student-halls' => fn () => view('student-halls', ['title' => '관별 명단']),
+    '/student-halls' => function () use ($db) {
+        $rows = $db->query('SELECT * FROM hall_members ORDER BY hall_key, sort_order, id')->fetchAll();
+        return view('student-halls', ['title' => '관별 명단', 'members' => $rows]);
+    },
     '/council' => fn () => view('page', ['title' => '학생회 소개', 'body' => "학생회는 학생들의 의견을 모으고 학교 생활 개선을 함께 논의하는 자치기구입니다."]),
     '/calendar' => fn () => view('calendar', ['title' => '일정 캘린더']),
     '/login' => fn () => $auth->loginPage(),
@@ -56,6 +59,80 @@ if ($path === '/admin/users/role' && $method === 'POST') {
     }
 
     redirect('/admin/users');
+}
+
+if ($path === '/admin/halls') {
+    $auth->requireRole(['admin']);
+    $members = $db->query('SELECT * FROM hall_members ORDER BY hall_key, sort_order, id')->fetchAll();
+    echo view('admin-halls', ['title' => '관별 명단 관리', 'members' => $members]);
+    exit;
+}
+
+if ($path === '/admin/halls/save' && $method === 'POST') {
+    $auth->requireRole(['admin']);
+    $allowedColors = ['blue', 'gold', 'green'];
+    $ids = $_POST['id'] ?? [];
+    $stmt = $db->prepare('
+        UPDATE hall_members
+        SET hall_key = ?, hall_name = ?, hall_meaning = ?, hall_color = ?, student_name = ?, year = ?, role_label = ?, sort_order = ?
+        WHERE id = ?
+    ');
+
+    foreach ($ids as $index => $id) {
+        $hallKey = trim($_POST['hall_key'][$index] ?? '');
+        $hallName = trim($_POST['hall_name'][$index] ?? '');
+        $hallMeaning = trim($_POST['hall_meaning'][$index] ?? '');
+        $hallColor = $_POST['hall_color'][$index] ?? 'green';
+        $studentName = trim($_POST['student_name'][$index] ?? '');
+        $year = max(1, min(3, (int) ($_POST['year'][$index] ?? 1)));
+        $roleLabel = trim($_POST['role_label'][$index] ?? '');
+        $sortOrder = (int) ($_POST['sort_order'][$index] ?? 0);
+
+        if ($hallKey === '' || $hallName === '' || $studentName === '' || $roleLabel === '') {
+            continue;
+        }
+
+        if (!in_array($hallColor, $allowedColors, true)) {
+            $hallColor = 'green';
+        }
+
+        $stmt->execute([$hallKey, $hallName, $hallMeaning, $hallColor, $studentName, $year, $roleLabel, $sortOrder, (int) $id]);
+    }
+
+    $newName = trim($_POST['new_student_name'] ?? '');
+    if ($newName !== '') {
+        $hallKey = trim($_POST['new_hall_key'] ?? 'gyeongcheon');
+        $hallName = trim($_POST['new_hall_name'] ?? '경천관');
+        $hallMeaning = trim($_POST['new_hall_meaning'] ?? '');
+        $hallColor = $_POST['new_hall_color'] ?? 'blue';
+        $year = max(1, min(3, (int) ($_POST['new_year'] ?? 1)));
+        $roleLabel = trim($_POST['new_role_label'] ?? '대표');
+        $sortOrder = (int) ($_POST['new_sort_order'] ?? 99);
+
+        if (!in_array($hallColor, $allowedColors, true)) {
+            $hallColor = 'green';
+        }
+
+        $stmt = $db->prepare('
+            INSERT INTO hall_members
+            (hall_key, hall_name, hall_meaning, hall_color, student_name, year, role_label, sort_order)
+            VALUES (?, ?, ?, ?, ?, ?, ?, ?)
+        ');
+        $stmt->execute([$hallKey, $hallName, $hallMeaning, $hallColor, $newName, $year, $roleLabel, $sortOrder]);
+    }
+
+    redirect('/admin/halls');
+}
+
+if ($path === '/admin/halls/delete' && $method === 'POST') {
+    $auth->requireRole(['admin']);
+    $id = (int) ($_POST['id'] ?? 0);
+    if ($id > 0) {
+        $stmt = $db->prepare('DELETE FROM hall_members WHERE id = ?');
+        $stmt->execute([$id]);
+    }
+
+    redirect('/admin/halls');
 }
 
 if (preg_match('#^/board/([a-z-]+)$#', $path, $matches)) {
