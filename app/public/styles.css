@@ -716,6 +716,12 @@ select {
     align-items: center;
 }
 
+.board-actions {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
 .board-search select,
 .board-search input {
     height: 38px;
@@ -742,6 +748,12 @@ select {
 
 .board-search button:hover {
     background: #374151;
+}
+
+.board-write-button {
+    min-height: 38px;
+    padding: 7px 16px;
+    border-radius: 5px;
 }
 
 .public-board-table {
@@ -1414,7 +1426,8 @@ select {
     }
 
     .board-tools,
-    .board-search {
+    .board-search,
+    .board-actions {
         align-items: stretch;
         flex-direction: column;
     }

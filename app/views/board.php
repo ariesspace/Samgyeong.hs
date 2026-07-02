@@ -1,20 +1,22 @@
 <section class="page board-page">
     <header class="board-head">
         <h1><?= e($board['name']) ?></h1>
-        <?php if ($canWrite): ?>
-            <a class="button" href="/board/<?= e($board['slug']) ?>/new">글쓰기</a>
-        <?php endif; ?>
     </header>
 
     <div class="board-tools">
         <p>총 <strong><?= count($posts) ?></strong>건</p>
-        <form method="get" action="/board/<?= e($board['slug']) ?>" class="board-search">
-            <select name="field" aria-label="검색 범위">
-                <option value="all">제목</option>
-            </select>
-            <input name="q" value="<?= e($keyword ?? '') ?>" placeholder="검색어 입력">
-            <button type="submit">검색</button>
-        </form>
+        <div class="board-actions">
+            <form method="get" action="/board/<?= e($board['slug']) ?>" class="board-search">
+                <select name="field" aria-label="검색 범위">
+                    <option value="all">제목</option>
+                </select>
+                <input name="q" value="<?= e($keyword ?? '') ?>" placeholder="검색어 입력">
+                <button type="submit">검색</button>
+            </form>
+            <?php if ($canWrite): ?>
+                <a class="button board-write-button" href="/board/<?= e($board['slug']) ?>/new">글쓰기</a>
+            <?php endif; ?>
+        </div>
     </div>
 
     <table class="board-table public-board-table">
