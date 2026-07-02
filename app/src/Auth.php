@@ -48,6 +48,9 @@ final class Auth
             'id' => $user['id'],
             'username' => $user['username'],
             'role' => $user['role'],
+            'display_name' => $user['display_name'] ?? '',
+            'hall_key' => $user['hall_key'] ?? '',
+            'year' => $user['year'] ?? 0,
         ];
 
         redirect('/');

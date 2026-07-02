@@ -8,6 +8,9 @@
             <tr>
                 <th>No.</th>
                 <th>아이디</th>
+                <th>이름</th>
+                <th>관</th>
+                <th>학년</th>
                 <th>현재 권한</th>
                 <th>가입일</th>
                 <th>권한 부여/수정</th>
@@ -20,6 +23,9 @@
                 <tr>
                     <td><?= e((string) ($index + 1)) ?></td>
                     <td class="admin-user-id"><?= e($user['username']) ?></td>
+                    <td><?= e($user['display_name'] ?: '-') ?></td>
+                    <td><?= e(hall_label($user['hall_key'] ?? '')) ?></td>
+                    <td><?= (int) ($user['year'] ?? 0) > 0 ? e((string) $user['year']) . '학년' : '-' ?></td>
                     <td><span class="role-badge role-badge-<?= e($user['role']) ?>"><?= e(role_label($user['role'])) ?></span></td>
                     <td><?= e(substr($user['created_at'], 0, 10)) ?></td>
                     <td>
@@ -43,6 +49,7 @@
                             <span class="muted">보호 계정</span>
                         <?php else: ?>
                             <div class="admin-row-actions">
+                                <a class="button ghost-button" href="/admin/users/edit?id=<?= e((string) $user['id']) ?>">수정</a>
                                 <button type="submit" form="reset-user-<?= e((string) $user['id']) ?>">비밀번호 초기화</button>
                                 <button class="danger-button" type="submit" form="delete-user-<?= e((string) $user['id']) ?>">삭제</button>
                             </div>

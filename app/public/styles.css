@@ -2084,7 +2084,7 @@ select {
 }
 
 .hall-admin-table {
-    min-width: 820px;
+    min-width: 760px;
     border-top-color: #1f2937;
 }
 
@@ -2389,6 +2389,14 @@ select {
     border-radius: 4px;
 }
 
+.success {
+    padding: 10px 12px;
+    color: #12633d;
+    background: #edfdf4;
+    border: 1px solid #b9ebcf;
+    border-radius: 4px;
+}
+
 .site-footer {
     display: grid;
     justify-items: center;
@@ -2467,6 +2475,84 @@ select {
     border: 1px solid #cfd8e3;
     border-radius: 4px;
     font: inherit;
+}
+
+.profile-card {
+    margin-top: 24px;
+    padding: 22px;
+    background: #f8fafc;
+    border: 1px solid var(--line);
+    border-top: 3px solid var(--green);
+    border-radius: 4px;
+}
+
+.profile-card h2 {
+    margin: 0 0 16px;
+    color: var(--ink);
+    font-size: 20px;
+}
+
+.profile-grid,
+.profile-password-form {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 16px;
+}
+
+.profile-grid input:disabled {
+    color: #596579;
+    background: #eef2f6;
+}
+
+.profile-password-form button {
+    grid-column: 1 / -1;
+    justify-self: end;
+}
+
+.points-summary {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 12px;
+    margin: 24px 0;
+}
+
+.points-summary article {
+    padding: 18px;
+    background: #f8fafc;
+    border: 1px solid var(--line);
+    border-radius: 4px;
+}
+
+.points-summary span {
+    display: block;
+    color: var(--muted);
+    font-size: 14px;
+    font-weight: 800;
+}
+
+.points-summary strong {
+    display: block;
+    margin-top: 6px;
+    color: var(--green);
+    font-size: 26px;
+}
+
+.point-type {
+    display: inline-flex;
+    padding: 3px 8px;
+    border-radius: 999px;
+    font-size: 12px;
+    font-weight: 800;
+}
+
+.point-type.good {
+    color: #12633d;
+    background: #edfdf4;
+}
+
+.point-type.bad {
+    color: #b42318;
+    background: #fff1f1;
 }
 
 .admin-create-actions {
@@ -2570,6 +2656,7 @@ select {
 
     .hall-grid,
     .hall-admin-grid,
+    .points-summary,
     .quick-links,
     .hall-album-grid,
     .home-boards {
@@ -2609,7 +2696,10 @@ select {
 
     .hall-admin-row,
     .add-member-row,
-    .hall-edit-fields {
+    .hall-edit-fields,
+    .profile-grid,
+    .profile-password-form,
+    .points-summary {
         grid-template-columns: 1fr;
     }
 

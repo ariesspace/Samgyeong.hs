@@ -11,6 +11,10 @@
                 <input name="username" required autocomplete="off" placeholder="예: student_01">
             </label>
             <label>
+                이름
+                <input name="display_name" required autocomplete="off" placeholder="학생 이름">
+            </label>
+            <label>
                 초기 비밀번호
                 <input type="password" name="password" required autocomplete="new-password" placeholder="초기 비밀번호 입력">
             </label>
@@ -20,6 +24,24 @@
                     <option value="student">재학생 (일반)</option>
                     <option value="council">삼경원 (학생회)</option>
                     <option value="admin">관리자</option>
+                </select>
+            </label>
+            <label>
+                관
+                <select name="hall_key">
+                    <option value="">선택 안 함</option>
+                    <?php foreach (hall_definitions() as $key => $hall): ?>
+                        <option value="<?= e($key) ?>"><?= e($hall['name']) ?></option>
+                    <?php endforeach; ?>
+                </select>
+            </label>
+            <label>
+                학년
+                <select name="year">
+                    <option value="0">선택 안 함</option>
+                    <option value="1">1학년</option>
+                    <option value="2">2학년</option>
+                    <option value="3">3학년</option>
                 </select>
             </label>
             <div class="admin-create-actions">

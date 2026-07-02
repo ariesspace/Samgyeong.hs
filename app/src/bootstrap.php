@@ -120,10 +120,17 @@ function role_label(?string $role): string
 {
     return match ($role) {
         'admin' => '관리자',
-        'council' => '학생회',
-        'student' => '학생',
+        'council' => '삼경원',
+        'student' => '재학생',
         default => '방문자',
     };
+}
+
+function hall_label(?string $hallKey): string
+{
+    $halls = hall_definitions();
+
+    return $hallKey && isset($halls[$hallKey]) ? $halls[$hallKey]['name'] : '-';
 }
 
 function nav_groups(): array
@@ -158,6 +165,13 @@ function nav_groups(): array
             ['label' => '일정 캘린더', 'href' => '/calendar'],
         ],
     ];
+
+    if (current_user()) {
+        $groups['마이페이지'] = [
+            ['label' => '내 정보 수정', 'href' => '/mypage'],
+            ['label' => '상벌점 현황', 'href' => '/mypage/points'],
+        ];
+    }
 
     if ((current_user()['role'] ?? null) === 'admin') {
         $groups['시스템 관리'] = [

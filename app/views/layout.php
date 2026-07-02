@@ -18,7 +18,11 @@
         <span>삼경인문고등학교 공식 사이트</span>
         <div class="utility-actions">
             <?php if (!empty($_SESSION['user'])): ?>
-                <span><?= e($_SESSION['user']['username']) ?> · <?= e(role_label($_SESSION['user']['role'])) ?></span>
+                <span><?= e(($_SESSION['user']['display_name'] ?? '') ?: $_SESSION['user']['username']) ?> · <?= e(role_label($_SESSION['user']['role'])) ?></span>
+                <a href="/mypage">마이페이지</a>
+                <?php if (($_SESSION['user']['role'] ?? '') === 'admin'): ?>
+                    <a href="/admin/users">시스템 관리</a>
+                <?php endif; ?>
                 <a href="/logout">로그아웃</a>
             <?php else: ?>
                 <a href="/login">로그인</a>
@@ -36,6 +40,12 @@
         </a>
         <nav class="primary-nav">
             <?php foreach ($groups as $group => $items): ?>
+                <?php
+                    $firstHref = $items[0]['href'] ?? '';
+                    if (str_starts_with($firstHref, '/mypage') || str_starts_with($firstHref, '/admin')) {
+                        continue;
+                    }
+                ?>
                 <a class="<?= !$isHome && $activeGroup === $group ? 'active' : '' ?>" href="<?= e($items[0]['href']) ?>"><?= e($group) ?></a>
             <?php endforeach; ?>
         </nav>

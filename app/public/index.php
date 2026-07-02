@@ -88,7 +88,7 @@ if (isset($routes[$path])) {
 
 if ($path === '/admin/users') {
     $auth->requireRole(['admin']);
-    $users = $db->query('SELECT id, username, role, created_at FROM users ORDER BY id ASC')->fetchAll();
+    $users = $db->query('SELECT id, username, role, display_name, hall_key, year, created_at FROM users ORDER BY id ASC')->fetchAll();
     echo view('admin-users', ['title' => '계정 권한 관리', 'users' => $users]);
     exit;
 }
@@ -99,15 +99,36 @@ if ($path === '/admin/users/create' && $method === 'GET') {
     exit;
 }
 
+if ($path === '/admin/users/edit' && $method === 'GET') {
+    $auth->requireRole(['admin']);
+    $userId = (int) ($_GET['id'] ?? 0);
+    $stmt = $db->prepare('SELECT id, username, role, display_name, hall_key, year, created_at FROM users WHERE id = ?');
+    $stmt->execute([$userId]);
+    $user = $stmt->fetch();
+    if (!$user || (int) $user['id'] === 1 || (int) $user['id'] === (int) ($auth->user()['id'] ?? 0)) {
+        redirect('/admin/users');
+    }
+
+    echo view('admin-user-edit', ['title' => '계정 정보 수정', 'account' => $user]);
+    exit;
+}
+
 if ($path === '/admin/users/create' && $method === 'POST') {
     $auth->requireRole(['admin']);
     $username = trim($_POST['username'] ?? '');
     $password = (string) ($_POST['password'] ?? '');
     $role = $_POST['role'] ?? '';
+    $displayName = trim($_POST['display_name'] ?? '');
+    $hallKey = $_POST['hall_key'] ?? '';
+    $year = max(0, min(3, (int) ($_POST['year'] ?? 0)));
 
     if ($username !== '' && $password !== '' && in_array($role, ['student', 'council', 'admin'], true)) {
-        $stmt = $db->prepare('INSERT OR IGNORE INTO users (username, password_hash, role) VALUES (?, ?, ?)');
-        $stmt->execute([$username, password_hash($password, PASSWORD_DEFAULT), $role]);
+        if ($role === 'admin') {
+            $hallKey = '';
+            $year = 0;
+        }
+        $stmt = $db->prepare('INSERT OR IGNORE INTO users (username, password_hash, role, display_name, hall_key, year) VALUES (?, ?, ?, ?, ?, ?)');
+        $stmt->execute([$username, password_hash($password, PASSWORD_DEFAULT), $role, $displayName !== '' ? $displayName : $username, $hallKey, $year]);
     }
 
     redirect('/admin/users');
@@ -121,6 +142,30 @@ if ($path === '/admin/users/update' && $method === 'POST') {
     if ($userId > 1 && $userId !== (int) ($auth->user()['id'] ?? 0) && in_array($role, ['student', 'council', 'admin'], true)) {
         $stmt = $db->prepare('UPDATE users SET role = ? WHERE id = ?');
         $stmt->execute([$role, $userId]);
+    }
+
+    redirect('/admin/users');
+}
+
+if ($path === '/admin/users/profile' && $method === 'POST') {
+    $auth->requireRole(['admin']);
+    $userId = (int) ($_POST['user_id'] ?? 0);
+    $displayName = trim($_POST['display_name'] ?? '');
+    $hallKey = $_POST['hall_key'] ?? '';
+    $year = max(0, min(3, (int) ($_POST['year'] ?? 0)));
+
+    if ($userId > 1 && $userId !== (int) ($auth->user()['id'] ?? 0) && $displayName !== '') {
+        $stmt = $db->prepare('SELECT role FROM users WHERE id = ?');
+        $stmt->execute([$userId]);
+        $role = $stmt->fetchColumn();
+        if ($role === 'admin') {
+            $hallKey = '';
+            $year = 0;
+        }
+        if ($role !== false) {
+            $stmt = $db->prepare('UPDATE users SET display_name = ?, hall_key = ?, year = ? WHERE id = ?');
+            $stmt->execute([$displayName, $hallKey, $year, $userId]);
+        }
     }
 
     redirect('/admin/users');
@@ -148,6 +193,44 @@ if ($path === '/admin/users/delete' && $method === 'POST') {
     }
 
     redirect('/admin/users');
+}
+
+if ($path === '/mypage') {
+    if (!$auth->user()) {
+        redirect('/login');
+    }
+    $stmt = $db->prepare('SELECT id, username, role, display_name, hall_key, year FROM users WHERE id = ?');
+    $stmt->execute([$auth->user()['id']]);
+    echo view('mypage-profile', [
+        'title' => '내 정보 수정',
+        'profile' => $stmt->fetch(),
+        'saved' => ($_GET['saved'] ?? '') === '1',
+        'error' => $_GET['error'] ?? '',
+    ]);
+    exit;
+}
+
+if ($path === '/mypage/password' && $method === 'POST') {
+    if (!$auth->user()) {
+        redirect('/login');
+    }
+    $password = (string) ($_POST['password'] ?? '');
+    $confirm = (string) ($_POST['password_confirm'] ?? '');
+    if ($password === '' || $password !== $confirm) {
+        redirect('/mypage?error=password');
+    }
+
+    $stmt = $db->prepare('UPDATE users SET password_hash = ? WHERE id = ?');
+    $stmt->execute([password_hash($password, PASSWORD_DEFAULT), $auth->user()['id']]);
+    redirect('/mypage?saved=1');
+}
+
+if ($path === '/mypage/points') {
+    if (!$auth->user()) {
+        redirect('/login');
+    }
+    echo view('mypage-points', ['title' => '상벌점 현황']);
+    exit;
 }
 
 if ($path === '/admin/halls') {
@@ -227,18 +310,18 @@ if ($path === '/admin/halls/update' && $method === 'POST') {
     $auth->requireRole(['admin']);
     $halls = hall_definitions();
     $id = (int) ($_POST['id'] ?? 0);
-    $stmt = $db->prepare('SELECT photo_path FROM hall_members WHERE id = ?');
+    $stmt = $db->prepare('SELECT photo_path, sort_order FROM hall_members WHERE id = ?');
     $stmt->execute([$id]);
-    $currentPhotoPath = $stmt->fetchColumn();
+    $current = $stmt->fetch();
 
-    if ($id > 0 && $currentPhotoPath !== false) {
+    if ($id > 0 && $current) {
         $hallKey = $_POST['hall_key'] ?? 'gyeongcheon';
         $hall = $halls[$hallKey] ?? $halls['gyeongcheon'];
         $studentName = trim($_POST['student_name'] ?? '');
         $year = max(1, min(3, (int) ($_POST['year'] ?? 1)));
         $roleLabel = trim($_POST['role_label'] ?? '');
-        $sortOrder = (int) ($_POST['sort_order'] ?? 0);
-        $photoPath = $currentPhotoPath ?: null;
+        $sortOrder = (int) ($current['sort_order'] ?? 0);
+        $photoPath = $current['photo_path'] ?: null;
         $uploadedPhoto = save_hall_photo('photo');
         if ($uploadedPhoto) {
             delete_upload($photoPath);

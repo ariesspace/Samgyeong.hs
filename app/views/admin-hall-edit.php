@@ -1,6 +1,6 @@
 <section class="page hall-admin-page">
     <h1>관별 명단 수정</h1>
-    <p class="muted">관, 이름, 학년, 직책, 사진, 정렬 순서를 수정합니다. 직책을 비우면 명단에는 관원으로 표시됩니다.</p>
+    <p class="muted">관, 이름, 학년, 직책, 사진을 수정합니다. 직책을 비우면 명단에는 관원으로 표시됩니다.</p>
 
     <?php $halls = hall_definitions(); ?>
 
@@ -42,10 +42,6 @@
             <label>
                 직책
                 <input name="role_label" value="<?= e($member['role_label']) ?>" placeholder="없으면 비워둠">
-            </label>
-            <label>
-                순서
-                <input type="number" name="sort_order" value="<?= e((string) $member['sort_order']) ?>" min="0">
             </label>
         </div>
 

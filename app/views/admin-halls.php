@@ -10,7 +10,7 @@
         <section class="add-member-panel hall-add-panel">
             <div>
                 <h2>인원 추가</h2>
-                <p class="muted">새 학생을 추가한 뒤 필요하면 수정 화면에서 사진과 순서를 더 자세히 관리할 수 있습니다.</p>
+                <p class="muted">새 학생을 추가한 뒤 필요하면 수정 화면에서 사진과 세부 정보를 더 자세히 관리할 수 있습니다.</p>
             </div>
             <div class="add-member-row">
                 <label>
@@ -56,7 +56,6 @@
                     <th>이름</th>
                     <th>학년</th>
                     <th>직책</th>
-                    <th>순서</th>
                     <th>관리</th>
                 </tr>
             </thead>
@@ -72,7 +71,6 @@
                         <td class="hall-member-name"><?= e($member['student_name']) ?></td>
                         <td><?= e((string) $member['year']) ?>학년</td>
                         <td><?= e($member['role_label'] !== '' ? $member['role_label'] : '관원') ?></td>
-                        <td><?= e((string) $member['sort_order']) ?></td>
                         <td>
                             <div class="hall-admin-actions">
                                 <a class="button ghost-button" href="/admin/halls/edit?id=<?= e((string) $member['id']) ?>">수정</a>

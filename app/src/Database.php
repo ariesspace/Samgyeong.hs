@@ -27,6 +27,9 @@ final class Database
                 username TEXT NOT NULL UNIQUE,
                 password_hash TEXT NOT NULL,
                 role TEXT NOT NULL CHECK(role IN ('student', 'council', 'admin')),
+                display_name TEXT NOT NULL DEFAULT '',
+                hall_key TEXT NOT NULL DEFAULT '',
+                year INTEGER NOT NULL DEFAULT 0,
                 created_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP
             );
 
@@ -71,8 +74,21 @@ final class Database
 
         $count = (int) $pdo->query('SELECT COUNT(*) FROM users')->fetchColumn();
         if ($count === 0) {
-            $stmt = $pdo->prepare('INSERT INTO users (username, password_hash, role) VALUES (?, ?, ?)');
-            $stmt->execute(['admin', password_hash('admin1234', PASSWORD_DEFAULT), 'admin']);
+            $stmt = $pdo->prepare('INSERT INTO users (username, password_hash, role, display_name, hall_key, year) VALUES (?, ?, ?, ?, ?, ?)');
+            $stmt->execute(['admin', password_hash('admin1234', PASSWORD_DEFAULT), 'admin', '최고관리자', '', 0]);
+        }
+
+        $columns = $pdo->query("PRAGMA table_info(users)")->fetchAll();
+        $userColumns = array_column($columns, 'name');
+        if (!in_array('display_name', $userColumns, true)) {
+            $pdo->exec("ALTER TABLE users ADD COLUMN display_name TEXT NOT NULL DEFAULT ''");
+            $pdo->exec("UPDATE users SET display_name = username WHERE display_name = ''");
+        }
+        if (!in_array('hall_key', $userColumns, true)) {
+            $pdo->exec("ALTER TABLE users ADD COLUMN hall_key TEXT NOT NULL DEFAULT ''");
+        }
+        if (!in_array('year', $userColumns, true)) {
+            $pdo->exec("ALTER TABLE users ADD COLUMN year INTEGER NOT NULL DEFAULT 0");
         }
 
         $columns = $pdo->query("PRAGMA table_info(posts)")->fetchAll();
