@@ -11,6 +11,7 @@
         $requestPath = parse_url($_SERVER['REQUEST_URI'] ?? '/', PHP_URL_PATH) ?: '/';
         $groups = nav_groups();
         $activeGroup = active_group($requestPath);
+        $isHome = $requestPath === '/';
     ?>
     <div class="utility-bar">
         <span>삼경인문고등학교 공식 사이트</span>
@@ -36,32 +37,36 @@
         </nav>
     </header>
 
-    <section class="site-hero">
-        <div>
-            <h1>삼경인문고등학교</h1>
-            <p>SAMGYEONG HUMANITIES HIGH SCHOOL</p>
-        </div>
-    </section>
-
-    <main class="shell">
-        <aside class="sidebar">
-            <h2><?= e($activeGroup) ?></h2>
-            <ul>
-                <?php foreach ($groups[$activeGroup] as $item): ?>
-                    <li>
-                        <a class="<?= $requestPath === $item['href'] ? 'active' : '' ?>" href="<?= e($item['href']) ?>">
-                            <?= e($item['label']) ?>
-                            <span><?= $requestPath === $item['href'] ? '-' : '+' ?></span>
-                        </a>
-                    </li>
-                <?php endforeach; ?>
-            </ul>
-        </aside>
-        <section class="content-panel">
-            <div class="breadcrumb">홈 &gt; <?= e($activeGroup) ?> &gt; <strong><?= e($title ?? '') ?></strong></div>
-            <?= $content ?>
+    <?php if ($isHome): ?>
+        <?= $content ?>
+    <?php else: ?>
+        <section class="site-hero">
+            <div>
+                <h1>삼경인문고등학교</h1>
+                <p>SAMGYEONG HUMANITIES HIGH SCHOOL</p>
+            </div>
         </section>
-    </main>
+
+        <main class="shell">
+            <aside class="sidebar">
+                <h2><?= e($activeGroup) ?></h2>
+                <ul>
+                    <?php foreach ($groups[$activeGroup] as $item): ?>
+                        <li>
+                            <a class="<?= $requestPath === $item['href'] ? 'active' : '' ?>" href="<?= e($item['href']) ?>">
+                                <?= e($item['label']) ?>
+                                <span><?= $requestPath === $item['href'] ? '-' : '+' ?></span>
+                            </a>
+                        </li>
+                    <?php endforeach; ?>
+                </ul>
+            </aside>
+            <section class="content-panel">
+                <div class="breadcrumb">홈 &gt; <?= e($activeGroup) ?> &gt; <strong><?= e($title ?? '') ?></strong></div>
+                <?= $content ?>
+            </section>
+        </main>
+    <?php endif; ?>
 
     <footer class="site-footer">
         <strong>삼경인문고등학교</strong>
