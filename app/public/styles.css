@@ -840,9 +840,7 @@ select {
 
 .post-manage-actions {
     display: flex;
-    justify-content: flex-end;
     gap: 8px;
-    margin: -6px 0 18px;
 }
 
 .post-manage-actions form {
@@ -939,7 +937,9 @@ select {
 
 .post-detail-foot {
     display: flex;
-    justify-content: flex-end;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
     padding-top: 22px;
 }
 
@@ -1714,6 +1714,15 @@ select {
 
     .post-meta div:last-child {
         border-bottom: 0;
+    }
+
+    .post-detail-foot {
+        align-items: stretch;
+        flex-direction: column;
+    }
+
+    .post-manage-actions {
+        justify-content: flex-end;
     }
 
     .write-page {
