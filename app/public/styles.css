@@ -816,11 +816,23 @@ select {
 }
 
 .file-link {
-    margin-left: 8px;
-    color: var(--green);
-    font-size: 13px;
-    font-weight: 800;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    margin-left: 6px;
+    color: #8a94a6;
+    font-size: 17px;
+    line-height: 1;
     text-decoration: none;
+    vertical-align: -2px;
+}
+
+.file-link::before {
+    content: "\1F4CE";
+}
+
+.file-link:hover {
+    color: var(--green);
 }
 
 .board-row-delete {

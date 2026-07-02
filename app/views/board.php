@@ -49,7 +49,7 @@
                             <?= e($post['title']) ?>
                         </a>
                         <?php if ($post['file_path']): ?>
-                            <a class="file-link" href="/uploads/<?= e($post['file_path']) ?>" download>첨부</a>
+                            <a class="file-link" href="/uploads/<?= e($post['file_path']) ?>" download title="첨부파일 다운로드" aria-label="첨부파일 다운로드"></a>
                         <?php endif; ?>
                     </td>
                     <td><?= e($post['username']) ?></td>
