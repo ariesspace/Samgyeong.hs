@@ -1,0 +1,4 @@
+/app/storage/data/
+/app/storage/uploads/*
+!/app/storage/uploads/.gitkeep
+.env
