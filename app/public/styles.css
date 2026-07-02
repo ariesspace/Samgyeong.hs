@@ -898,16 +898,16 @@ select {
 
 .text-flow {
     display: grid;
-    gap: 22px;
+    gap: 16px;
     max-width: 760px;
-    margin-bottom: 44px;
+    margin-bottom: 36px;
 }
 
 .text-flow p {
     margin: 0;
     color: #23362f;
-    font-size: clamp(20px, 3vw, 26px);
-    line-height: 1.55;
+    font-size: 18px;
+    line-height: 1.8;
     word-break: keep-all;
 }
 
@@ -922,10 +922,10 @@ select {
 }
 
 .motto-section h2 {
-    margin: 0 0 22px;
+    margin: 0 0 14px;
     color: #23362f;
     font-family: Georgia, "Times New Roman", serif;
-    font-size: clamp(24px, 4vw, 32px);
+    font-size: clamp(24px, 4vw, 30px);
     font-weight: 800;
 }
 
@@ -939,9 +939,9 @@ select {
 .motto-section p {
     margin: 0;
     color: #23362f;
-    font-size: clamp(20px, 3vw, 26px);
+    font-size: 18px;
     font-weight: 800;
-    line-height: 1.55;
+    line-height: 1.75;
     word-break: keep-all;
 }
 
