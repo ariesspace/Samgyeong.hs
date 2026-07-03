@@ -255,6 +255,7 @@ function build_point_rule_sections(array $rules): array
 {
     $sections = point_rule_categories();
     foreach ($sections as $key => $section) {
+        $sections[$key]['key'] = $key;
         $sections[$key]['items'] = [];
     }
 

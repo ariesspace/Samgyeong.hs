@@ -1165,7 +1165,7 @@ a {
 
 .point-rule-admin-sections {
     display: grid;
-    gap: 34px;
+    gap: 38px;
 }
 
 .point-rule-admin-block {
@@ -1213,7 +1213,7 @@ a {
 }
 
 .point-rule-admin-row label,
-.point-rule-add-panel label {
+.point-rule-inline-add-form label {
     display: grid;
     gap: 5px;
     color: #344054;
@@ -1223,9 +1223,8 @@ a {
 
 .point-rule-admin-row input,
 .point-rule-admin-row textarea,
-.point-rule-add-panel input,
-.point-rule-add-panel textarea,
-.point-rule-add-panel select {
+.point-rule-inline-add-form input,
+.point-rule-inline-add-form textarea {
     width: 100%;
     border: 1px solid #ccd4df;
     border-radius: 4px;
@@ -1239,9 +1238,8 @@ a {
 
 .point-rule-admin-row input:focus,
 .point-rule-admin-row textarea:focus,
-.point-rule-add-panel input:focus,
-.point-rule-add-panel textarea:focus,
-.point-rule-add-panel select:focus {
+.point-rule-inline-add-form input:focus,
+.point-rule-inline-add-form textarea:focus {
     outline: none;
     background: white;
     border-color: var(--green);
@@ -1249,13 +1247,13 @@ a {
 }
 
 .point-rule-admin-row textarea,
-.point-rule-add-panel textarea {
+.point-rule-inline-add-form textarea {
     min-height: 40px;
     resize: vertical;
 }
 
 .point-rule-admin-row .checkbox-field,
-.point-rule-add-panel .checkbox-field {
+.point-rule-inline-add-form .checkbox-field {
     display: flex;
     align-items: center;
     gap: 7px;
@@ -1265,39 +1263,34 @@ a {
 }
 
 .point-rule-admin-row .checkbox-field input,
-.point-rule-add-panel .checkbox-field input {
+.point-rule-inline-add-form .checkbox-field input {
     width: auto;
 }
 
-.point-rule-add-panel {
-    padding-top: 22px;
-    border-top: 2px solid var(--green);
+.point-rule-inline-add {
+    margin-top: 8px;
+    padding: 14px 0 0;
+    border-top: 1px dashed #cfd6df;
 }
 
-.point-rule-add-panel h2 {
-    margin: 0 0 16px;
-    color: var(--ink);
-    font-size: 22px;
+.point-rule-inline-add-title {
+    margin-bottom: 10px;
+    color: var(--green);
+    font-size: 14px;
+    font-weight: 900;
 }
 
-.point-rule-add-form {
+.point-rule-inline-add-form {
     display: grid;
-    grid-template-columns: 190px 130px minmax(260px, 1fr) 116px;
+    grid-template-columns: 108px minmax(280px, 1fr) 72px 72px;
     gap: 12px;
     align-items: end;
 }
 
-.point-rule-add-panel .rule-text-field {
-    grid-column: auto;
-}
-
-.point-rule-add-panel .checkbox-field {
-    grid-column: auto;
-}
-
-.point-rule-add-panel .admin-create-actions {
-    grid-column: 1 / -1;
-    margin-top: 0;
+.admin-point-rules-form > .form-actions {
+    margin-top: 24px;
+    padding-top: 18px;
+    border-top: 1px solid var(--line);
 }
 
 .council-principles div {
@@ -4884,19 +4877,22 @@ select {
         padding: 0 0 14px;
     }
 
-    .point-rule-admin-head h2,
-    .point-rule-add-panel h2 {
+    .point-rule-admin-head h2 {
         font-size: 19px;
     }
 
-    .point-rule-admin-row {
+    .point-rule-admin-row,
+    .point-rule-inline-add-form {
         grid-template-columns: 1fr;
         gap: 10px;
+    }
+
+    .point-rule-admin-row {
         padding: 14px 0;
     }
 
     .point-rule-admin-row .checkbox-field,
-    .point-rule-add-panel .checkbox-field {
+    .point-rule-inline-add-form .checkbox-field {
         padding-top: 0;
     }
 
@@ -4904,8 +4900,8 @@ select {
         justify-self: end;
     }
 
-    .point-rule-add-form {
-        grid-template-columns: 1fr;
+    .point-rule-inline-add-form button {
+        width: 100%;
     }
 
     .points-assign-panel,
