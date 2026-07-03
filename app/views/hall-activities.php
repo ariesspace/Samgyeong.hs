@@ -57,22 +57,23 @@ $activities = [
 ];
 ?>
 
-<section class="page hall-activities-page">
+<section class="page hall-activities-page" data-hall-activities>
     <header class="hall-activities-hero">
         <p class="eyebrow">Samgyeong Hall Activities</p>
         <h1>관별 자치활동</h1>
         <p>삼경의 정신을 각 관의 방식으로 실천하는 자치활동 앨범입니다. 활동은 고정된 세 가지에 머무르지 않고, 관별 특성과 필요에 따라 계속 확장됩니다.</p>
     </header>
 
-    <section class="hall-activity-filter" aria-label="관별 활동 안내">
-        <span class="blue">경천관 하늘</span>
-        <span class="gold">경인관 사람</span>
-        <span class="green">경물관 만물</span>
+    <section class="hall-activity-filter" aria-label="관별 활동 필터">
+        <button type="button" class="all active" data-hall-filter="all">전체</button>
+        <button type="button" class="blue" data-hall-filter="blue">경천관 하늘</button>
+        <button type="button" class="gold" data-hall-filter="gold">경인관 사람</button>
+        <button type="button" class="green" data-hall-filter="green">경물관 만물</button>
     </section>
 
     <section class="hall-activity-grid">
         <?php foreach ($activities as $index => $activity): ?>
-            <article class="hall-activity-card <?= e($activity['tone']) ?>">
+            <article class="hall-activity-card <?= e($activity['tone']) ?>" data-hall-card="<?= e($activity['tone']) ?>">
                 <div class="hall-activity-cover">
                     <span><?= e($activity['hall']) ?> · <?= e($activity['meaning']) ?></span>
                     <strong><?= e(str_pad((string) ($index + 1), 2, '0', STR_PAD_LEFT)) ?></strong>
@@ -95,3 +96,29 @@ $activities = [
         <?php endforeach; ?>
     </section>
 </section>
+
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+    var root = document.querySelector('[data-hall-activities]');
+    if (!root) {
+        return;
+    }
+
+    var filters = root.querySelectorAll('[data-hall-filter]');
+    var cards = root.querySelectorAll('[data-hall-card]');
+
+    filters.forEach(function (filterButton) {
+        filterButton.addEventListener('click', function () {
+            var selected = filterButton.dataset.hallFilter;
+
+            filters.forEach(function (button) {
+                button.classList.toggle('active', button === filterButton);
+            });
+
+            cards.forEach(function (card) {
+                card.hidden = selected !== 'all' && card.dataset.hallCard !== selected;
+            });
+        });
+    });
+});
+</script>

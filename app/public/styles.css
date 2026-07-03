@@ -2451,7 +2451,7 @@ select {
     gap: 8px;
 }
 
-.hall-activity-filter span {
+.hall-activity-filter button {
     padding: 7px 12px;
     color: #344054;
     background: white;
@@ -2459,6 +2459,25 @@ select {
     border-radius: 999px;
     font-size: 13px;
     font-weight: 900;
+    line-height: 1.25;
+    cursor: pointer;
+    transition: background .15s ease, border-color .15s ease, color .15s ease, transform .15s ease;
+}
+
+.hall-activity-filter button:hover {
+    transform: translateY(-1px);
+}
+
+.hall-activity-filter .all {
+    color: var(--green);
+    background: #f5faf7;
+}
+
+.hall-activity-filter .all.active,
+.hall-activity-filter .all:hover {
+    color: white;
+    background: var(--green);
+    border-color: var(--green);
 }
 
 .hall-activity-filter .blue {
@@ -2476,20 +2495,45 @@ select {
     background: #eef7f1;
 }
 
+.hall-activity-filter .blue.active,
+.hall-activity-filter .blue:hover {
+    color: white;
+    background: #2c5282;
+    border-color: #2c5282;
+}
+
+.hall-activity-filter .gold.active,
+.hall-activity-filter .gold:hover {
+    color: white;
+    background: #b7791f;
+    border-color: #b7791f;
+}
+
+.hall-activity-filter .green.active,
+.hall-activity-filter .green:hover {
+    color: white;
+    background: #276749;
+    border-color: #276749;
+}
+
 .hall-activity-grid {
     display: grid;
-    grid-template-columns: repeat(3, minmax(0, 1fr));
-    gap: 18px;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 20px;
 }
 
 .hall-activity-card {
     overflow: hidden;
     display: grid;
-    grid-template-rows: 142px 1fr;
+    grid-template-rows: 128px 1fr;
     background: white;
     border: 1px solid var(--line);
     border-radius: 5px;
     box-shadow: 0 10px 24px rgba(15, 23, 42, .06);
+}
+
+.hall-activity-card[hidden] {
+    display: none;
 }
 
 .hall-activity-cover {
@@ -2568,6 +2612,7 @@ select {
 
 .hall-activity-body dl {
     display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
     gap: 10px;
     margin: 0;
 }
@@ -5076,7 +5121,7 @@ select {
         gap: 6px;
     }
 
-    .hall-activity-filter span {
+    .hall-activity-filter button {
         padding: 6px 9px;
         font-size: 12px;
     }
@@ -5113,6 +5158,10 @@ select {
     .hall-activity-body dd {
         font-size: 14px;
         line-height: 1.65;
+    }
+
+    .hall-activity-body dl {
+        grid-template-columns: 1fr;
     }
 
     .symbol-card h2 {
