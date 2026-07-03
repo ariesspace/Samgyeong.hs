@@ -2151,6 +2151,145 @@ select {
     word-break: keep-all;
 }
 
+.symbols-page {
+    display: grid;
+    gap: 54px;
+}
+
+.symbol-section h1 {
+    margin: 0 0 26px;
+    padding-bottom: 12px;
+    color: #23362f;
+    border-bottom: 2px solid var(--green);
+    font-family: Georgia, "Times New Roman", serif;
+    font-size: clamp(25px, 4vw, 32px);
+    font-weight: 700;
+    line-height: 1.25;
+}
+
+.symbol-section h1 span {
+    margin-left: 6px;
+    color: #1f2937;
+    font-size: .72em;
+}
+
+.symbol-emblem-panel {
+    display: grid;
+    grid-template-columns: 260px minmax(0, 1fr);
+    gap: 42px;
+    align-items: center;
+    padding: 36px;
+    background: #fbfcfd;
+    border: 1px solid #d9e1ea;
+    border-radius: 4px;
+}
+
+.symbol-emblem {
+    display: grid;
+    place-items: center;
+    width: 220px;
+    height: 220px;
+    margin: 0 auto;
+    background: white;
+    border: 1px solid #edf0f4;
+    border-radius: 999px;
+    box-shadow: 0 12px 28px rgba(15, 23, 42, .08);
+}
+
+.symbol-emblem img {
+    width: 168px;
+    height: 168px;
+    object-fit: contain;
+}
+
+.symbol-copy {
+    display: grid;
+    gap: 14px;
+    color: #293548;
+    font-family: Georgia, "Times New Roman", serif;
+    font-size: 19px;
+    line-height: 1.9;
+    word-break: keep-all;
+}
+
+.symbol-copy p {
+    margin: 0;
+}
+
+.symbol-copy strong {
+    color: var(--green);
+    font-weight: 800;
+}
+
+.symbol-note {
+    margin-top: 8px !important;
+    color: #667085;
+    font-size: 16px;
+    line-height: 1.7;
+}
+
+.symbol-card-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 34px;
+}
+
+.symbol-card {
+    display: grid;
+    gap: 18px;
+    justify-items: center;
+    padding: 26px;
+    background: white;
+    border: 1px solid #d9e1ea;
+    border-radius: 4px;
+}
+
+.symbol-card h2 {
+    margin: 0;
+    padding: 8px 20px;
+    color: var(--green);
+    background: #eef8f2;
+    border-radius: 4px;
+    font-family: Georgia, "Times New Roman", serif;
+    font-size: 22px;
+    font-weight: 700;
+}
+
+.symbol-card h2 span {
+    color: inherit;
+    font-size: .82em;
+}
+
+.symbol-card figure {
+    width: 100%;
+    aspect-ratio: 16 / 10;
+    margin: 0;
+    overflow: hidden;
+    background: #f3f6f9;
+    border-radius: 4px;
+}
+
+.symbol-card img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.symbol-card p {
+    max-width: 430px;
+    margin: 0;
+    color: #526174;
+    font-size: 16px;
+    line-height: 1.85;
+    text-align: center;
+    word-break: keep-all;
+}
+
+.symbol-card strong {
+    color: var(--ink);
+    font-weight: 800;
+}
+
 .inline-form {
     display: flex;
     gap: 8px;
@@ -3215,8 +3354,38 @@ select {
     .hall-admin-grid,
     .quick-links,
     .hall-album-grid,
+    .symbol-emblem-panel,
+    .symbol-card-grid,
     .home-boards {
         grid-template-columns: 1fr;
+    }
+
+    .symbol-emblem-panel {
+        gap: 24px;
+        padding: 24px 18px;
+    }
+
+    .symbol-emblem {
+        width: 170px;
+        height: 170px;
+    }
+
+    .symbol-emblem img {
+        width: 130px;
+        height: 130px;
+    }
+
+    .symbol-copy {
+        font-size: 16px;
+        line-height: 1.75;
+    }
+
+    .symbol-card {
+        padding: 20px 16px;
+    }
+
+    .symbol-card h2 {
+        font-size: 19px;
     }
 
     .hall-admin-row,
