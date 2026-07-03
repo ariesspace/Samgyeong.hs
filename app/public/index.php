@@ -142,8 +142,8 @@ if ($path === '/admin/users/create' && $method === 'POST') {
     $hallKey = $_POST['hall_key'] ?? '';
     $year = max(0, min(3, (int) ($_POST['year'] ?? 0)));
 
-    if ($username !== '' && $password !== '' && in_array($role, ['student', 'council', 'admin'], true)) {
-        if ($role === 'admin') {
+    if ($username !== '' && $password !== '' && in_array($role, ['guest', 'student', 'council', 'admin'], true)) {
+        if ($role === 'admin' || $role === 'guest') {
             $hallKey = '';
             $year = 0;
         }
@@ -162,7 +162,7 @@ if ($path === '/admin/users/update' && $method === 'POST') {
     $userId = (int) ($_POST['user_id'] ?? 0);
     $role = $_POST['role'] ?? '';
 
-    if ($userId > 1 && $userId !== (int) ($auth->user()['id'] ?? 0) && in_array($role, ['student', 'council', 'admin'], true)) {
+    if ($userId > 1 && $userId !== (int) ($auth->user()['id'] ?? 0) && in_array($role, ['guest', 'student', 'council', 'admin'], true)) {
         $stmt = $db->prepare('UPDATE users SET role = ? WHERE id = ?');
         $stmt->execute([$role, $userId]);
         sync_user_hall_member($db, $userId);
@@ -180,11 +180,11 @@ if ($path === '/admin/users/profile' && $method === 'POST') {
     $year = max(0, min(3, (int) ($_POST['year'] ?? 0)));
     $roleLabel = trim($_POST['role_label'] ?? '');
 
-    if ($userId > 1 && $userId !== (int) ($auth->user()['id'] ?? 0) && $displayName !== '' && in_array($role, ['student', 'council', 'admin'], true)) {
+    if ($userId > 1 && $userId !== (int) ($auth->user()['id'] ?? 0) && $displayName !== '' && in_array($role, ['guest', 'student', 'council', 'admin'], true)) {
         $stmt = $db->prepare('SELECT id FROM users WHERE id = ?');
         $stmt->execute([$userId]);
         $exists = $stmt->fetchColumn();
-        if ($role === 'admin') {
+        if ($role === 'admin' || $role === 'guest') {
             $hallKey = '';
             $year = 0;
         }
@@ -192,7 +192,7 @@ if ($path === '/admin/users/profile' && $method === 'POST') {
             $stmt = $db->prepare('UPDATE users SET display_name = ?, hall_key = ?, year = ?, role = ? WHERE id = ?');
             $stmt->execute([$displayName, $hallKey, $year, $role, $userId]);
             sync_user_hall_member($db, $userId);
-            if ($role !== 'admin') {
+            if ($role !== 'admin' && $role !== 'guest') {
                 $stmt = $db->prepare('UPDATE hall_members SET role_label = ? WHERE user_id = ?');
                 $stmt->execute([$roleLabel, $userId]);
             }
@@ -223,9 +223,12 @@ if ($path === '/admin/users/delete' && $method === 'POST') {
     $userId = (int) ($_POST['user_id'] ?? 0);
 
     if ($userId > 1 && $userId !== (int) ($auth->user()['id'] ?? 0)) {
-        $stmt = $db->prepare('SELECT display_name, hall_key, year, photo_path FROM users WHERE id = ?');
+        $stmt = $db->prepare('SELECT username, display_name, hall_key, year, photo_path FROM users WHERE id = ?');
         $stmt->execute([$userId]);
         $user = $stmt->fetch();
+        if (!$user || ($user['username'] ?? '') === 'guest') {
+            redirect('/admin/users');
+        }
         delete_upload($user['photo_path'] ?? null);
 
         $stmt = $db->prepare('DELETE FROM hall_members WHERE user_id = ?');
@@ -268,7 +271,7 @@ if ($path === '/admin/boards/permissions/save' && $method === 'POST') {
     $auth->requireRole(['admin']);
     $readPresets = [
         'public' => [],
-        'student' => ['student', 'council', 'admin'],
+        'student' => ['guest', 'student', 'council', 'admin'],
         'council' => ['council', 'admin'],
         'admin' => ['admin'],
     ];
@@ -662,7 +665,7 @@ function sync_user_hall_member(PDO $db, int $userId): void
     $hallKey = (string) ($user['hall_key'] ?? '');
     $year = (int) ($user['year'] ?? 0);
     $displayName = trim((string) ($user['display_name'] ?? ''));
-    $shouldAppear = $user['role'] !== 'admin'
+    $shouldAppear = in_array($user['role'], ['student', 'council'], true)
         && $displayName !== ''
         && isset($halls[$hallKey])
         && $year >= 1

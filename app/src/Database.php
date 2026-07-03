@@ -26,7 +26,7 @@ final class Database
                 id INTEGER PRIMARY KEY AUTOINCREMENT,
                 username TEXT NOT NULL UNIQUE,
                 password_hash TEXT NOT NULL,
-                role TEXT NOT NULL CHECK(role IN ('student', 'council', 'admin')),
+                role TEXT NOT NULL CHECK(role IN ('guest', 'student', 'council', 'admin')),
                 display_name TEXT NOT NULL DEFAULT '',
                 hall_key TEXT NOT NULL DEFAULT '',
                 year INTEGER NOT NULL DEFAULT 0,
@@ -116,6 +116,8 @@ final class Database
         if (!in_array('photo_path', $userColumns, true)) {
             $pdo->exec('ALTER TABLE users ADD COLUMN photo_path TEXT');
         }
+        self::ensureGuestRole($pdo);
+        self::ensureGuestAccount($pdo);
 
         $columns = $pdo->query("PRAGMA table_info(posts)")->fetchAll();
         $postColumns = array_column($columns, 'name');
@@ -134,6 +136,8 @@ final class Database
         if (!in_array('user_id', $hallColumns, true)) {
             $pdo->exec('ALTER TABLE hall_members ADD COLUMN user_id INTEGER');
         }
+
+        self::ensureGuestBoardReadPermissions($pdo);
 
         $postCount = (int) $pdo->query('SELECT COUNT(*) FROM posts')->fetchColumn();
         if ($postCount === 0) {
@@ -173,6 +177,75 @@ final class Database
             foreach ($events as $event) {
                 $stmt->execute([$event[0], $event[1], $event[2], $adminId]);
             }
+        }
+    }
+
+    private static function ensureGuestRole(PDO $pdo): void
+    {
+        $schema = (string) $pdo->query("SELECT sql FROM sqlite_master WHERE type = 'table' AND name = 'users'")->fetchColumn();
+        if (str_contains($schema, "'guest'")) {
+            return;
+        }
+
+        $pdo->exec('PRAGMA foreign_keys = OFF');
+        $pdo->beginTransaction();
+        try {
+            $pdo->exec("
+                CREATE TABLE users_new (
+                    id INTEGER PRIMARY KEY AUTOINCREMENT,
+                    username TEXT NOT NULL UNIQUE,
+                    password_hash TEXT NOT NULL,
+                    role TEXT NOT NULL CHECK(role IN ('guest', 'student', 'council', 'admin')),
+                    display_name TEXT NOT NULL DEFAULT '',
+                    hall_key TEXT NOT NULL DEFAULT '',
+                    year INTEGER NOT NULL DEFAULT 0,
+                    photo_path TEXT,
+                    created_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP
+                )
+            ");
+            $pdo->exec("
+                INSERT INTO users_new (id, username, password_hash, role, display_name, hall_key, year, photo_path, created_at)
+                SELECT id, username, password_hash, role, display_name, hall_key, year, photo_path, created_at
+                FROM users
+            ");
+            $pdo->exec('DROP TABLE users');
+            $pdo->exec('ALTER TABLE users_new RENAME TO users');
+            $pdo->commit();
+        } catch (Throwable $exception) {
+            $pdo->rollBack();
+            throw $exception;
+        } finally {
+            $pdo->exec('PRAGMA foreign_keys = ON');
+        }
+    }
+
+    private static function ensureGuestAccount(PDO $pdo): void
+    {
+        $stmt = $pdo->prepare('SELECT id FROM users WHERE username = ?');
+        $stmt->execute(['guest']);
+        if ($stmt->fetchColumn()) {
+            $stmt = $pdo->prepare("UPDATE users SET role = 'guest', display_name = '게스트', hall_key = '', year = 0 WHERE username = 'guest'");
+            $stmt->execute();
+            return;
+        }
+
+        $stmt = $pdo->prepare('INSERT INTO users (username, password_hash, role, display_name, hall_key, year) VALUES (?, ?, ?, ?, ?, ?)');
+        $stmt->execute(['guest', password_hash('guest1234', PASSWORD_DEFAULT), 'guest', '게스트', '', 0]);
+    }
+
+    private static function ensureGuestBoardReadPermissions(PDO $pdo): void
+    {
+        $rows = $pdo->query('SELECT board_slug, read_roles FROM board_permissions')->fetchAll();
+        $stmt = $pdo->prepare('UPDATE board_permissions SET read_roles = ?, updated_at = CURRENT_TIMESTAMP WHERE board_slug = ?');
+
+        foreach ($rows as $row) {
+            $roles = json_decode((string) $row['read_roles'], true);
+            if (!is_array($roles) || !in_array('student', $roles, true) || in_array('guest', $roles, true)) {
+                continue;
+            }
+
+            $roles[] = 'guest';
+            $stmt->execute([json_encode(array_values(array_unique($roles)), JSON_UNESCAPED_UNICODE), $row['board_slug']]);
         }
     }
 }

@@ -12,7 +12,8 @@
         'admin' => '관리자만',
     ];
     $presetOf = function (array $roles, bool $read): string {
-        $roles = array_values(array_intersect(['student', 'council', 'admin'], $roles));
+        $allowed = $read ? ['guest', 'student', 'council', 'admin'] : ['student', 'council', 'admin'];
+        $roles = array_values(array_intersect($allowed, $roles));
         sort($roles);
         $key = implode(',', $roles);
 
@@ -20,6 +21,7 @@
             '' => $read ? 'public' : 'none',
             'admin' => 'admin',
             'admin,council' => 'council',
+            'admin,council,guest,student' => 'student',
             'admin,council,student' => 'student',
             default => $read ? 'student' : 'none',
         };

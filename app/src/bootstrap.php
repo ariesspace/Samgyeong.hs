@@ -122,6 +122,7 @@ function role_label(?string $role): string
         'admin' => '관리자',
         'council' => '삼경원',
         'student' => '재학생',
+        'guest' => '게스트',
         default => '방문자',
     };
 }

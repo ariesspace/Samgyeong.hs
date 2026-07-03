@@ -25,7 +25,10 @@
         </thead>
         <tbody>
             <?php foreach ($users as $index => $user): ?>
-                <?php $isProtected = (int) $user['id'] === 1 || (int) $user['id'] === (int) (current_user()['id'] ?? 0); ?>
+                <?php
+                    $canEdit = (int) $user['id'] !== 1 && (int) $user['id'] !== (int) (current_user()['id'] ?? 0);
+                    $canDelete = $canEdit && ($user['username'] ?? '') !== 'guest';
+                ?>
                 <tr>
                     <td><?= e((string) ($index + 1)) ?></td>
                     <td class="admin-user-name"><?= e($user['display_name'] ?: '-') ?></td>
@@ -36,12 +39,16 @@
                     </td>
                     <td><span class="role-badge role-badge-<?= e($user['role']) ?>"><?= e(role_label($user['role'])) ?></span></td>
                     <td>
-                        <?php if ($isProtected): ?>
+                        <?php if (!$canEdit): ?>
                             <span class="muted">보호</span>
                         <?php else: ?>
                             <div class="compact-actions">
                                 <a class="icon-button" href="/admin/users/edit?id=<?= e((string) $user['id']) ?>" title="계정 수정" aria-label="계정 수정">✎</a>
-                                <button class="icon-button danger" type="submit" form="delete-user-<?= e((string) $user['id']) ?>" title="계정 삭제" aria-label="계정 삭제">🗑</button>
+                                <?php if ($canDelete): ?>
+                                    <button class="icon-button danger" type="submit" form="delete-user-<?= e((string) $user['id']) ?>" title="계정 삭제" aria-label="계정 삭제">🗑</button>
+                                <?php else: ?>
+                                    <span class="muted">보호</span>
+                                <?php endif; ?>
                             </div>
                         <?php endif; ?>
                     </td>
@@ -51,7 +58,7 @@
     </table>
 
     <?php foreach ($users as $user): ?>
-        <?php if ((int) $user['id'] !== 1 && (int) $user['id'] !== (int) (current_user()['id'] ?? 0)): ?>
+        <?php if ((int) $user['id'] !== 1 && (int) $user['id'] !== (int) (current_user()['id'] ?? 0) && ($user['username'] ?? '') !== 'guest'): ?>
             <form id="delete-user-<?= e((string) $user['id']) ?>" method="post" action="/admin/users/delete" onsubmit="return confirm('삭제하시겠습니까?');">
                 <input type="hidden" name="csrf" value="<?= e(csrf_token()) ?>">
                 <input type="hidden" name="user_id" value="<?= e((string) $user['id']) ?>">

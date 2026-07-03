@@ -16,14 +16,14 @@ final class Board
             'name' => '자료실',
             'badge' => '자료',
             'tags' => ['자료', '규정', '안내', '일반'],
-            'read_roles' => ['student', 'council', 'admin'],
+            'read_roles' => ['guest', 'student', 'council', 'admin'],
             'write_roles' => ['council', 'admin'],
         ],
         'free' => [
             'name' => '자유게시판',
             'badge' => '일반',
             'tags' => ['일반', '질문', '정보', '의견'],
-            'read_roles' => ['student', 'council', 'admin'],
+            'read_roles' => ['guest', 'student', 'council', 'admin'],
             'write_roles' => ['student', 'council', 'admin'],
         ],
         'council' => [
@@ -59,6 +59,7 @@ final class Board
     public static function roleOptions(): array
     {
         return [
+            'guest' => '게스트',
             'student' => '재학생',
             'council' => '삼경원',
             'admin' => '관리자',
