@@ -2634,24 +2634,137 @@ select {
 }
 
 @media (max-width: 900px) {
+    body {
+        overflow-x: hidden;
+    }
+
+    .utility-bar {
+        padding: 8px 14px;
+    }
+
+    .utility-actions {
+        flex-wrap: wrap;
+        gap: 6px;
+    }
+
+    .utility-actions a {
+        padding: 4px 8px;
+    }
+
     .site-header {
         position: static;
-        align-items: flex-start;
+        align-items: stretch;
         flex-direction: column;
-        padding-top: 16px;
-        padding-bottom: 16px;
+        gap: 12px;
+        min-height: 0;
+        padding: 14px;
+    }
+
+    .brand-block {
+        min-width: 0;
+    }
+
+    .brand-block img {
+        width: 38px;
+        height: 38px;
+    }
+
+    .brand-block strong {
+        font-size: 22px;
+        line-height: 1.15;
+    }
+
+    .brand-block em {
+        font-size: 10px;
     }
 
     .primary-nav {
-        flex-wrap: wrap;
+        gap: 6px;
+        overflow-x: auto;
+        padding-bottom: 4px;
+        -webkit-overflow-scrolling: touch;
     }
 
     .primary-nav a {
+        flex: 0 0 auto;
         min-height: 34px;
+        padding: 0 10px;
+        border: 1px solid var(--line);
+        border-radius: 4px;
+        background: #f8fafc;
+        font-size: 14px;
+        white-space: nowrap;
+    }
+
+    .primary-nav a.active,
+    .primary-nav a:hover {
+        color: white;
+        background: var(--green);
+        border-color: var(--green);
     }
 
     .shell {
         grid-template-columns: 1fr;
+        gap: 16px;
+        width: min(100% - 20px, 720px);
+        padding: 18px 0 44px;
+    }
+
+    .sub-hero {
+        min-height: 180px;
+    }
+
+    .site-hero > div {
+        width: min(100% - 28px, 720px);
+    }
+
+    .site-hero h1 {
+        font-size: 34px;
+    }
+
+    .sidebar {
+        box-shadow: none;
+    }
+
+    .sidebar h2 {
+        padding: 14px 16px;
+        font-size: 22px;
+    }
+
+    .sidebar ul {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    .sidebar li {
+        min-width: 0;
+    }
+
+    .sidebar a {
+        min-height: 42px;
+        padding: 10px 12px;
+        font-size: 13px;
+    }
+
+    .sidebar-submenu {
+        grid-column: 1 / -1;
+    }
+
+    .sidebar-submenu a {
+        min-height: 36px;
+        padding: 8px 12px 8px 22px;
+    }
+
+    .content-panel {
+        min-width: 0;
+        padding: 22px;
+    }
+
+    .breadcrumb {
+        justify-content: flex-start;
+        overflow-x: auto;
+        text-align: left;
+        white-space: nowrap;
     }
 
     .hall-grid,
@@ -2680,10 +2793,62 @@ select {
     .utility-bar {
         align-items: flex-start;
         flex-direction: column;
+        gap: 8px;
+    }
+
+    .utility-actions {
+        width: 100%;
+    }
+
+    .utility-actions span {
+        flex-basis: 100%;
+    }
+
+    .brand-block strong {
+        font-size: 20px;
+    }
+
+    .brand-block em {
+        display: none;
+    }
+
+    .site-hero {
+        min-height: 150px;
+    }
+
+    .sub-hero {
+        min-height: 150px;
+    }
+
+    .site-hero span {
+        font-size: 12px;
+    }
+
+    .site-hero h1 {
+        font-size: 30px;
+    }
+
+    .site-hero p {
+        font-size: 12px;
+    }
+
+    .shell {
+        width: min(100% - 12px, 540px);
+        padding-top: 12px;
+    }
+
+    .sidebar ul {
+        grid-template-columns: 1fr;
     }
 
     .content-panel {
-        padding: 18px;
+        padding: 16px 12px;
+    }
+
+    .page h1,
+    .intro-box h1 {
+        font-size: 28px;
+        line-height: 1.2;
     }
 
     .hall-grid,
@@ -2726,8 +2891,39 @@ select {
 
     .board-table {
         display: block;
+        width: 100%;
         overflow-x: auto;
         white-space: nowrap;
+        -webkit-overflow-scrolling: touch;
+        font-size: 13px;
+    }
+
+    .board-table th,
+    .board-table td {
+        padding: 10px 8px;
+    }
+
+    .public-board-table .col-author,
+    .public-board-table .col-views,
+    .admin-user-table th:nth-child(4),
+    .admin-user-table td:nth-child(4),
+    .admin-user-table th:nth-child(6),
+    .admin-user-table td:nth-child(6) {
+        display: none;
+    }
+
+    .admin-row-actions,
+    .hall-admin-actions {
+        align-items: stretch;
+        flex-direction: column;
+        gap: 6px;
+    }
+
+    .admin-row-actions .button,
+    .admin-row-actions button,
+    .hall-admin-actions .button,
+    .hall-admin-actions button {
+        width: 100%;
     }
 
     .board-tools,
@@ -2828,5 +3024,26 @@ select {
     .write-actions .button,
     .write-actions button {
         width: 100%;
+    }
+
+    .admin-create-actions,
+    .form-actions {
+        align-items: stretch;
+        flex-direction: column-reverse;
+    }
+
+    .admin-create-actions .button,
+    .admin-create-actions button,
+    .form-actions .button,
+    .form-actions button {
+        width: 100%;
+    }
+
+    .profile-password-form button {
+        justify-self: stretch;
+    }
+
+    .main-copy h1 {
+        font-size: 34px;
     }
 }
