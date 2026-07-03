@@ -1152,9 +1152,9 @@ a {
     margin: 0;
     max-width: 720px;
     color: var(--ink);
-    font-size: 21px;
-    font-weight: 900;
-    line-height: 1.7;
+    font-size: 16px;
+    font-weight: 700;
+    line-height: 1.8;
     word-break: keep-all;
 }
 
@@ -4808,9 +4808,9 @@ select {
     }
 
     .admissions-process article {
-        grid-template-columns: 74px minmax(0, 1fr);
-        gap: 10px;
-        padding: 12px 0;
+        grid-template-columns: 58px minmax(0, 1fr);
+        gap: 9px;
+        padding: 11px 0;
     }
 
     .admissions-process article > div {
@@ -4819,7 +4819,7 @@ select {
     }
 
     .admissions-process article > div strong {
-        font-size: 18px;
+        font-size: 17px;
     }
 
     .admissions-process article > div span {
@@ -4829,20 +4829,21 @@ select {
     .admissions-process ol {
         display: flex;
         flex-wrap: wrap;
-        gap: 5px;
+        gap: 6px;
         padding: 0;
     }
 
     .admissions-process li {
         width: auto;
-        gap: 0;
-        padding: 4px 8px;
-        color: #475467;
-        background: transparent;
+        gap: 5px;
+        padding: 4px 8px 4px 5px;
+        color: #344054;
+        background: #f8fafc;
         border: 1px solid #dbe1e8;
         border-radius: 999px;
         font-size: 12px;
         font-weight: 800;
+        line-height: 1.25;
     }
 
     .admissions-process li + li {
@@ -4854,18 +4855,22 @@ select {
     }
 
     .admissions-process li::before {
-        display: none;
+        display: inline-grid;
+        width: 19px;
+        height: 19px;
+        font-size: 10px;
     }
 
     .admissions-closing {
         display: grid;
-        padding-top: 22px;
-        gap: 14px;
+        padding-top: 18px;
+        gap: 12px;
     }
 
     .admissions-closing p {
-        font-size: 17px;
-        line-height: 1.7;
+        font-size: 14px;
+        font-weight: 700;
+        line-height: 1.75;
     }
 
     .admissions-closing .button {
