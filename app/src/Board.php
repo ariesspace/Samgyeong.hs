@@ -5,13 +5,6 @@ declare(strict_types=1);
 final class Board
 {
     private const BOARDS = [
-        'notice' => [
-            'name' => '입학 게시판',
-            'badge' => '공지',
-            'tags' => ['공지', '모집', '안내', '일반'],
-            'read_roles' => [],
-            'write_roles' => ['council', 'admin'],
-        ],
         'resources' => [
             'name' => '자료실',
             'badge' => '자료',
@@ -31,6 +24,13 @@ final class Board
             'badge' => '의견',
             'tags' => ['의견', '공지', '회의', '일반'],
             'read_roles' => ['council', 'admin'],
+            'write_roles' => ['council', 'admin'],
+        ],
+        'minutes' => [
+            'name' => '회의록',
+            'badge' => '회의',
+            'tags' => ['공지', '회의', '결정', '보고', '일반'],
+            'read_roles' => ['student', 'council', 'admin'],
             'write_roles' => ['council', 'admin'],
         ],
     ];

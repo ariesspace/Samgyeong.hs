@@ -164,9 +164,28 @@ final class Database
                 ['resources', '안내', '관별 자습실 이용 안내', '경천관, 경인관, 경물관 자습실 이용 수칙입니다.', 215, '2026-03-02 09:00:00'],
                 ['council', '회의', '1학년 신입생 교육 진행 상황 공유', '학생회 신입생 교육 진행 상황을 공유합니다.', 12, '2026-07-01 09:00:00'],
                 ['council', '의견', '경물관 시설 보수 의견 처리 방안', '접수된 시설 보수 의견의 처리 방안을 논의합니다.', 8, '2026-06-28 09:00:00'],
+                ['minutes', '공지', '삼경원 회의록 열람 안내', '삼경원 회의록은 재학생 이상 로그인 후 열람할 수 있습니다.', 18, '2026-07-02 09:00:00'],
+                ['minutes', '회의', '7월 정기 회의록', '7월 정기 회의 주요 안건과 결정 사항을 공유합니다.', 14, '2026-07-01 09:00:00'],
             ];
 
             foreach ($samples as $sample) {
+                $stmt->execute([$sample[0], $sample[1], $sample[2], $sample[3], $adminId, $sample[4], $sample[5]]);
+            }
+        }
+
+        $minutesCount = (int) $pdo->query("SELECT COUNT(*) FROM posts WHERE board = 'minutes'")->fetchColumn();
+        if ($minutesCount === 0) {
+            $adminId = (int) $pdo->query("SELECT id FROM users WHERE username = 'admin'")->fetchColumn();
+            $stmt = $pdo->prepare('
+                INSERT INTO posts (board, tag, title, body, author_id, views, created_at)
+                VALUES (?, ?, ?, ?, ?, ?, ?)
+            ');
+            $minutesSamples = [
+                ['minutes', '공지', '삼경원 회의록 열람 안내', '삼경원 회의록은 재학생 이상 로그인 후 열람할 수 있습니다.', 18, '2026-07-02 09:00:00'],
+                ['minutes', '회의', '7월 정기 회의록', '7월 정기 회의 주요 안건과 결정 사항을 공유합니다.', 14, '2026-07-01 09:00:00'],
+            ];
+
+            foreach ($minutesSamples as $sample) {
                 $stmt->execute([$sample[0], $sample[1], $sample[2], $sample[3], $adminId, $sample[4], $sample[5]]);
             }
         }

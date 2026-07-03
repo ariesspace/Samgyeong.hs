@@ -146,7 +146,6 @@ function nav_groups(): array
         ],
         '입학안내' => [
             ['label' => '모집요강', 'href' => '/admissions'],
-            ['label' => '입학 게시판', 'href' => '/board/notice'],
         ],
         '삼경마당' => [
             [
@@ -173,6 +172,7 @@ function nav_groups(): array
         '학생 자치기구' => [
             ['label' => '학생회 소개', 'href' => '/council'],
             ['label' => '자유게시판', 'href' => '/board/council'],
+            ['label' => '회의록', 'href' => '/board/minutes'],
             ['label' => '일정 캘린더', 'href' => '/calendar'],
             ['label' => '상벌점 부여', 'href' => '/points/assign'],
         ],

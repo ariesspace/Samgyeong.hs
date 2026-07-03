@@ -34,7 +34,7 @@ final class BoardController
             FROM posts
             JOIN users ON users.id = posts.author_id
             {$where}
-            ORDER BY posts.id DESC
+            ORDER BY CASE WHEN posts.tag = '공지' THEN 0 ELSE 1 END, posts.id DESC
         ");
         $stmt->execute($params);
         $posts = $stmt->fetchAll();

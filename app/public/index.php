@@ -41,13 +41,13 @@ $routes = [
     '/' => function () use ($db) {
         $homeBoards = [];
         foreach (Board::all($db) as $slug => $board) {
-            $stmt = $db->prepare('
+            $stmt = $db->prepare("
                 SELECT id, title, tag, created_at
                 FROM posts
                 WHERE board = ?
-                ORDER BY id DESC
+                ORDER BY CASE WHEN tag = '공지' THEN 0 ELSE 1 END, id DESC
                 LIMIT 4
-            ');
+            ");
             $stmt->execute([$slug]);
             $homeBoards[] = ['slug' => $slug] + $board + ['items' => $stmt->fetchAll()];
         }
