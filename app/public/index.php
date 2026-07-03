@@ -221,7 +221,18 @@ if ($path === '/admin/boards/permissions') {
 
 if ($path === '/admin/boards/permissions/save' && $method === 'POST') {
     $auth->requireRole(['admin']);
-    $allowedRoles = array_keys(Board::roleOptions());
+    $readPresets = [
+        'public' => [],
+        'student' => ['student', 'council', 'admin'],
+        'council' => ['council', 'admin'],
+        'admin' => ['admin'],
+    ];
+    $writePresets = [
+        'none' => [],
+        'student' => ['student', 'council', 'admin'],
+        'council' => ['council', 'admin'],
+        'admin' => ['admin'],
+    ];
     $boards = Board::all($db);
     $stmt = $db->prepare('
         INSERT INTO board_permissions (board_slug, read_roles, write_roles, updated_at)
@@ -233,10 +244,10 @@ if ($path === '/admin/boards/permissions/save' && $method === 'POST') {
     ');
 
     foreach ($boards as $slug => $board) {
-        $readRoles = $_POST['read_roles'][$slug] ?? [];
-        $writeRoles = $_POST['write_roles'][$slug] ?? [];
-        $readRoles = is_array($readRoles) ? array_values(array_intersect($readRoles, $allowedRoles)) : [];
-        $writeRoles = is_array($writeRoles) ? array_values(array_intersect($writeRoles, $allowedRoles)) : [];
+        $readPreset = $_POST['read_preset'][$slug] ?? 'public';
+        $writePreset = $_POST['write_preset'][$slug] ?? 'none';
+        $readRoles = $readPresets[$readPreset] ?? $readPresets['public'];
+        $writeRoles = $writePresets[$writePreset] ?? $writePresets['none'];
 
         $stmt->execute([
             $slug,

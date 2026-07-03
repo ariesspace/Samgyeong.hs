@@ -1,6 +1,34 @@
+<?php
+    $readOptions = [
+        'public' => '전체 공개',
+        'student' => '재학생 이상',
+        'council' => '삼경원 이상',
+        'admin' => '관리자만',
+    ];
+    $writeOptions = [
+        'none' => '글쓰기 불가',
+        'student' => '재학생 이상',
+        'council' => '삼경원 이상',
+        'admin' => '관리자만',
+    ];
+    $presetOf = function (array $roles, bool $read): string {
+        $roles = array_values(array_intersect(['student', 'council', 'admin'], $roles));
+        sort($roles);
+        $key = implode(',', $roles);
+
+        return match ($key) {
+            '' => $read ? 'public' : 'none',
+            'admin' => 'admin',
+            'admin,council' => 'council',
+            'admin,council,student' => 'student',
+            default => $read ? 'student' : 'none',
+        };
+    };
+?>
+
 <section class="page admin-users-page">
     <h1>게시판 권한 설정</h1>
-    <p class="muted">게시판별 읽기와 쓰기 권한을 조정합니다. 읽기 권한을 모두 비우면 방문자에게도 공개됩니다.</p>
+    <p class="muted">게시판별 접근 범위를 선택합니다. 세부 역할을 하나씩 고르지 않고, 운영에 맞는 범위만 지정하면 됩니다.</p>
 
     <?php if ($saved): ?>
         <div class="success">게시판 권한 설정이 저장되었습니다.</div>
@@ -25,27 +53,20 @@
                             <span>/board/<?= e($slug) ?></span>
                         </td>
                         <td>
-                            <?php if ($board['read_roles'] === []): ?>
-                                <p class="permission-state">전체 공개</p>
-                            <?php endif; ?>
-                            <div class="permission-checks">
-                                <?php foreach ($roles as $role => $label): ?>
-                                    <label>
-                                        <input type="checkbox" name="read_roles[<?= e($slug) ?>][]" value="<?= e($role) ?>" <?= in_array($role, $board['read_roles'], true) ? 'checked' : '' ?>>
-                                        <?= e($label) ?>
-                                    </label>
+                            <select class="permission-select" name="read_preset[<?= e($slug) ?>]">
+                                <?php $currentRead = $presetOf($board['read_roles'], true); ?>
+                                <?php foreach ($readOptions as $value => $label): ?>
+                                    <option value="<?= e($value) ?>" <?= $currentRead === $value ? 'selected' : '' ?>><?= e($label) ?></option>
                                 <?php endforeach; ?>
-                            </div>
+                            </select>
                         </td>
                         <td>
-                            <div class="permission-checks">
-                                <?php foreach ($roles as $role => $label): ?>
-                                    <label>
-                                        <input type="checkbox" name="write_roles[<?= e($slug) ?>][]" value="<?= e($role) ?>" <?= in_array($role, $board['write_roles'], true) ? 'checked' : '' ?>>
-                                        <?= e($label) ?>
-                                    </label>
+                            <select class="permission-select" name="write_preset[<?= e($slug) ?>]">
+                                <?php $currentWrite = $presetOf($board['write_roles'], false); ?>
+                                <?php foreach ($writeOptions as $value => $label): ?>
+                                    <option value="<?= e($value) ?>" <?= $currentWrite === $value ? 'selected' : '' ?>><?= e($label) ?></option>
                                 <?php endforeach; ?>
-                            </div>
+                            </select>
                         </td>
                     </tr>
                 <?php endforeach; ?>
