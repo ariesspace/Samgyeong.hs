@@ -65,7 +65,7 @@
             <form method="post" action="/admin/users/reset-password" onsubmit="return confirm('이 계정의 비밀번호를 초기화할까요?');">
                 <input type="hidden" name="csrf" value="<?= e(csrf_token()) ?>">
                 <input type="hidden" name="user_id" value="<?= e((string) $account['id']) ?>">
-                <input type="hidden" name="redirect_to" value="/admin/users/edit?id=<?= e((string) $account['id']) ?>">
+                <input type="hidden" name="redirect_to" value="/admin/users?saved=reset">
                 <button type="submit" class="ghost-button">비밀번호 초기화</button>
             </form>
             <form method="post" action="/admin/users/delete" onsubmit="return confirm('이 계정을 삭제할까요?');">

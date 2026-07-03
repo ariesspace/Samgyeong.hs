@@ -90,7 +90,11 @@ if (isset($routes[$path])) {
 if ($path === '/admin/users') {
     $auth->requireRole(['admin']);
     $users = $db->query('SELECT id, username, role, display_name, hall_key, year, photo_path, created_at FROM users ORDER BY id ASC')->fetchAll();
-    echo view('admin-users', ['title' => '계정 권한 관리', 'users' => $users]);
+    echo view('admin-users', [
+        'title' => '계정 권한 관리',
+        'users' => $users,
+        'saved' => $_GET['saved'] ?? '',
+    ]);
     exit;
 }
 
@@ -183,7 +187,7 @@ if ($path === '/admin/users/profile' && $method === 'POST') {
         }
     }
 
-    redirect('/admin/users/edit?id=' . $userId);
+    redirect('/admin/users?saved=profile');
 }
 
 if ($path === '/admin/users/reset-password' && $method === 'POST') {
@@ -234,7 +238,7 @@ if ($path === '/admin/users/delete' && $method === 'POST') {
         $stmt->execute([$userId]);
     }
 
-    redirect('/admin/users');
+    redirect('/admin/users?saved=deleted');
 }
 
 if ($path === '/admin/boards/permissions') {

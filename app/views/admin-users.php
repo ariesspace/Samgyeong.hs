@@ -1,6 +1,16 @@
 <section class="page admin-users-page">
     <h1>계정 권한 관리</h1>
     <p class="muted">총 <strong><?= e((string) count($users)) ?></strong>명의 가입된 계정이 있습니다.</p>
+    <?php
+    $savedMessages = [
+        'profile' => '계정 정보가 저장되었습니다.',
+        'reset' => '비밀번호가 samgyeong1234로 초기화되었습니다.',
+        'deleted' => '계정이 삭제되었습니다.',
+    ];
+    ?>
+    <?php if (isset($savedMessages[$saved ?? ''])): ?>
+        <div class="notice success"><?= e($savedMessages[$saved]) ?></div>
+    <?php endif; ?>
 
     <table class="board-table admin-user-table compact-user-table">
         <thead>
