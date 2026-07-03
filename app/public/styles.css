@@ -3952,48 +3952,132 @@ select {
     }
 
     .hall-tabs {
-        grid-template-columns: 1fr;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        margin: 18px 0 24px;
     }
 
     .hall-tabs button {
-        border-right: 0;
-        border-bottom: 1px solid #cfd6df;
-    }
-
-    .hall-tabs button:last-child {
+        min-height: 44px;
+        padding: 8px 6px;
+        border-right: 1px solid #cfd6df;
         border-bottom: 0;
+        font-size: 13px;
+        line-height: 1.25;
+        word-break: keep-all;
     }
 
     .section-title-row {
         align-items: flex-start;
         flex-direction: column;
+        gap: 6px;
+        margin-bottom: 10px;
     }
 
-    .org-trunk,
-    .org-split,
-    .org-hall-chief::after,
-    .org-sub-unit::after {
-        display: none;
+    .section-title-row h2 {
+        font-size: 20px;
+    }
+
+    .hall-org-chart {
+        overflow: visible;
+        padding: 14px 0 4px;
+    }
+
+    .org-root {
+        width: min(220px, 78%);
+        padding: 13px 14px;
+        border-radius: 3px;
+    }
+
+    .org-root strong {
+        font-size: 17px;
+    }
+
+    .org-root span {
+        font-size: 11px;
+    }
+
+    .org-trunk {
+        display: block;
+        height: 24px;
+        margin-top: 5px;
+    }
+
+    .org-split {
+        display: block;
+        width: calc(100% - 44px);
+        height: 24px;
+        border-top-width: 1px;
+    }
+
+    .org-split span {
+        display: block;
+        height: 24px;
     }
 
     .org-branches {
-        grid-template-columns: 1fr;
-        gap: 22px;
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+        gap: 7px;
         width: 100%;
         min-width: 0;
     }
 
     .org-branch {
-        gap: 14px;
-        padding: 16px;
-        border: 1px solid #e5e9f0;
-        border-radius: 4px;
+        gap: 0;
+        padding: 0;
+        border: 0;
     }
 
     .org-hall-chief,
     .org-sub-unit,
     .org-members {
         width: 100%;
+    }
+
+    .org-hall-chief {
+        gap: 4px;
+        padding: 10px 4px;
+        border-radius: 3px;
+        box-shadow: 0 4px 10px rgba(31, 41, 55, .12);
+    }
+
+    .org-hall-chief::after {
+        display: block;
+        height: 18px;
+        margin: 10px auto -10px;
+    }
+
+    .org-hall-chief strong {
+        font-size: 13px;
+    }
+
+    .org-hall-chief span {
+        font-size: 10px;
+    }
+
+    .org-sub-unit {
+        gap: 4px;
+        padding: 10px 4px;
+        border-radius: 3px;
+    }
+
+    .org-sub-unit::after {
+        display: block;
+        height: 16px;
+        margin: 7px auto -7px;
+    }
+
+    .org-sub-unit strong {
+        font-size: 12px;
+    }
+
+    .org-sub-unit span {
+        font-size: 10px;
+    }
+
+    .org-members {
+        padding: 8px 4px;
+        border-radius: 3px;
+        font-size: 11px;
     }
 
     .calendar-event-form {
