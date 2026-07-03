@@ -3267,6 +3267,57 @@ select {
     background: #fff1f1;
 }
 
+.points-assign-page {
+    display: grid;
+    gap: 18px;
+}
+
+.points-assign-panel,
+.points-history-panel {
+    padding: 20px;
+    background: white;
+    border: 1px solid var(--line);
+    border-radius: 4px;
+}
+
+.points-assign-panel h2,
+.points-history-panel h2 {
+    margin: 0 0 14px;
+    color: #1f2937;
+    font-size: 20px;
+}
+
+.points-assign-form {
+    display: grid;
+    grid-template-columns: minmax(180px, 1.2fr) 120px 110px 150px;
+    gap: 12px;
+    align-items: end;
+}
+
+.points-assign-form label {
+    display: grid;
+    gap: 6px;
+    color: #344054;
+    font-size: 14px;
+    font-weight: 800;
+}
+
+.points-assign-form input,
+.points-assign-form select {
+    min-height: 38px;
+    background: #fff;
+}
+
+.points-reason-field {
+    grid-column: 1 / -2;
+}
+
+.points-assign-form button {
+    min-height: 38px;
+    padding-inline: 16px;
+    white-space: nowrap;
+}
+
 .admin-create-actions {
     display: flex;
     justify-content: flex-end;
@@ -3791,6 +3842,24 @@ select {
     .profile-password-form,
     .points-summary {
         grid-template-columns: 1fr;
+    }
+
+    .points-assign-panel,
+    .points-history-panel {
+        padding: 15px;
+    }
+
+    .points-assign-form {
+        grid-template-columns: 1fr;
+        gap: 10px;
+    }
+
+    .points-reason-field {
+        grid-column: auto;
+    }
+
+    .points-assign-form button {
+        width: 100%;
     }
 
     .account-detail-head {

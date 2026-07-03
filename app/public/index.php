@@ -390,8 +390,83 @@ if ($path === '/mypage/points') {
     if (!$auth->user()) {
         redirect('/login');
     }
-    echo view('mypage-points', ['title' => '상벌점 현황']);
+    $userId = (int) $auth->user()['id'];
+    $stmt = $db->prepare('
+        SELECT point_records.*, issuer.display_name AS issuer_name, issuer.username AS issuer_username
+        FROM point_records
+        JOIN users AS issuer ON issuer.id = point_records.issuer_id
+        WHERE point_records.user_id = ?
+        ORDER BY point_records.issued_at DESC, point_records.id DESC
+    ');
+    $stmt->execute([$userId]);
+    $records = $stmt->fetchAll();
+    echo view('mypage-points', ['title' => '상벌점 현황', 'records' => $records]);
     exit;
+}
+
+if ($path === '/points/assign') {
+    $auth->requireRole(['council', 'admin']);
+    $students = $db->query("
+        SELECT id, username, display_name, hall_key, year, role
+        FROM users
+        WHERE role IN ('student', 'council')
+        ORDER BY hall_key, year DESC, display_name, username
+    ")->fetchAll();
+    $records = $db->query('
+        SELECT point_records.*, target.display_name AS target_name, target.username AS target_username,
+               issuer.display_name AS issuer_name, issuer.username AS issuer_username
+        FROM point_records
+        JOIN users AS target ON target.id = point_records.user_id
+        JOIN users AS issuer ON issuer.id = point_records.issuer_id
+        ORDER BY point_records.issued_at DESC, point_records.id DESC
+        LIMIT 30
+    ')->fetchAll();
+    echo view('points-assign', [
+        'title' => '상벌점 부여',
+        'students' => $students,
+        'records' => $records,
+        'saved' => $_GET['saved'] ?? '',
+    ]);
+    exit;
+}
+
+if ($path === '/points/assign/store' && $method === 'POST') {
+    $auth->requireRole(['council', 'admin']);
+    $userId = (int) ($_POST['user_id'] ?? 0);
+    $type = $_POST['type'] ?? '';
+    $points = max(0, min(100, (int) ($_POST['points'] ?? 0)));
+    $reason = trim($_POST['reason'] ?? '');
+    $issuedAt = $_POST['issued_at'] ?? date('Y-m-d');
+
+    if (
+        $userId > 0
+        && in_array($type, ['merit', 'demerit'], true)
+        && $points > 0
+        && $reason !== ''
+        && preg_match('/^\d{4}-\d{2}-\d{2}$/', $issuedAt)
+    ) {
+        $stmt = $db->prepare("SELECT id FROM users WHERE id = ? AND role IN ('student', 'council')");
+        $stmt->execute([$userId]);
+        if ($stmt->fetchColumn()) {
+            $stmt = $db->prepare('
+                INSERT INTO point_records (user_id, type, points, reason, issuer_id, issued_at)
+                VALUES (?, ?, ?, ?, ?, ?)
+            ');
+            $stmt->execute([$userId, $type, $points, $reason, $auth->user()['id'], $issuedAt]);
+        }
+    }
+
+    redirect('/points/assign?saved=1');
+}
+
+if ($path === '/points/assign/delete' && $method === 'POST') {
+    $auth->requireRole(['council', 'admin']);
+    $id = (int) ($_POST['id'] ?? 0);
+    if ($id > 0) {
+        $stmt = $db->prepare('DELETE FROM point_records WHERE id = ?');
+        $stmt->execute([$id]);
+    }
+    redirect('/points/assign?saved=deleted');
 }
 
 if ($path === '/admin/halls') {

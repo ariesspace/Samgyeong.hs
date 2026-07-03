@@ -1,19 +1,32 @@
+<?php
+    $meritTotal = 0;
+    $demeritTotal = 0;
+    foreach ($records as $record) {
+        if ($record['type'] === 'merit') {
+            $meritTotal += (int) $record['points'];
+        } else {
+            $demeritTotal += (int) $record['points'];
+        }
+    }
+    $wishCoupons = intdiv($meritTotal, 10);
+?>
+
 <section class="page mypage-page">
     <h1>상벌점 현황</h1>
-    <p class="muted">상벌점 기능을 연결하기 전까지는 예시 현황으로 표시합니다.</p>
+    <p class="muted">본인에게 부여된 상점과 벌점 기록을 확인할 수 있습니다.</p>
 
     <div class="points-summary">
         <article>
             <span>상점</span>
-            <strong>12점</strong>
+            <strong><?= e((string) $meritTotal) ?>점</strong>
         </article>
         <article>
             <span>벌점</span>
-            <strong>5점</strong>
+            <strong><?= e((string) $demeritTotal) ?>점</strong>
         </article>
         <article>
             <span>소원권</span>
-            <strong>1개</strong>
+            <strong><?= e((string) $wishCoupons) ?>개</strong>
         </article>
     </div>
 
@@ -28,19 +41,18 @@
             </tr>
         </thead>
         <tbody>
-            <?php foreach ([
-                ['2026-07-01', '상점', '+2', '경물관 자습실 청소 자원', '경물관장'],
-                ['2026-06-28', '벌점', '-2', '생활 규정 미준수', '삼경원'],
-                ['2026-06-25', '상점', '+5', '전통 예절 교육 주간 우수 참여', '인성교육부'],
-                ['2026-06-20', '벌점', '-3', '주간 일지 미작성', '사감위'],
-                ['2026-06-15', '상점', '+5', '신입생 안내 도우미 활동', '학생부'],
-            ] as $row): ?>
+            <?php if (!$records): ?>
                 <tr>
-                    <td><?= e($row[0]) ?></td>
-                    <td><span class="point-type <?= $row[1] === '상점' ? 'good' : 'bad' ?>"><?= e($row[1]) ?></span></td>
-                    <td><?= e($row[2]) ?></td>
-                    <td class="title-cell"><?= e($row[3]) ?></td>
-                    <td><?= e($row[4]) ?></td>
+                    <td colspan="5" class="empty-board">상벌점 기록이 없습니다.</td>
+                </tr>
+            <?php endif; ?>
+            <?php foreach ($records as $record): ?>
+                <tr>
+                    <td><?= e($record['issued_at']) ?></td>
+                    <td><span class="point-type <?= $record['type'] === 'merit' ? 'good' : 'bad' ?>"><?= $record['type'] === 'merit' ? '상점' : '벌점' ?></span></td>
+                    <td><?= e(($record['type'] === 'merit' ? '+' : '-') . (string) $record['points']) ?></td>
+                    <td class="title-cell"><?= e($record['reason']) ?></td>
+                    <td><?= e($record['issuer_name'] ?: $record['issuer_username']) ?></td>
                 </tr>
             <?php endforeach; ?>
         </tbody>

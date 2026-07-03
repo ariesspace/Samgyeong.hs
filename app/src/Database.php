@@ -80,6 +80,19 @@ final class Database
                 write_roles TEXT NOT NULL DEFAULT '[]',
                 updated_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP
             );
+
+            CREATE TABLE IF NOT EXISTS point_records (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                user_id INTEGER NOT NULL,
+                type TEXT NOT NULL CHECK(type IN ('merit', 'demerit')),
+                points INTEGER NOT NULL CHECK(points > 0),
+                reason TEXT NOT NULL,
+                issuer_id INTEGER NOT NULL,
+                issued_at TEXT NOT NULL,
+                created_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP,
+                FOREIGN KEY(user_id) REFERENCES users(id),
+                FOREIGN KEY(issuer_id) REFERENCES users(id)
+            );
         ");
 
         $count = (int) $pdo->query('SELECT COUNT(*) FROM users')->fetchColumn();

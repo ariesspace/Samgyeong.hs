@@ -173,6 +173,7 @@ function nav_groups(): array
             ['label' => '학생회 소개', 'href' => '/council'],
             ['label' => '자유게시판', 'href' => '/board/council'],
             ['label' => '일정 캘린더', 'href' => '/calendar'],
+            ['label' => '상벌점 부여', 'href' => '/points/assign'],
         ],
     ];
 
