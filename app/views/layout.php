@@ -21,7 +21,7 @@
                 <span><?= e(($_SESSION['user']['display_name'] ?? '') ?: $_SESSION['user']['username']) ?> · <?= e(role_label($_SESSION['user']['role'])) ?></span>
                 <a class="utility-button primary" href="/mypage"><span aria-hidden="true">⚙</span> 내 정보</a>
                 <?php if (($_SESSION['user']['role'] ?? '') === 'admin'): ?>
-                    <a class="utility-button secondary" href="/admin/users"><span aria-hidden="true">▦</span> 시스템</a>
+                    <a class="utility-button system" href="/admin/users"><span aria-hidden="true">▦</span> 시스템</a>
                 <?php endif; ?>
                 <a class="utility-button secondary" href="/logout"><span aria-hidden="true">↪</span> 로그아웃</a>
             <?php else: ?>

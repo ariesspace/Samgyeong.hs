@@ -10,7 +10,7 @@
 
         <div class="main-copy">
             <p>Samgyeong Humanities High School</p>
-            <h1>배움이 깊어지고 마음이 자라는 학교</h1>
+            <h1>배움이 깊어지고<br>마음이 자라는 학교</h1>
             <a href="/about">학교 소개 보기</a>
         </div>
 
