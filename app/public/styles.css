@@ -2706,14 +2706,6 @@ select {
     font-size: 17px;
 }
 
-.profile-manage-head a {
-    flex: 0 0 auto;
-    margin-top: 36px;
-    color: #496ecf;
-    font-weight: 800;
-    text-decoration: underline;
-}
-
 .profile-note {
     margin: 22px 0 0;
     color: #98a2b3;
@@ -3200,10 +3192,6 @@ select {
 
     .profile-manage-head p {
         font-size: 15px;
-    }
-
-    .profile-manage-head a {
-        margin-top: 0;
     }
 
     .profile-photo-frame {

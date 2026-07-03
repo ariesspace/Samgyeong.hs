@@ -5,7 +5,6 @@
                 <h1><?= e(($profile['display_name'] ?: $profile['username'])) ?> 프로필 관리</h1>
                 <p><?= e($profile['username']) ?></p>
             </div>
-            <a href="#password-change">비밀번호 변경</a>
         </div>
 
         <?php if ($saved === 'photo'): ?>
