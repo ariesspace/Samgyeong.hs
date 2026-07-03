@@ -889,6 +889,112 @@ a {
     background: #475467;
 }
 
+.admin-point-rules-page {
+    display: grid;
+    gap: 22px;
+}
+
+.point-rule-admin-sections {
+    display: grid;
+    gap: 18px;
+}
+
+.point-rule-admin-block {
+    padding: 0;
+    overflow: hidden;
+}
+
+.point-rule-admin-head {
+    padding: 18px 22px;
+    background: #f8fafc;
+    border-top: 4px solid var(--green);
+    border-bottom: 1px solid var(--line);
+}
+
+.point-rule-admin-head h2 {
+    margin: 0;
+    color: var(--ink);
+    font-size: 20px;
+}
+
+.point-rule-admin-head p {
+    margin: 4px 0 0;
+    color: var(--muted);
+    font-size: 14px;
+}
+
+.point-rule-admin-list {
+    display: grid;
+}
+
+.point-rule-admin-row {
+    display: grid;
+    grid-template-columns: 100px minmax(260px, 1fr) 84px 82px 42px;
+    gap: 12px;
+    align-items: end;
+    padding: 16px 22px;
+    border-bottom: 1px solid #edf0f3;
+}
+
+.point-rule-admin-row:last-child {
+    border-bottom: 0;
+}
+
+.point-rule-admin-row label,
+.point-rule-add-panel label {
+    display: grid;
+    gap: 6px;
+    color: #344054;
+    font-size: 13px;
+    font-weight: 800;
+}
+
+.point-rule-admin-row input,
+.point-rule-admin-row textarea,
+.point-rule-add-panel input,
+.point-rule-add-panel textarea,
+.point-rule-add-panel select {
+    width: 100%;
+    border: 1px solid #ccd4df;
+    border-radius: 4px;
+    padding: 9px 10px;
+    color: var(--ink);
+    background: white;
+    font: inherit;
+}
+
+.point-rule-admin-row textarea,
+.point-rule-add-panel textarea {
+    min-height: 44px;
+    resize: vertical;
+}
+
+.point-rule-admin-row .checkbox-field,
+.point-rule-add-panel .checkbox-field {
+    display: flex;
+    align-items: center;
+    gap: 7px;
+    min-height: 42px;
+}
+
+.point-rule-admin-row .checkbox-field input,
+.point-rule-add-panel .checkbox-field input {
+    width: auto;
+}
+
+.point-rule-add-panel .admin-create-form {
+    grid-template-columns: 180px 140px 100px minmax(260px, 1fr);
+}
+
+.point-rule-add-panel .rule-text-field {
+    grid-column: auto;
+}
+
+.point-rule-add-panel .checkbox-field,
+.point-rule-add-panel .admin-create-actions {
+    grid-column: 1 / -1;
+}
+
 .council-principles div {
     display: grid;
     align-content: center;
@@ -4246,6 +4352,24 @@ select {
     .point-rule-row span {
         font-size: 14px;
         line-height: 1.65;
+    }
+
+    .point-rule-admin-head {
+        padding: 15px 16px;
+    }
+
+    .point-rule-admin-row {
+        grid-template-columns: 1fr;
+        gap: 10px;
+        padding: 14px 16px;
+    }
+
+    .point-rule-admin-row .icon-button {
+        justify-self: end;
+    }
+
+    .point-rule-add-panel .admin-create-form {
+        grid-template-columns: 1fr;
     }
 
     .points-assign-panel,

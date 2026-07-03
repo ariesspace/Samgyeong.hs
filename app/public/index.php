@@ -66,11 +66,15 @@ $routes = [
         }
         return view('page', ['title' => '생활 규정', 'body' => "삼경인의 학교생활 기본 규정을 안내하는 공간입니다.\n\n기숙사 생활, 자습실 이용, 복장 및 예절, 공동체 생활 규칙 등을 정리해 게시할 수 있습니다."]);
     },
-    '/rules/points' => function () use ($auth) {
+    '/rules/points' => function () use ($auth, $db) {
         if (!$auth->user()) {
             return view('access-denied', ['title' => '권한 없음', 'message' => '재학생 이상 로그인 후 접근이 가능한 메뉴입니다.']);
         }
-        return view('point-rules', ['title' => '상벌점 리스트']);
+        $rules = $db->query('SELECT * FROM point_rules ORDER BY category, sort_order, id')->fetchAll();
+        return view('point-rules', [
+            'title' => '상벌점 리스트',
+            'sections' => build_point_rule_sections($rules),
+        ]);
     },
     '/rules/discipline' => function () use ($auth) {
         if (!$auth->user()) {
@@ -528,6 +532,79 @@ if ($path === '/points/assign/delete' && $method === 'POST') {
         $stmt->execute([$id]);
     }
     redirect('/points/assign?saved=deleted');
+}
+
+if ($path === '/admin/point-rules') {
+    $auth->requireRole(['admin']);
+    $rules = $db->query('SELECT * FROM point_rules ORDER BY category, sort_order, id')->fetchAll();
+    echo view('admin-point-rules', [
+        'title' => '상벌점 기준 관리',
+        'sections' => build_point_rule_sections($rules),
+        'saved' => ($_GET['saved'] ?? '') === '1',
+        'deleted' => ($_GET['deleted'] ?? '') === '1',
+    ]);
+    exit;
+}
+
+if ($path === '/admin/point-rules/save' && $method === 'POST') {
+    $auth->requireRole(['admin']);
+    $ids = $_POST['id'] ?? [];
+    $scoreLabels = $_POST['score_label'] ?? [];
+    $ruleTexts = $_POST['rule_text'] ?? [];
+    $sortOrders = $_POST['sort_order'] ?? [];
+    $emphasisIds = $_POST['is_emphasis'] ?? [];
+
+    if (is_array($ids) && is_array($scoreLabels) && is_array($ruleTexts) && is_array($sortOrders)) {
+        $checkedIds = is_array($emphasisIds) ? array_map('intval', $emphasisIds) : [];
+        $stmt = $db->prepare('
+            UPDATE point_rules
+            SET score_label = ?, rule_text = ?, is_emphasis = ?, sort_order = ?, updated_at = CURRENT_TIMESTAMP
+            WHERE id = ?
+        ');
+
+        $count = min(count($ids), count($scoreLabels), count($ruleTexts), count($sortOrders));
+        for ($i = 0; $i < $count; $i++) {
+            $id = (int) $ids[$i];
+            $scoreLabel = trim((string) $scoreLabels[$i]);
+            $ruleText = trim((string) $ruleTexts[$i]);
+            $sortOrder = (int) $sortOrders[$i];
+            if ($id > 0 && $scoreLabel !== '' && $ruleText !== '') {
+                $stmt->execute([$scoreLabel, $ruleText, in_array($id, $checkedIds, true) ? 1 : 0, $sortOrder, $id]);
+            }
+        }
+    }
+
+    redirect('/admin/point-rules?saved=1');
+}
+
+if ($path === '/admin/point-rules/add' && $method === 'POST') {
+    $auth->requireRole(['admin']);
+    $category = $_POST['category'] ?? '';
+    $scoreLabel = trim((string) ($_POST['score_label'] ?? ''));
+    $ruleText = trim((string) ($_POST['rule_text'] ?? ''));
+    $sortOrder = (int) ($_POST['sort_order'] ?? 99);
+    $isEmphasis = isset($_POST['is_emphasis']) ? 1 : 0;
+
+    if (isset(point_rule_categories()[$category]) && $scoreLabel !== '' && $ruleText !== '') {
+        $stmt = $db->prepare('
+            INSERT INTO point_rules (category, score_label, rule_text, is_emphasis, sort_order)
+            VALUES (?, ?, ?, ?, ?)
+        ');
+        $stmt->execute([$category, $scoreLabel, $ruleText, $isEmphasis, $sortOrder]);
+    }
+
+    redirect('/admin/point-rules?saved=1');
+}
+
+if ($path === '/admin/point-rules/delete' && $method === 'POST') {
+    $auth->requireRole(['admin']);
+    $id = (int) ($_POST['id'] ?? 0);
+    if ($id > 0) {
+        $stmt = $db->prepare('DELETE FROM point_rules WHERE id = ?');
+        $stmt->execute([$id]);
+    }
+
+    redirect('/admin/point-rules?deleted=1');
 }
 
 if ($path === '/admin/halls') {

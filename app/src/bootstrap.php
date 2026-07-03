@@ -196,6 +196,7 @@ function nav_groups(): array
                 ],
             ],
             ['label' => '게시판 권한 설정', 'href' => '/admin/boards/permissions'],
+            ['label' => '상벌점 기준 관리', 'href' => '/admin/point-rules'],
             ['label' => '관별 명단 관리', 'href' => '/admin/halls'],
         ];
     }
@@ -223,4 +224,55 @@ function hall_definitions(): array
         'gyeongin' => ['name' => '경인관', 'meaning' => '사람', 'color' => 'gold'],
         'gyeongmul' => ['name' => '경물관', 'meaning' => '만물', 'color' => 'green'],
     ];
+}
+
+function point_rule_categories(): array
+{
+    return [
+        'personal' => [
+            'title' => '개인에 대한 징계 기준',
+            'tone' => 'red',
+            'description' => '',
+        ],
+        'year' => [
+            'title' => '학년에 대한 징계 기준',
+            'tone' => 'orange',
+            'description' => '',
+        ],
+        'hall' => [
+            'title' => '관에 대한 징계 기준',
+            'tone' => 'gold',
+            'description' => '경천관, 경인관, 경물관 단위로 적용됩니다.',
+        ],
+        'school' => [
+            'title' => '전체에 대한 징계 기준',
+            'tone' => 'gray',
+            'description' => '',
+        ],
+    ];
+}
+
+function build_point_rule_sections(array $rules): array
+{
+    $sections = point_rule_categories();
+    foreach ($sections as $key => $section) {
+        $sections[$key]['items'] = [];
+    }
+
+    foreach ($rules as $rule) {
+        $category = $rule['category'] ?? '';
+        if (!isset($sections[$category])) {
+            continue;
+        }
+
+        $sections[$category]['items'][] = [
+            'id' => (int) ($rule['id'] ?? 0),
+            'score' => (string) ($rule['score_label'] ?? ''),
+            'text' => (string) ($rule['rule_text'] ?? ''),
+            'emphasis' => (int) ($rule['is_emphasis'] ?? 0) === 1,
+            'sort_order' => (int) ($rule['sort_order'] ?? 0),
+        ];
+    }
+
+    return array_values($sections);
 }

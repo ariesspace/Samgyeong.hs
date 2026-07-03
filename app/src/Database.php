@@ -93,6 +93,16 @@ final class Database
                 FOREIGN KEY(user_id) REFERENCES users(id),
                 FOREIGN KEY(issuer_id) REFERENCES users(id)
             );
+
+            CREATE TABLE IF NOT EXISTS point_rules (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                category TEXT NOT NULL CHECK(category IN ('personal', 'year', 'hall', 'school')),
+                score_label TEXT NOT NULL,
+                rule_text TEXT NOT NULL,
+                is_emphasis INTEGER NOT NULL DEFAULT 0,
+                sort_order INTEGER NOT NULL DEFAULT 0,
+                updated_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP
+            );
         ");
 
         $count = (int) $pdo->query('SELECT COUNT(*) FROM users')->fetchColumn();
@@ -177,6 +187,45 @@ final class Database
             foreach ($events as $event) {
                 $stmt->execute([$event[0], $event[1], $event[2], $adminId]);
             }
+        }
+
+        self::seedPointRules($pdo);
+    }
+
+    private static function seedPointRules(PDO $pdo): void
+    {
+        $count = (int) $pdo->query('SELECT COUNT(*) FROM point_rules')->fetchColumn();
+        if ($count > 0) {
+            return;
+        }
+
+        $rules = [
+            ['personal', '-3점', '참회록(반성문) 작성', 0, 10],
+            ['personal', '-5점', '버피 또는 토끼뜀 20회, 참회록(반성문) 작성', 0, 20],
+            ['personal', '-8점', '버피 또는 토끼뜀 30회, 참회록(반성문) 작성, 삼경원 관찰 꼬리표 3일 부착', 0, 30],
+            ['personal', '-10점', '버피 또는 토끼뜀 40회, 예절 교육기간 1일', 0, 40],
+            ['personal', '-13점', '버피 또는 토끼뜀 50회, 예절 교육기간 2일, 직속 3학년 선배(관장) 연대 참회록 작성', 0, 50],
+            ['personal', '-15점', '퇴학 처리 (재입학 불가)', 1, 60],
+            ['year', '-10점', '학년 전체 꼬리표 3일 부착, 학년 전체 참회록(반성문) 작성', 0, 10],
+            ['year', '-15점', '학년 릴레이 버피 또는 토끼뜀 20회, 릴레이 참회록(반성문) 작성, 삼경원 관찰 꼬리표 3일 부착', 0, 20],
+            ['year', '-20점', '학년 릴레이 버피 또는 토끼뜀 30회, 학년 예절 교육기간 1일', 0, 30],
+            ['year', '-25점', '학년 릴레이 버피 또는 토끼뜀 40회, 학년 예절 교육기간 2일', 0, 40],
+            ['year', '-30점', '학년 전체 집합', 1, 50],
+            ['hall', '-10점', '관 전체 꼬리표 3일 부착, 관 전체 참회록(반성문) 작성', 0, 10],
+            ['hall', '-15점', '관 소속 인원 릴레이 버피 또는 토끼뜀 20회, 릴레이 참회록(반성문) 작성, 삼경원 관찰 꼬리표 3일 부착', 0, 20],
+            ['hall', '-20점', '관 소속 인원 릴레이 버피 또는 토끼뜀 30회, 관 예절 교육기간 1일', 0, 30],
+            ['hall', '-25점', '관 소속 인원 릴레이 버피 또는 토끼뜀 40회, 관 예절 교육기간 2일', 0, 40],
+            ['hall', '-30점', '관 전체 집합', 1, 50],
+            ['school', '-25점', '전체 점호 실시 (삼경원 및 3학년 주도)', 1, 10],
+        ];
+
+        $stmt = $pdo->prepare('
+            INSERT INTO point_rules (category, score_label, rule_text, is_emphasis, sort_order)
+            VALUES (?, ?, ?, ?, ?)
+        ');
+
+        foreach ($rules as $rule) {
+            $stmt->execute($rule);
         }
     }
 
