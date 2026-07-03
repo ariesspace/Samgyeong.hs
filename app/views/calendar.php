@@ -2,6 +2,9 @@
     $firstDay = strtotime($month . '-01');
     $daysInMonth = (int) date('t', $firstDay);
     $startOffset = (int) date('w', $firstDay);
+    $prevMonth = date('Y-m', strtotime('-1 month', $firstDay));
+    $nextMonth = date('Y-m', strtotime('+1 month', $firstDay));
+    $currentMonth = date('Y-m');
     $eventsByDay = [];
     foreach ($events as $event) {
         $day = (int) substr($event['event_date'], 8, 2);
@@ -13,6 +16,13 @@
     <header class="page-title">
         <h1>일정 캘린더</h1>
     </header>
+
+    <nav class="calendar-month-nav" aria-label="월 이동">
+        <a class="ghost-button" href="/calendar?month=<?= e($prevMonth) ?>">이전달</a>
+        <strong><?= e(date('Y년 n월', $firstDay)) ?></strong>
+        <a class="ghost-button" href="/calendar?month=<?= e($nextMonth) ?>">다음달</a>
+        <a class="button" href="/calendar?month=<?= e($currentMonth) ?>">이번달</a>
+    </nav>
 
     <form method="post" action="/calendar/events/store" class="calendar-event-form">
         <input type="hidden" name="csrf" value="<?= e(csrf_token()) ?>">

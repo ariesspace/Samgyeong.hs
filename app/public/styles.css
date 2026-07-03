@@ -1921,6 +1921,30 @@ select {
     gap: 20px;
 }
 
+.calendar-month-nav {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    padding: 12px;
+    background: #f8fafc;
+    border: 1px solid var(--line);
+    border-radius: 4px;
+}
+
+.calendar-month-nav strong {
+    min-width: 130px;
+    color: #1f2937;
+    font-size: 17px;
+    text-align: center;
+}
+
+.calendar-month-nav a {
+    min-height: 32px;
+    padding: 6px 11px;
+    font-size: 13px;
+}
+
 .calendar-event-form {
     display: grid;
     grid-template-columns: 170px minmax(220px, 1fr) 130px auto;
@@ -4421,6 +4445,27 @@ select {
         grid-template-columns: 1fr;
         gap: 8px;
         padding: 12px;
+    }
+
+    .calendar-month-nav {
+        display: grid;
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+        gap: 7px;
+        padding: 10px;
+    }
+
+    .calendar-month-nav strong {
+        grid-column: 1 / -1;
+        grid-row: 1;
+        min-width: 0;
+        font-size: 16px;
+    }
+
+    .calendar-month-nav a {
+        justify-content: center;
+        width: 100%;
+        min-height: 32px;
+        padding: 6px 4px;
     }
 
     .calendar-event-form label {
