@@ -2893,6 +2893,53 @@ select {
     font-weight: 700;
 }
 
+.admin-board-permission-table {
+    margin-top: 22px;
+}
+
+.admin-board-permission-table td:first-child {
+    text-align: left;
+}
+
+.admin-board-permission-table td:first-child span {
+    display: block;
+    margin-top: 4px;
+    color: var(--muted);
+    font-size: 13px;
+}
+
+.permission-checks {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    justify-content: center;
+}
+
+.permission-checks label {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    min-height: 32px;
+    padding: 5px 10px;
+    color: #334155;
+    background: #f8fafc;
+    border: 1px solid #d8dee8;
+    border-radius: 999px;
+    font-size: 13px;
+    font-weight: 800;
+}
+
+.permission-checks input {
+    width: 14px;
+    height: 14px;
+}
+
+.permission-checks .permission-public {
+    color: #145032;
+    background: #edf7f1;
+    border-color: #b9dac7;
+}
+
 .admin-role-form {
     justify-content: center;
 }

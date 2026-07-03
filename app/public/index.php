@@ -21,7 +21,7 @@ if ($path === '/login' && $method === 'POST') {
 $routes = [
     '/' => function () use ($db) {
         $homeBoards = [];
-        foreach (Board::all() as $slug => $board) {
+        foreach (Board::all($db) as $slug => $board) {
             $stmt = $db->prepare('
                 SELECT id, title, tag, created_at
                 FROM posts
@@ -205,6 +205,46 @@ if ($path === '/admin/users/delete' && $method === 'POST') {
     }
 
     redirect('/admin/users');
+}
+
+if ($path === '/admin/boards/permissions') {
+    $auth->requireRole(['admin']);
+    echo view('admin-board-permissions', [
+        'title' => '게시판 권한 설정',
+        'boards' => Board::all($db),
+        'roles' => Board::roleOptions(),
+        'saved' => ($_GET['saved'] ?? '') === '1',
+    ]);
+    exit;
+}
+
+if ($path === '/admin/boards/permissions/save' && $method === 'POST') {
+    $auth->requireRole(['admin']);
+    $allowedRoles = array_keys(Board::roleOptions());
+    $boards = Board::all($db);
+    $stmt = $db->prepare('
+        INSERT INTO board_permissions (board_slug, read_roles, write_roles, updated_at)
+        VALUES (?, ?, ?, CURRENT_TIMESTAMP)
+        ON CONFLICT(board_slug) DO UPDATE SET
+            read_roles = excluded.read_roles,
+            write_roles = excluded.write_roles,
+            updated_at = CURRENT_TIMESTAMP
+    ');
+
+    foreach ($boards as $slug => $board) {
+        $readRoles = $_POST['read_roles'][$slug] ?? [];
+        $writeRoles = $_POST['write_roles'][$slug] ?? [];
+        $readRoles = is_array($readRoles) ? array_values(array_intersect($readRoles, $allowedRoles)) : [];
+        $writeRoles = is_array($writeRoles) ? array_values(array_intersect($writeRoles, $allowedRoles)) : [];
+
+        $stmt->execute([
+            $slug,
+            json_encode($readRoles, JSON_UNESCAPED_UNICODE),
+            json_encode($writeRoles, JSON_UNESCAPED_UNICODE),
+        ]);
+    }
+
+    redirect('/admin/boards/permissions?saved=1');
 }
 
 if ($path === '/mypage') {
@@ -562,43 +602,43 @@ if ($path === '/calendar/events/delete' && $method === 'POST') {
 }
 
 if (preg_match('#^/board/([a-z-]+)$#', $path, $matches)) {
-    $board = Board::fromSlug($matches[1]);
+    $board = Board::fromSlug($matches[1], $db);
     echo (new BoardController($db, $auth))->index($board);
     exit;
 }
 
 if (preg_match('#^/board/([a-z-]+)/post/(\d+)$#', $path, $matches)) {
-    $board = Board::fromSlug($matches[1]);
+    $board = Board::fromSlug($matches[1], $db);
     echo (new BoardController($db, $auth))->show($board, (int) $matches[2]);
     exit;
 }
 
 if (preg_match('#^/board/([a-z-]+)/new$#', $path, $matches)) {
-    $board = Board::fromSlug($matches[1]);
+    $board = Board::fromSlug($matches[1], $db);
     echo (new BoardController($db, $auth))->create($board);
     exit;
 }
 
 if (preg_match('#^/board/([a-z-]+)/post/(\d+)/edit$#', $path, $matches)) {
-    $board = Board::fromSlug($matches[1]);
+    $board = Board::fromSlug($matches[1], $db);
     echo (new BoardController($db, $auth))->edit($board, (int) $matches[2]);
     exit;
 }
 
 if (preg_match('#^/board/([a-z-]+)/store$#', $path, $matches) && $method === 'POST') {
-    $board = Board::fromSlug($matches[1]);
+    $board = Board::fromSlug($matches[1], $db);
     echo (new BoardController($db, $auth))->store($board);
     exit;
 }
 
 if (preg_match('#^/board/([a-z-]+)/post/(\d+)/update$#', $path, $matches) && $method === 'POST') {
-    $board = Board::fromSlug($matches[1]);
+    $board = Board::fromSlug($matches[1], $db);
     echo (new BoardController($db, $auth))->update($board, (int) $matches[2]);
     exit;
 }
 
 if (preg_match('#^/board/([a-z-]+)/post/(\d+)/delete$#', $path, $matches) && $method === 'POST') {
-    $board = Board::fromSlug($matches[1]);
+    $board = Board::fromSlug($matches[1], $db);
     echo (new BoardController($db, $auth))->delete($board, (int) $matches[2]);
     exit;
 }

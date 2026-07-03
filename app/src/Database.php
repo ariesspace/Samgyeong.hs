@@ -73,6 +73,13 @@ final class Database
                 created_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP,
                 FOREIGN KEY(author_id) REFERENCES users(id)
             );
+
+            CREATE TABLE IF NOT EXISTS board_permissions (
+                board_slug TEXT PRIMARY KEY,
+                read_roles TEXT NOT NULL DEFAULT '[]',
+                write_roles TEXT NOT NULL DEFAULT '[]',
+                updated_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP
+            );
         ");
 
         $count = (int) $pdo->query('SELECT COUNT(*) FROM users')->fetchColumn();

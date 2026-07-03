@@ -184,6 +184,7 @@ function nav_groups(): array
                     ['label' => '계정 생성', 'href' => '/admin/users/create'],
                 ],
             ],
+            ['label' => '게시판 권한 설정', 'href' => '/admin/boards/permissions'],
             ['label' => '관별 명단 관리', 'href' => '/admin/halls'],
         ];
     }

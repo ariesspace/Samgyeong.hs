@@ -35,7 +35,7 @@ final class Board
         ],
     ];
 
-    public static function fromSlug(string $slug): array
+    public static function fromSlug(string $slug, ?PDO $db = null): array
     {
         if (!isset(self::BOARDS[$slug])) {
             http_response_code(404);
@@ -43,11 +43,52 @@ final class Board
             exit;
         }
 
-        return ['slug' => $slug] + self::BOARDS[$slug];
+        return ['slug' => $slug] + self::withPermissions($slug, self::BOARDS[$slug], $db);
     }
 
-    public static function all(): array
+    public static function all(?PDO $db = null): array
     {
-        return self::BOARDS;
+        $boards = [];
+        foreach (self::BOARDS as $slug => $board) {
+            $boards[$slug] = self::withPermissions($slug, $board, $db);
+        }
+
+        return $boards;
+    }
+
+    public static function roleOptions(): array
+    {
+        return [
+            'student' => '재학생',
+            'council' => '삼경원',
+            'admin' => '관리자',
+        ];
+    }
+
+    private static function withPermissions(string $slug, array $board, ?PDO $db): array
+    {
+        if (!$db) {
+            return $board;
+        }
+
+        $stmt = $db->prepare('SELECT read_roles, write_roles FROM board_permissions WHERE board_slug = ?');
+        $stmt->execute([$slug]);
+        $permissions = $stmt->fetch();
+        if (!$permissions) {
+            return $board;
+        }
+
+        $readRoles = json_decode((string) $permissions['read_roles'], true);
+        $writeRoles = json_decode((string) $permissions['write_roles'], true);
+        $allowedRoles = array_keys(self::roleOptions());
+
+        if (is_array($readRoles)) {
+            $board['read_roles'] = array_values(array_intersect($readRoles, $allowedRoles));
+        }
+        if (is_array($writeRoles)) {
+            $board['write_roles'] = array_values(array_intersect($writeRoles, $allowedRoles));
+        }
+
+        return $board;
     }
 }
