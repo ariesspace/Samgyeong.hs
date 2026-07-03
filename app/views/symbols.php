@@ -22,7 +22,7 @@
             <article class="symbol-card">
                 <h2>교목 : 소나무 <span>松</span></h2>
                 <figure>
-                    <img src="https://images.unsplash.com/photo-1613967193490-1d17b930c1a1?auto=format&fit=crop&w=900&q=80" alt="소나무">
+                    <img src="/assets/pine-tree.jpg" alt="소나무">
                 </figure>
                 <p>
                     사시사철 푸르고 굳건한 기상을 자랑하는 소나무는 삼경인의
