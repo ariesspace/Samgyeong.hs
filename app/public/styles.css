@@ -43,13 +43,44 @@ a {
     gap: 12px;
 }
 
-.utility-actions a {
-    padding: 4px 10px;
+.utility-button {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    min-height: 28px;
+    padding: 4px 9px;
     color: white;
-    background: var(--green);
     border-radius: 4px;
+    font-size: 13px;
     font-weight: 700;
+    line-height: 1;
     text-decoration: none;
+    transition: background .15s ease, transform .15s ease;
+}
+
+.utility-button.primary {
+    background: var(--green);
+}
+
+.utility-button.secondary {
+    background: #344054;
+}
+
+.utility-button:hover {
+    transform: translateY(-1px);
+}
+
+.utility-button.primary:hover {
+    background: var(--green-2);
+}
+
+.utility-button.secondary:hover {
+    background: #475467;
+}
+
+.utility-button span {
+    font-size: 13px;
+    line-height: 1;
 }
 
 .site-header {
@@ -2780,7 +2811,7 @@ select {
         gap: 6px;
     }
 
-    .utility-actions a {
+    .utility-button {
         padding: 4px 8px;
     }
 
