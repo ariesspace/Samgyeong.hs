@@ -48,7 +48,24 @@
             <?php endfor; ?>
             <?php for ($date = 1; $date <= $daysInMonth; $date++): ?>
                 <?php $dayEvents = $eventsByDay[$date] ?? []; ?>
-                <div class="calendar-day-cell <?= $dayEvents ? 'has-events' : '' ?>">
+                <?php
+                    $dayEventData = array_map(
+                        fn ($event) => [
+                            'title' => $event['title'],
+                            'category' => $event['category'],
+                        ],
+                        $dayEvents
+                    );
+                    $fullDate = $month . '-' . str_pad((string) $date, 2, '0', STR_PAD_LEFT);
+                ?>
+                <div
+                    class="calendar-day-cell <?= $dayEvents ? 'has-events' : '' ?>"
+                    role="button"
+                    tabindex="0"
+                    data-calendar-day
+                    data-date="<?= e(str_replace('-', '.', $fullDate)) ?>"
+                    data-events="<?= e(json_encode($dayEventData, JSON_UNESCAPED_UNICODE)) ?>"
+                >
                     <strong><?= e((string) $date) ?></strong>
                     <?php if ($dayEvents): ?>
                         <em class="calendar-event-count"><?= e((string) count($dayEvents)) ?></em>
@@ -88,3 +105,78 @@
         <?php endforeach; ?>
     </section>
 </section>
+
+<div class="calendar-day-modal" data-calendar-modal hidden>
+    <div class="calendar-day-dialog">
+        <div class="calendar-day-dialog-head">
+            <h2 data-calendar-modal-title>일정</h2>
+            <button type="button" class="icon-button" data-calendar-modal-close aria-label="닫기">×</button>
+        </div>
+        <div class="calendar-day-dialog-body" data-calendar-modal-body></div>
+    </div>
+</div>
+
+<script>
+(() => {
+    const modal = document.querySelector('[data-calendar-modal]');
+    const title = document.querySelector('[data-calendar-modal-title]');
+    const body = document.querySelector('[data-calendar-modal-body]');
+    if (!modal || !title || !body) {
+        return;
+    }
+
+    const openDay = (cell) => {
+        let events = [];
+        try {
+            events = JSON.parse(cell.dataset.events || '[]');
+        } catch (_) {
+            events = [];
+        }
+
+        title.textContent = `${cell.dataset.date || ''} 일정`;
+        body.innerHTML = '';
+
+        if (events.length === 0) {
+            const empty = document.createElement('p');
+            empty.className = 'calendar-day-empty';
+            empty.textContent = '등록된 일정이 없습니다.';
+            body.appendChild(empty);
+        } else {
+            events.forEach((event) => {
+                const item = document.createElement('p');
+                item.className = `calendar-day-popup-item ${event.category || 'general'}`;
+                item.textContent = event.title || '';
+                body.appendChild(item);
+            });
+        }
+
+        modal.hidden = false;
+    };
+
+    document.querySelectorAll('[data-calendar-day]').forEach((cell) => {
+        cell.addEventListener('click', (event) => {
+            if (event.target.closest('form, button, a')) {
+                return;
+            }
+            openDay(cell);
+        });
+        cell.addEventListener('keydown', (event) => {
+            if (event.key === 'Enter' || event.key === ' ') {
+                event.preventDefault();
+                openDay(cell);
+            }
+        });
+    });
+
+    document.querySelectorAll('[data-calendar-modal-close]').forEach((button) => {
+        button.addEventListener('click', () => {
+            modal.hidden = true;
+        });
+    });
+    modal.addEventListener('click', (event) => {
+        if (event.target === modal) {
+            modal.hidden = true;
+        }
+    });
+})();
+</script>
