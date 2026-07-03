@@ -17,13 +17,6 @@
         <h1>일정 캘린더</h1>
     </header>
 
-    <nav class="calendar-month-nav" aria-label="월 이동">
-        <a class="ghost-button" href="/calendar?month=<?= e($prevMonth) ?>">이전달</a>
-        <strong><?= e(date('Y년 n월', $firstDay)) ?></strong>
-        <a class="ghost-button" href="/calendar?month=<?= e($nextMonth) ?>">다음달</a>
-        <a class="button" href="/calendar?month=<?= e($currentMonth) ?>">이번달</a>
-    </nav>
-
     <form method="post" action="/calendar/events/store" class="calendar-event-form">
         <input type="hidden" name="csrf" value="<?= e(csrf_token()) ?>">
         <label>
@@ -46,7 +39,13 @@
     </form>
 
     <div class="calendar">
-        <div class="calendar-head"><?= e(date('Y년 n월', $firstDay)) ?> 학생회 일정</div>
+        <div class="calendar-head">
+            <a href="/calendar?month=<?= e($prevMonth) ?>" aria-label="이전달">‹</a>
+            <a class="calendar-head-title" href="/calendar?month=<?= e($currentMonth) ?>" title="이번달로 이동">
+                <?= e(date('Y년 n월', $firstDay)) ?> 학생회 일정
+            </a>
+            <a href="/calendar?month=<?= e($nextMonth) ?>" aria-label="다음달">›</a>
+        </div>
         <div class="calendar-week">
             <?php foreach (['일', '월', '화', '수', '목', '금', '토'] as $day): ?>
                 <span><?= e($day) ?></span>

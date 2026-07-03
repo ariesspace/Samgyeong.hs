@@ -1921,30 +1921,6 @@ select {
     gap: 20px;
 }
 
-.calendar-month-nav {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 8px;
-    padding: 12px;
-    background: #f8fafc;
-    border: 1px solid var(--line);
-    border-radius: 4px;
-}
-
-.calendar-month-nav strong {
-    min-width: 130px;
-    color: #1f2937;
-    font-size: 17px;
-    text-align: center;
-}
-
-.calendar-month-nav a {
-    min-height: 32px;
-    padding: 6px 11px;
-    font-size: 13px;
-}
-
 .calendar-event-form {
     display: grid;
     grid-template-columns: 170px minmax(220px, 1fr) 130px auto;
@@ -1980,12 +1956,40 @@ select {
 }
 
 .calendar-head {
+    display: grid;
+    grid-template-columns: 42px minmax(0, 1fr) 42px;
+    align-items: center;
     padding: 13px;
     color: white;
     background: var(--green);
     font-size: 18px;
     font-weight: 800;
     text-align: center;
+}
+
+.calendar-head a {
+    display: grid;
+    place-items: center;
+    min-height: 34px;
+    color: white;
+    border-radius: 4px;
+    text-decoration: none;
+}
+
+.calendar-head > a:not(.calendar-head-title) {
+    font-size: 30px;
+    line-height: 1;
+}
+
+.calendar-head a:hover {
+    background: rgba(255, 255, 255, .12);
+    text-decoration: none;
+}
+
+.calendar-head-title {
+    font-size: inherit;
+    font-weight: inherit;
+    line-height: 1.2;
 }
 
 .calendar-week,
@@ -4519,27 +4523,6 @@ select {
         padding: 12px;
     }
 
-    .calendar-month-nav {
-        display: grid;
-        grid-template-columns: repeat(3, minmax(0, 1fr));
-        gap: 7px;
-        padding: 10px;
-    }
-
-    .calendar-month-nav strong {
-        grid-column: 1 / -1;
-        grid-row: 1;
-        min-width: 0;
-        font-size: 16px;
-    }
-
-    .calendar-month-nav a {
-        justify-content: center;
-        width: 100%;
-        min-height: 32px;
-        padding: 6px 4px;
-    }
-
     .calendar-event-form label {
         font-size: 13px;
     }
@@ -4556,8 +4539,17 @@ select {
     }
 
     .calendar-head {
+        grid-template-columns: 34px minmax(0, 1fr) 34px;
         padding: 10px;
         font-size: 15px;
+    }
+
+    .calendar-head a {
+        min-height: 30px;
+    }
+
+    .calendar-head > a:not(.calendar-head-title) {
+        font-size: 26px;
     }
 
     .calendar-week span {
