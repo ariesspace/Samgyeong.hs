@@ -26,6 +26,7 @@
                         <?php foreach ($section['items'] as $item): ?>
                             <div class="point-rule-admin-row">
                                 <input type="hidden" name="id[]" value="<?= e((string) $item['id']) ?>">
+                                <input type="hidden" name="category[]" value="<?= e($item['category'] ?? '') ?>">
                                 <label>
                                     점수
                                     <input name="score_label[]" value="<?= e($item['score']) ?>" required>
@@ -33,10 +34,6 @@
                                 <label class="rule-text-field">
                                     내용
                                     <textarea name="rule_text[]" rows="2" required><?= e($item['text']) ?></textarea>
-                                </label>
-                                <label>
-                                    순서
-                                    <input type="number" name="sort_order[]" value="<?= e((string) $item['sort_order']) ?>">
                                 </label>
                                 <label class="checkbox-field">
                                     <input type="checkbox" name="is_emphasis[]" value="<?= e((string) $item['id']) ?>" <?= !empty($item['emphasis']) ? 'checked' : '' ?>>
@@ -83,10 +80,6 @@
             <label>
                 점수
                 <input name="score_label" placeholder="예: -10점" required>
-            </label>
-            <label>
-                순서
-                <input type="number" name="sort_order" value="99">
             </label>
             <label class="rule-text-field">
                 내용

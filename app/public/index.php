@@ -561,25 +561,32 @@ if ($path === '/admin/point-rules') {
 if ($path === '/admin/point-rules/save' && $method === 'POST') {
     $auth->requireRole(['admin']);
     $ids = $_POST['id'] ?? [];
+    $categories = $_POST['category'] ?? [];
     $scoreLabels = $_POST['score_label'] ?? [];
     $ruleTexts = $_POST['rule_text'] ?? [];
-    $sortOrders = $_POST['sort_order'] ?? [];
     $emphasisIds = $_POST['is_emphasis'] ?? [];
 
-    if (is_array($ids) && is_array($scoreLabels) && is_array($ruleTexts) && is_array($sortOrders)) {
+    if (is_array($ids) && is_array($categories) && is_array($scoreLabels) && is_array($ruleTexts)) {
         $checkedIds = is_array($emphasisIds) ? array_map('intval', $emphasisIds) : [];
+        $sortCounters = [];
         $stmt = $db->prepare('
             UPDATE point_rules
             SET score_label = ?, rule_text = ?, is_emphasis = ?, sort_order = ?, updated_at = CURRENT_TIMESTAMP
             WHERE id = ?
         ');
 
-        $count = min(count($ids), count($scoreLabels), count($ruleTexts), count($sortOrders));
+        $count = min(count($ids), count($categories), count($scoreLabels), count($ruleTexts));
         for ($i = 0; $i < $count; $i++) {
             $id = (int) $ids[$i];
+            $category = (string) $categories[$i];
             $scoreLabel = trim((string) $scoreLabels[$i]);
             $ruleText = trim((string) $ruleTexts[$i]);
-            $sortOrder = (int) $sortOrders[$i];
+            if (!isset(point_rule_categories()[$category])) {
+                continue;
+            }
+
+            $sortCounters[$category] = ($sortCounters[$category] ?? 0) + 10;
+            $sortOrder = $sortCounters[$category];
             if ($id > 0 && $scoreLabel !== '' && $ruleText !== '') {
                 $stmt->execute([$scoreLabel, $ruleText, in_array($id, $checkedIds, true) ? 1 : 0, $sortOrder, $id]);
             }
@@ -594,10 +601,13 @@ if ($path === '/admin/point-rules/add' && $method === 'POST') {
     $category = $_POST['category'] ?? '';
     $scoreLabel = trim((string) ($_POST['score_label'] ?? ''));
     $ruleText = trim((string) ($_POST['rule_text'] ?? ''));
-    $sortOrder = (int) ($_POST['sort_order'] ?? 99);
     $isEmphasis = isset($_POST['is_emphasis']) ? 1 : 0;
 
     if (isset(point_rule_categories()[$category]) && $scoreLabel !== '' && $ruleText !== '') {
+        $stmt = $db->prepare('SELECT COALESCE(MAX(sort_order), 0) + 10 FROM point_rules WHERE category = ?');
+        $stmt->execute([$category]);
+        $sortOrder = (int) $stmt->fetchColumn();
+
         $stmt = $db->prepare('
             INSERT INTO point_rules (category, score_label, rule_text, is_emphasis, sort_order)
             VALUES (?, ?, ?, ?, ?)

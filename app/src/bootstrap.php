@@ -266,6 +266,7 @@ function build_point_rule_sections(array $rules): array
 
         $sections[$category]['items'][] = [
             'id' => (int) ($rule['id'] ?? 0),
+            'category' => $category,
             'score' => (string) ($rule['score_label'] ?? ''),
             'text' => (string) ($rule['rule_text'] ?? ''),
             'emphasis' => (int) ($rule['is_emphasis'] ?? 0) === 1,
