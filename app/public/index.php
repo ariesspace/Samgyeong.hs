@@ -194,12 +194,28 @@ if ($path === '/admin/users/delete' && $method === 'POST') {
     $userId = (int) ($_POST['user_id'] ?? 0);
 
     if ($userId > 1 && $userId !== (int) ($auth->user()['id'] ?? 0)) {
-        $stmt = $db->prepare('SELECT photo_path FROM users WHERE id = ?');
+        $stmt = $db->prepare('SELECT display_name, hall_key, year, photo_path FROM users WHERE id = ?');
         $stmt->execute([$userId]);
-        delete_upload($stmt->fetchColumn() ?: null);
+        $user = $stmt->fetch();
+        delete_upload($user['photo_path'] ?? null);
 
         $stmt = $db->prepare('DELETE FROM hall_members WHERE user_id = ?');
         $stmt->execute([$userId]);
+
+        if ($user && trim((string) $user['display_name']) !== '' && ($user['hall_key'] ?? '') !== '' && (int) ($user['year'] ?? 0) > 0) {
+            $stmt = $db->prepare('
+                DELETE FROM hall_members
+                WHERE (user_id IS NULL OR user_id = 0)
+                  AND student_name = ?
+                  AND hall_key = ?
+                  AND year = ?
+            ');
+            $stmt->execute([
+                trim((string) $user['display_name']),
+                $user['hall_key'],
+                (int) $user['year'],
+            ]);
+        }
 
         $stmt = $db->prepare('DELETE FROM users WHERE id = ?');
         $stmt->execute([$userId]);
