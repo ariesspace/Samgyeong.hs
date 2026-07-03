@@ -14,7 +14,7 @@
 
         <div class="point-rule-admin-sections">
             <?php foreach ($sections as $section): ?>
-                <section class="admin-create-panel point-rule-admin-block">
+                <section class="point-rule-admin-block">
                     <div class="point-rule-admin-head">
                         <h2><?= e($section['title']) ?></h2>
                         <?php if (!empty($section['description'])): ?>
@@ -65,9 +65,9 @@
         <?php endforeach; ?>
     <?php endforeach; ?>
 
-    <section class="admin-create-panel point-rule-add-panel">
+    <section class="point-rule-add-panel">
         <h2>새 기준 추가</h2>
-        <form method="post" action="/admin/point-rules/add" class="admin-create-form">
+        <form method="post" action="/admin/point-rules/add" class="point-rule-add-form">
             <input type="hidden" name="csrf" value="<?= e(csrf_token()) ?>">
             <label>
                 분류

@@ -1144,37 +1144,39 @@ a {
 
 .admin-point-rules-page {
     display: grid;
-    gap: 22px;
+    gap: 24px;
 }
 
 .point-rule-admin-sections {
     display: grid;
-    gap: 18px;
+    gap: 34px;
 }
 
 .point-rule-admin-block {
-    padding: 0;
-    overflow: hidden;
-    border-top: 0;
+    padding-top: 20px;
+    border-top: 2px solid var(--green);
 }
 
 .point-rule-admin-head {
-    padding: 18px 22px 16px;
-    background: #f8fafc;
-    border-top: 4px solid var(--green);
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 16px;
+    padding: 0 0 16px;
     border-bottom: 1px solid var(--line);
 }
 
 .point-rule-admin-head h2 {
     margin: 0;
     color: var(--ink);
-    font-size: 20px;
+    font-size: 22px;
 }
 
 .point-rule-admin-head p {
-    margin: 4px 0 0;
+    margin: 0;
     color: var(--muted);
     font-size: 14px;
+    word-break: keep-all;
 }
 
 .point-rule-admin-list {
@@ -1183,10 +1185,10 @@ a {
 
 .point-rule-admin-row {
     display: grid;
-    grid-template-columns: 112px minmax(280px, 1fr) 84px 42px;
-    gap: 14px;
+    grid-template-columns: 108px minmax(280px, 1fr) 72px 38px;
+    gap: 12px;
     align-items: center;
-    padding: 14px 22px;
+    padding: 14px 0;
     border-bottom: 1px solid #edf0f3;
 }
 
@@ -1197,9 +1199,9 @@ a {
 .point-rule-admin-row label,
 .point-rule-add-panel label {
     display: grid;
-    gap: 6px;
+    gap: 5px;
     color: #344054;
-    font-size: 13px;
+    font-size: 12px;
     font-weight: 800;
 }
 
@@ -1211,15 +1213,28 @@ a {
     width: 100%;
     border: 1px solid #ccd4df;
     border-radius: 4px;
-    padding: 9px 10px;
+    padding: 8px 10px;
     color: var(--ink);
-    background: white;
+    background: #fbfcfd;
     font: inherit;
+    font-size: 14px;
+    transition: border-color .15s ease, box-shadow .15s ease, background .15s ease;
+}
+
+.point-rule-admin-row input:focus,
+.point-rule-admin-row textarea:focus,
+.point-rule-add-panel input:focus,
+.point-rule-add-panel textarea:focus,
+.point-rule-add-panel select:focus {
+    outline: none;
+    background: white;
+    border-color: var(--green);
+    box-shadow: 0 0 0 3px rgba(26, 67, 49, .08);
 }
 
 .point-rule-admin-row textarea,
 .point-rule-add-panel textarea {
-    min-height: 42px;
+    min-height: 40px;
     resize: vertical;
 }
 
@@ -1228,8 +1243,9 @@ a {
     display: flex;
     align-items: center;
     gap: 7px;
-    min-height: 40px;
-    padding-top: 18px;
+    min-height: 36px;
+    padding-top: 16px;
+    white-space: nowrap;
 }
 
 .point-rule-admin-row .checkbox-field input,
@@ -1237,8 +1253,21 @@ a {
     width: auto;
 }
 
-.point-rule-add-panel .admin-create-form {
-    grid-template-columns: 190px 140px minmax(260px, 1fr);
+.point-rule-add-panel {
+    padding-top: 22px;
+    border-top: 2px solid var(--green);
+}
+
+.point-rule-add-panel h2 {
+    margin: 0 0 16px;
+    color: var(--ink);
+    font-size: 22px;
+}
+
+.point-rule-add-form {
+    display: grid;
+    grid-template-columns: 190px 130px minmax(260px, 1fr) 116px;
+    gap: 12px;
     align-items: end;
 }
 
@@ -1246,9 +1275,13 @@ a {
     grid-column: auto;
 }
 
-.point-rule-add-panel .checkbox-field,
+.point-rule-add-panel .checkbox-field {
+    grid-column: auto;
+}
+
 .point-rule-add-panel .admin-create-actions {
     grid-column: 1 / -1;
+    margin-top: 0;
 }
 
 .council-principles div {
@@ -4704,20 +4737,31 @@ select {
     }
 
     .point-rule-admin-head {
-        padding: 15px 16px;
+        display: grid;
+        padding: 0 0 14px;
+    }
+
+    .point-rule-admin-head h2,
+    .point-rule-add-panel h2 {
+        font-size: 19px;
     }
 
     .point-rule-admin-row {
         grid-template-columns: 1fr;
         gap: 10px;
-        padding: 14px 16px;
+        padding: 14px 0;
+    }
+
+    .point-rule-admin-row .checkbox-field,
+    .point-rule-add-panel .checkbox-field {
+        padding-top: 0;
     }
 
     .point-rule-admin-row .icon-button {
         justify-self: end;
     }
 
-    .point-rule-add-panel .admin-create-form {
+    .point-rule-add-form {
         grid-template-columns: 1fr;
     }
 
