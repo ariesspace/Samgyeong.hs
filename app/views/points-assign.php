@@ -48,6 +48,23 @@
         </form>
     </section>
 
+    <section class="points-assign-panel">
+        <h2>텍스트 일괄 입력</h2>
+        <p class="muted">여러 줄을 붙여넣으면 학생 이름, 상점/벌점, 점수, 사유를 자동으로 분석합니다. 예: <strong>5/26 회의 참여 일괄 +1</strong> 아래에 학생 이름을 여러 줄로 입력할 수 있습니다.</p>
+        <form method="post" action="/points/assign/preview" class="points-bulk-form">
+            <input type="hidden" name="csrf" value="<?= e(csrf_token()) ?>">
+            <label>
+                기본 일자
+                <input type="date" name="default_date" value="<?= e(date('Y-m-d')) ?>" required>
+            </label>
+            <label class="points-bulk-textarea">
+                원문 텍스트
+                <textarea name="raw_text" rows="8" required placeholder="5/26 동아리 회의 일괄 +1&#10;홍길동&#10;김철수&#10;&#10;이영희 벌점 2점 지각&#10;박민수 +1 회의록 작성"></textarea>
+            </label>
+            <button type="submit">자동 분석하기</button>
+        </form>
+    </section>
+
     <section class="points-history-panel">
         <h2>최근 부여 기록</h2>
         <table class="board-table points-table">

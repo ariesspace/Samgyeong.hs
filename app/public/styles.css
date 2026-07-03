@@ -3318,6 +3318,38 @@ select {
     white-space: nowrap;
 }
 
+.points-bulk-form {
+    display: grid;
+    gap: 12px;
+}
+
+.points-bulk-form label {
+    display: grid;
+    gap: 6px;
+    color: #344054;
+    font-size: 14px;
+    font-weight: 800;
+}
+
+.points-bulk-form textarea {
+    min-height: 180px;
+    resize: vertical;
+    line-height: 1.6;
+}
+
+.points-bulk-form button,
+.points-bulk-save-form button {
+    justify-self: start;
+    min-height: 38px;
+}
+
+.points-bulk-save-form {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-bottom: 14px;
+}
+
 .admin-create-actions {
     display: flex;
     justify-content: flex-end;
@@ -3859,6 +3891,12 @@ select {
     }
 
     .points-assign-form button {
+        width: 100%;
+    }
+
+    .points-bulk-form button,
+    .points-bulk-save-form .button,
+    .points-bulk-save-form button {
         width: 100%;
     }
 

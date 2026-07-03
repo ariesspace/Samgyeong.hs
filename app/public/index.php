@@ -459,6 +459,55 @@ if ($path === '/points/assign/store' && $method === 'POST') {
     redirect('/points/assign?saved=1');
 }
 
+if ($path === '/points/assign/preview' && $method === 'POST') {
+    $auth->requireRole(['council', 'admin']);
+    $rawText = (string) ($_POST['raw_text'] ?? '');
+    $defaultDate = preg_match('/^\d{4}-\d{2}-\d{2}$/', $_POST['default_date'] ?? '') ? $_POST['default_date'] : date('Y-m-d');
+    $students = $db->query("
+        SELECT id, username, display_name, hall_key, year, role
+        FROM users
+        WHERE role IN ('student', 'council')
+        ORDER BY hall_key, year DESC, display_name, username
+    ")->fetchAll();
+    [$parsed, $failed] = parse_point_bulk_text($rawText, $defaultDate, $students);
+
+    echo view('points-bulk-preview', [
+        'title' => '일괄 입력 미리보기',
+        'parsed' => $parsed,
+        'failed' => $failed,
+    ]);
+    exit;
+}
+
+if ($path === '/points/assign/bulk-save' && $method === 'POST') {
+    $auth->requireRole(['council', 'admin']);
+    $userIds = $_POST['user_id'] ?? [];
+    $types = $_POST['type'] ?? [];
+    $pointsList = $_POST['points'] ?? [];
+    $reasons = $_POST['reason'] ?? [];
+    $issuedDates = $_POST['issued_at'] ?? [];
+
+    if (is_array($userIds) && is_array($types) && is_array($pointsList) && is_array($reasons) && is_array($issuedDates)) {
+        $stmt = $db->prepare('
+            INSERT INTO point_records (user_id, type, points, reason, issuer_id, issued_at)
+            VALUES (?, ?, ?, ?, ?, ?)
+        ');
+        $count = min(count($userIds), count($types), count($pointsList), count($reasons), count($issuedDates));
+        for ($i = 0; $i < $count; $i++) {
+            $userId = (int) $userIds[$i];
+            $type = (string) $types[$i];
+            $points = max(0, min(100, (int) $pointsList[$i]));
+            $reason = trim((string) $reasons[$i]);
+            $issuedAt = (string) $issuedDates[$i];
+            if ($userId > 0 && in_array($type, ['merit', 'demerit'], true) && $points > 0 && $reason !== '' && preg_match('/^\d{4}-\d{2}-\d{2}$/', $issuedAt)) {
+                $stmt->execute([$userId, $type, $points, $reason, $auth->user()['id'], $issuedAt]);
+            }
+        }
+    }
+
+    redirect('/points/assign?saved=1');
+}
+
 if ($path === '/points/assign/delete' && $method === 'POST') {
     $auth->requireRole(['council', 'admin']);
     $id = (int) ($_POST['id'] ?? 0);
@@ -711,6 +760,180 @@ function save_hall_photo(string $field): ?string
     }
 
     return $stored;
+}
+
+function point_normalize(string $text): string
+{
+    return trim((string) preg_replace('/\s+/u', ' ', $text));
+}
+
+function extract_point_score(string $line): ?array
+{
+    $line = point_normalize($line);
+    if (preg_match('/([+-])\s*(\d+)\s*점?/u', $line, $matches)) {
+        return [
+            'type' => $matches[1] === '+' ? 'merit' : 'demerit',
+            'points' => (int) $matches[2],
+            'token' => $matches[0],
+        ];
+    }
+
+    $patterns = [
+        'merit' => [
+            '/(?:상점|상)\s*(\d+)\s*점?/u',
+            '/(\d+)\s*점?\s*(?:상점|상)/u',
+        ],
+        'demerit' => [
+            '/(?:벌점|벌)\s*(\d+)\s*점?/u',
+            '/(\d+)\s*점?\s*(?:벌점|벌)/u',
+        ],
+    ];
+
+    foreach ($patterns as $type => $items) {
+        foreach ($items as $pattern) {
+            if (preg_match($pattern, $line, $matches)) {
+                return [
+                    'type' => $type,
+                    'points' => (int) $matches[1],
+                    'token' => $matches[0],
+                ];
+            }
+        }
+    }
+
+    return null;
+}
+
+function point_reason_from_line(string $line, string $studentName, ?string $scoreToken): string
+{
+    $reason = str_replace($studentName, ' ', $line);
+    if ($scoreToken) {
+        $reason = str_replace($scoreToken, ' ', $reason);
+    }
+    $reason = str_replace(['상점', '벌점', '상', '벌', '점', '사유', ':', '-', '=', '/', '(', ')'], ' ', $reason);
+    $reason = point_normalize($reason);
+
+    return $reason !== '' ? $reason : '사유 미입력';
+}
+
+function point_date_from_line(string $line, string $defaultDate): string
+{
+    if (!preg_match('/(\d{1,2})\s*\/\s*(\d{1,2})/u', $line, $matches)) {
+        return $defaultDate;
+    }
+
+    $year = (int) date('Y');
+    $month = max(1, min(12, (int) $matches[1]));
+    $day = max(1, min(31, (int) $matches[2]));
+
+    return sprintf('%04d-%02d-%02d', $year, $month, $day);
+}
+
+function parse_point_batch_header(string $line, string $defaultDate): ?array
+{
+    if (!str_contains($line, '일괄')) {
+        return null;
+    }
+
+    $score = extract_point_score($line);
+    if (!$score) {
+        return null;
+    }
+
+    $reason = $line;
+    $reason = preg_replace('/\d{1,2}\s*\/\s*\d{1,2}/u', ' ', $reason) ?? $reason;
+    $reason = str_replace(['일괄', $score['token']], ' ', $reason);
+    $reason = point_normalize($reason);
+
+    return [
+        'type' => $score['type'],
+        'points' => $score['points'],
+        'reason' => $reason !== '' ? $reason : '일괄 지급',
+        'issued_at' => point_date_from_line($line, $defaultDate),
+    ];
+}
+
+function find_point_student_candidates(string $line, array $students): array
+{
+    $candidates = [];
+    foreach ($students as $student) {
+        $name = trim((string) ($student['display_name'] ?: $student['username']));
+        if ($name !== '' && str_contains($line, $name)) {
+            $candidates[] = $student;
+        }
+    }
+
+    usort($candidates, fn ($a, $b) => strlen((string) ($b['display_name'] ?: $b['username'])) <=> strlen((string) ($a['display_name'] ?: $a['username'])));
+
+    return $candidates;
+}
+
+function parse_point_bulk_text(string $rawText, string $defaultDate, array $students): array
+{
+    $parsed = [];
+    $failed = [];
+    $activeBatch = null;
+    $lines = preg_split('/\R/u', $rawText) ?: [];
+
+    foreach ($lines as $index => $rawLine) {
+        $line = point_normalize($rawLine);
+        if ($line === '') {
+            continue;
+        }
+
+        $batchHeader = parse_point_batch_header($line, $defaultDate);
+        if ($batchHeader) {
+            $activeBatch = $batchHeader;
+            continue;
+        }
+
+        $candidates = find_point_student_candidates($line, $students);
+        $lineNo = $index + 1;
+        if (count($candidates) === 0) {
+            $failed[] = ['line_no' => $lineNo, 'raw_line' => $line, 'status' => '학생 이름을 찾을 수 없음'];
+            continue;
+        }
+        if (count($candidates) > 1) {
+            $names = array_map(fn ($student) => (string) ($student['display_name'] ?: $student['username']), $candidates);
+            $failed[] = ['line_no' => $lineNo, 'raw_line' => $line, 'status' => '학생 이름 중복 또는 여러 명 매칭: ' . implode(', ', $names)];
+            continue;
+        }
+
+        $student = $candidates[0];
+        $studentName = (string) ($student['display_name'] ?: $student['username']);
+        $score = extract_point_score($line);
+        if ($score) {
+            $parsed[] = [
+                'line_no' => $lineNo,
+                'raw_line' => $line,
+                'user_id' => (int) $student['id'],
+                'student_name' => $studentName,
+                'type' => $score['type'],
+                'points' => $score['points'],
+                'reason' => point_reason_from_line($line, $studentName, $score['token']),
+                'issued_at' => $defaultDate,
+            ];
+            continue;
+        }
+
+        if ($activeBatch) {
+            $parsed[] = [
+                'line_no' => $lineNo,
+                'raw_line' => $line,
+                'user_id' => (int) $student['id'],
+                'student_name' => $studentName,
+                'type' => $activeBatch['type'],
+                'points' => $activeBatch['points'],
+                'reason' => $activeBatch['reason'],
+                'issued_at' => $activeBatch['issued_at'],
+            ];
+            continue;
+        }
+
+        $failed[] = ['line_no' => $lineNo, 'raw_line' => $line, 'status' => '상점/벌점 또는 점수를 찾을 수 없음'];
+    }
+
+    return [$parsed, $failed];
 }
 
 function delete_upload(?string $path): void
