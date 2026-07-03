@@ -92,7 +92,25 @@
             <p>등록된 일정이 없습니다.</p>
         <?php endif; ?>
         <?php foreach ($events as $event): ?>
-            <article class="calendar-list-item <?= e($event['category']) ?>">
+            <?php
+                $eventDay = (int) substr($event['event_date'], 8, 2);
+                $listDayEvents = $eventsByDay[$eventDay] ?? [];
+                $listEventData = array_map(
+                    fn ($item) => [
+                        'title' => $item['title'],
+                        'category' => $item['category'],
+                    ],
+                    $listDayEvents
+                );
+            ?>
+            <article
+                class="calendar-list-item <?= e($event['category']) ?>"
+                role="button"
+                tabindex="0"
+                data-calendar-day
+                data-date="<?= e(str_replace('-', '.', $event['event_date'])) ?>"
+                data-events="<?= e(json_encode($listEventData, JSON_UNESCAPED_UNICODE)) ?>"
+            >
                 <time><?= e(str_replace('-', '.', $event['event_date'])) ?></time>
                 <span><?= e($event['title']) ?></span>
                 <form method="post" action="/calendar/events/delete" onsubmit="return confirm('삭제하시겠습니까?');">

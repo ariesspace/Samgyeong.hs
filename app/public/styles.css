@@ -2047,7 +2047,75 @@ select {
 }
 
 .calendar-mobile-list {
-    display: none;
+    display: grid;
+    gap: 8px;
+}
+
+.calendar-mobile-list h2 {
+    margin: 2px 0 4px;
+    color: #1f2937;
+    font-size: 18px;
+}
+
+.calendar-mobile-list p {
+    margin: 0;
+    padding: 13px;
+    color: var(--muted);
+    background: #f8fafc;
+    border: 1px solid var(--line);
+    border-radius: 4px;
+    font-size: 13px;
+}
+
+.calendar-list-item {
+    display: grid;
+    grid-template-columns: 110px minmax(0, 1fr) auto;
+    gap: 10px;
+    align-items: center;
+    padding: 11px 12px;
+    background: white;
+    border: 1px solid var(--line);
+    border-left: 3px solid #60a5fa;
+    border-radius: 4px;
+    cursor: pointer;
+}
+
+.calendar-list-item:focus {
+    outline: 2px solid rgba(26, 67, 49, .28);
+    outline-offset: 2px;
+}
+
+.calendar-list-item.important {
+    border-left-color: #ef4444;
+}
+
+.calendar-list-item.check {
+    border-left-color: #22c55e;
+}
+
+.calendar-list-item time {
+    color: #667085;
+    font-size: 13px;
+    font-weight: 800;
+}
+
+.calendar-list-item span {
+    color: #1f2937;
+    font-size: 14px;
+    font-weight: 700;
+    line-height: 1.35;
+}
+
+.calendar-list-item form {
+    margin: 0;
+}
+
+.calendar-list-item button {
+    min-height: 28px;
+    padding: 4px 8px;
+    color: #98a2b3;
+    background: transparent;
+    font-size: 12px;
 }
 
 .calendar-day-modal[hidden] {
