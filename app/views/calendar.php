@@ -42,7 +42,7 @@
         <div class="calendar-head">
             <a href="/calendar?month=<?= e($prevMonth) ?>" aria-label="이전달">‹</a>
             <a class="calendar-head-title" href="/calendar?month=<?= e($currentMonth) ?>" title="이번달로 이동">
-                <?= e(date('Y년 n월', $firstDay)) ?> 학생회 일정
+                <?= e(date('Y년 n월', $firstDay)) ?> 삼경원 일정
             </a>
             <a href="/calendar?month=<?= e($nextMonth) ?>" aria-label="다음달">›</a>
         </div>

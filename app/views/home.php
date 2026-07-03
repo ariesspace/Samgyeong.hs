@@ -21,7 +21,7 @@
                 <em>전형 일정과 제출 서류를 확인하세요.</em>
             </a>
             <a class="popup-card dark" href="/calendar">
-                <span>학생회 일정</span>
+                <span>삼경원 일정</span>
                 <strong>7월 자치활동 캘린더</strong>
                 <em>회의, 간담회, 시설 점검 일정을 안내합니다.</em>
             </a>
