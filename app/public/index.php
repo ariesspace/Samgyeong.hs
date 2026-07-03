@@ -70,17 +70,19 @@ $routes = [
         if (!$auth->user()) {
             return view('access-denied', ['title' => '권한 없음', 'message' => '재학생 이상 로그인 후 접근이 가능한 메뉴입니다.']);
         }
-        $rules = $db->query('SELECT * FROM point_rules ORDER BY category, sort_order, id')->fetchAll();
-        return view('point-rules', [
+        return view('points-guide', [
             'title' => '상벌점 리스트',
-            'sections' => build_point_rule_sections($rules),
         ]);
     },
-    '/rules/discipline' => function () use ($auth) {
+    '/rules/discipline' => function () use ($auth, $db) {
         if (!$auth->user()) {
             return view('access-denied', ['title' => '권한 없음', 'message' => '재학생 이상 로그인 후 접근이 가능한 메뉴입니다.']);
         }
-        return view('page', ['title' => '징계 및 포상', 'body' => "징계 절차와 포상 기준을 안내하는 공간입니다.\n\n지도 절차, 심의 기준, 포상 추천 및 승인 절차 등을 정리해 게시할 수 있습니다."]);
+        $rules = $db->query('SELECT * FROM point_rules ORDER BY category, sort_order, id')->fetchAll();
+        return view('discipline-awards', [
+            'title' => '징계 및 포상',
+            'sections' => build_point_rule_sections($rules),
+        ]);
     },
     '/student-halls' => function () use ($db) {
         $rows = $db->query("
