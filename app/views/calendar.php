@@ -47,9 +47,13 @@
                 <div></div>
             <?php endfor; ?>
             <?php for ($date = 1; $date <= $daysInMonth; $date++): ?>
-                <div>
+                <?php $dayEvents = $eventsByDay[$date] ?? []; ?>
+                <div class="calendar-day-cell <?= $dayEvents ? 'has-events' : '' ?>">
                     <strong><?= e((string) $date) ?></strong>
-                    <?php foreach ($eventsByDay[$date] ?? [] as $event): ?>
+                    <?php if ($dayEvents): ?>
+                        <em class="calendar-event-count"><?= e((string) count($dayEvents)) ?></em>
+                    <?php endif; ?>
+                    <?php foreach ($dayEvents as $event): ?>
                         <div class="calendar-event <?= e($event['category']) ?>">
                             <span><?= e($event['title']) ?></span>
                             <form method="post" action="/calendar/events/delete" onsubmit="return confirm('삭제하시겠습니까?');">
@@ -64,4 +68,23 @@
             <?php endfor; ?>
         </div>
     </div>
+
+    <section class="calendar-mobile-list">
+        <h2><?= e(date('n월', $firstDay)) ?> 일정</h2>
+        <?php if (!$events): ?>
+            <p>등록된 일정이 없습니다.</p>
+        <?php endif; ?>
+        <?php foreach ($events as $event): ?>
+            <article class="calendar-list-item <?= e($event['category']) ?>">
+                <time><?= e(str_replace('-', '.', $event['event_date'])) ?></time>
+                <span><?= e($event['title']) ?></span>
+                <form method="post" action="/calendar/events/delete" onsubmit="return confirm('삭제하시겠습니까?');">
+                    <input type="hidden" name="csrf" value="<?= e(csrf_token()) ?>">
+                    <input type="hidden" name="id" value="<?= e((string) $event['id']) ?>">
+                    <input type="hidden" name="month" value="<?= e($month) ?>">
+                    <button type="submit" aria-label="일정 삭제">삭제</button>
+                </form>
+            </article>
+        <?php endforeach; ?>
+    </section>
 </section>
