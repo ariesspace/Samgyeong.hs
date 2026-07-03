@@ -109,6 +109,9 @@ if ($path === '/admin/users/edit' && $method === 'GET') {
     if (!$user || (int) $user['id'] === 1 || (int) $user['id'] === (int) ($auth->user()['id'] ?? 0)) {
         redirect('/admin/users');
     }
+    $stmt = $db->prepare('SELECT role_label FROM hall_members WHERE user_id = ? LIMIT 1');
+    $stmt->execute([$userId]);
+    $user['role_label'] = $stmt->fetchColumn() ?: '';
 
     echo view('admin-user-edit', ['title' => '계정 정보 수정', 'account' => $user]);
     exit;
@@ -156,37 +159,47 @@ if ($path === '/admin/users/profile' && $method === 'POST') {
     $auth->requireRole(['admin']);
     $userId = (int) ($_POST['user_id'] ?? 0);
     $displayName = trim($_POST['display_name'] ?? '');
+    $role = $_POST['role'] ?? '';
     $hallKey = $_POST['hall_key'] ?? '';
     $year = max(0, min(3, (int) ($_POST['year'] ?? 0)));
+    $roleLabel = trim($_POST['role_label'] ?? '');
 
-    if ($userId > 1 && $userId !== (int) ($auth->user()['id'] ?? 0) && $displayName !== '') {
-        $stmt = $db->prepare('SELECT role FROM users WHERE id = ?');
+    if ($userId > 1 && $userId !== (int) ($auth->user()['id'] ?? 0) && $displayName !== '' && in_array($role, ['student', 'council', 'admin'], true)) {
+        $stmt = $db->prepare('SELECT id FROM users WHERE id = ?');
         $stmt->execute([$userId]);
-        $role = $stmt->fetchColumn();
+        $exists = $stmt->fetchColumn();
         if ($role === 'admin') {
             $hallKey = '';
             $year = 0;
         }
-        if ($role !== false) {
-            $stmt = $db->prepare('UPDATE users SET display_name = ?, hall_key = ?, year = ? WHERE id = ?');
-            $stmt->execute([$displayName, $hallKey, $year, $userId]);
+        if ($exists !== false) {
+            $stmt = $db->prepare('UPDATE users SET display_name = ?, hall_key = ?, year = ?, role = ? WHERE id = ?');
+            $stmt->execute([$displayName, $hallKey, $year, $role, $userId]);
             sync_user_hall_member($db, $userId);
+            if ($role !== 'admin') {
+                $stmt = $db->prepare('UPDATE hall_members SET role_label = ? WHERE user_id = ?');
+                $stmt->execute([$roleLabel, $userId]);
+            }
         }
     }
 
-    redirect('/admin/users');
+    redirect('/admin/users/edit?id=' . $userId);
 }
 
 if ($path === '/admin/users/reset-password' && $method === 'POST') {
     $auth->requireRole(['admin']);
     $userId = (int) ($_POST['user_id'] ?? 0);
+    $redirectTo = $_POST['redirect_to'] ?? '/admin/users';
+    if (!is_string($redirectTo) || !str_starts_with($redirectTo, '/admin/users')) {
+        $redirectTo = '/admin/users';
+    }
 
     if ($userId > 1 && $userId !== (int) ($auth->user()['id'] ?? 0)) {
         $stmt = $db->prepare('UPDATE users SET password_hash = ? WHERE id = ?');
         $stmt->execute([password_hash('samgyeong1234', PASSWORD_DEFAULT), $userId]);
     }
 
-    redirect('/admin/users');
+    redirect($redirectTo);
 }
 
 if ($path === '/admin/users/delete' && $method === 'POST') {

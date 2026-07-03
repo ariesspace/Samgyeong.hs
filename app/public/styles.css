@@ -3114,6 +3114,103 @@ select {
     font-weight: 700;
 }
 
+.admin-user-name {
+    color: var(--ink);
+    font-weight: 800;
+}
+
+.compact-user-table th:last-child,
+.compact-user-table td:last-child {
+    width: 96px;
+}
+
+.compact-actions {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+}
+
+.icon-button {
+    display: inline-grid;
+    place-items: center;
+    width: 30px;
+    height: 30px;
+    min-height: 0;
+    padding: 0;
+    color: #23362f;
+    background: white;
+    border: 1px solid #cfd8e3;
+    border-radius: 4px;
+    font-size: 15px;
+    line-height: 1;
+    text-decoration: none;
+}
+
+.icon-button:hover {
+    color: white;
+    background: var(--green);
+    border-color: var(--green);
+    text-decoration: none;
+}
+
+.icon-button.danger {
+    color: #b42318;
+}
+
+.icon-button.danger:hover {
+    color: white;
+    background: #b42318;
+    border-color: #b42318;
+}
+
+.admin-account-detail {
+    background: white;
+}
+
+.account-detail-head {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 16px;
+    margin-bottom: 20px;
+    padding-bottom: 16px;
+    border-bottom: 1px solid #d9e1ea;
+}
+
+.account-detail-head h2 {
+    margin-bottom: 4px;
+}
+
+.account-detail-head p {
+    margin: 0;
+    color: var(--muted);
+    font-size: 14px;
+}
+
+.account-detail-form {
+    max-width: 760px;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.account-detail-form label:last-of-type,
+.account-detail-form .admin-create-actions {
+    grid-column: 1 / -1;
+}
+
+.account-danger-panel {
+    margin-top: 16px;
+    background: white;
+    border-top-color: #b42318;
+}
+
+.account-danger-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin-top: 14px;
+}
+
 .admin-board-permission-table {
     margin-top: 22px;
     table-layout: fixed;
@@ -3469,9 +3566,15 @@ select {
     .council-role-grid,
     .profile-grid,
     .profile-readonly-grid,
+    .account-detail-form,
     .profile-password-form,
     .points-summary {
         grid-template-columns: 1fr;
+    }
+
+    .account-detail-head,
+    .account-danger-actions {
+        flex-direction: column;
     }
 
     .profile-manage-card {
@@ -3552,9 +3655,7 @@ select {
 
     .public-board-table .col-views,
     .admin-user-table th:nth-child(4),
-    .admin-user-table td:nth-child(4),
-    .admin-user-table th:nth-child(6),
-    .admin-user-table td:nth-child(6) {
+    .admin-user-table td:nth-child(4) {
         display: none;
     }
 
