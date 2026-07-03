@@ -56,7 +56,7 @@ $routes = [
             'selectedHall' => isset($halls[$selectedHall]) ? $selectedHall : '',
         ]);
     },
-    '/council' => fn () => view('page', ['title' => '학생회 소개', 'body' => "학생회는 학생들의 의견을 모으고 학교 생활 개선을 함께 논의하는 자치기구입니다."]),
+    '/council' => fn () => view('council', ['title' => '삼경원 소개']),
     '/calendar' => function () use ($auth, $db) {
         if (!$auth->hasRole(['council', 'admin'])) {
             return view('access-denied', ['title' => '권한 없음', 'message' => '삼경원(학생회) 인원 및 관리자만 접근이 가능한 메뉴입니다.']);
