@@ -2692,7 +2692,7 @@ select {
 .hall-activity-body h2 {
     margin: 0;
     color: var(--ink);
-    font-size: 20px;
+    font-size: 19px;
 }
 
 .hall-activity-body p,
@@ -2703,9 +2703,14 @@ select {
     word-break: keep-all;
 }
 
-.hall-activity-body dd {
+.hall-activity-body p {
     font-size: 14px;
-    line-height: 1.55;
+    line-height: 1.6;
+}
+
+.hall-activity-body dd {
+    font-size: 13px;
+    line-height: 1.5;
 }
 
 .hall-activity-body dl {
@@ -2716,11 +2721,11 @@ select {
 }
 
 .hall-activity-body dl div {
-    padding: 12px;
+    padding: 11px;
     background: #f8fafc;
     border: 1px solid #edf0f3;
     border-radius: 4px;
-    min-height: 118px;
+    min-height: 108px;
 }
 
 .hall-activity-body dt {
