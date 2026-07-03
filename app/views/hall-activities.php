@@ -7,7 +7,7 @@ $activities = $activities ?? [];
     <header class="hall-activities-hero">
         <p class="eyebrow">Samgyeong Hall Activities</p>
         <h1>관별 자치활동</h1>
-        <p>삼경의 정신을 각 관의 방식으로 실천하는 자치활동 앨범입니다. 활동은 고정된 세 가지에 머무르지 않고, 관별 특성과 필요에 따라 계속 확장됩니다.</p>
+        <p>삼경의 정신을 각 관의 방식으로 실천하는 자치활동 앨범입니다.</p>
     </header>
 
     <section class="hall-activity-filter" aria-label="관별 활동 필터">
