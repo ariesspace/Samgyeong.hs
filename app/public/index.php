@@ -88,7 +88,7 @@ if (isset($routes[$path])) {
 
 if ($path === '/admin/users') {
     $auth->requireRole(['admin']);
-    $users = $db->query('SELECT id, username, role, display_name, hall_key, year, created_at FROM users ORDER BY id ASC')->fetchAll();
+    $users = $db->query('SELECT id, username, role, display_name, hall_key, year, photo_path, created_at FROM users ORDER BY id ASC')->fetchAll();
     echo view('admin-users', ['title' => '계정 권한 관리', 'users' => $users]);
     exit;
 }
@@ -102,7 +102,7 @@ if ($path === '/admin/users/create' && $method === 'GET') {
 if ($path === '/admin/users/edit' && $method === 'GET') {
     $auth->requireRole(['admin']);
     $userId = (int) ($_GET['id'] ?? 0);
-    $stmt = $db->prepare('SELECT id, username, role, display_name, hall_key, year, created_at FROM users WHERE id = ?');
+    $stmt = $db->prepare('SELECT id, username, role, display_name, hall_key, year, photo_path, created_at FROM users WHERE id = ?');
     $stmt->execute([$userId]);
     $user = $stmt->fetch();
     if (!$user || (int) $user['id'] === 1 || (int) $user['id'] === (int) ($auth->user()['id'] ?? 0)) {
@@ -129,6 +129,9 @@ if ($path === '/admin/users/create' && $method === 'POST') {
         }
         $stmt = $db->prepare('INSERT OR IGNORE INTO users (username, password_hash, role, display_name, hall_key, year) VALUES (?, ?, ?, ?, ?, ?)');
         $stmt->execute([$username, password_hash($password, PASSWORD_DEFAULT), $role, $displayName !== '' ? $displayName : $username, $hallKey, $year]);
+        if ($stmt->rowCount() > 0) {
+            sync_user_hall_member($db, (int) $db->lastInsertId());
+        }
     }
 
     redirect('/admin/users');
@@ -142,6 +145,7 @@ if ($path === '/admin/users/update' && $method === 'POST') {
     if ($userId > 1 && $userId !== (int) ($auth->user()['id'] ?? 0) && in_array($role, ['student', 'council', 'admin'], true)) {
         $stmt = $db->prepare('UPDATE users SET role = ? WHERE id = ?');
         $stmt->execute([$role, $userId]);
+        sync_user_hall_member($db, $userId);
     }
 
     redirect('/admin/users');
@@ -165,6 +169,7 @@ if ($path === '/admin/users/profile' && $method === 'POST') {
         if ($role !== false) {
             $stmt = $db->prepare('UPDATE users SET display_name = ?, hall_key = ?, year = ? WHERE id = ?');
             $stmt->execute([$displayName, $hallKey, $year, $userId]);
+            sync_user_hall_member($db, $userId);
         }
     }
 
@@ -188,6 +193,13 @@ if ($path === '/admin/users/delete' && $method === 'POST') {
     $userId = (int) ($_POST['user_id'] ?? 0);
 
     if ($userId > 1 && $userId !== (int) ($auth->user()['id'] ?? 0)) {
+        $stmt = $db->prepare('SELECT photo_path FROM users WHERE id = ?');
+        $stmt->execute([$userId]);
+        delete_upload($stmt->fetchColumn() ?: null);
+
+        $stmt = $db->prepare('DELETE FROM hall_members WHERE user_id = ?');
+        $stmt->execute([$userId]);
+
         $stmt = $db->prepare('DELETE FROM users WHERE id = ?');
         $stmt->execute([$userId]);
     }
@@ -199,15 +211,39 @@ if ($path === '/mypage') {
     if (!$auth->user()) {
         redirect('/login');
     }
-    $stmt = $db->prepare('SELECT id, username, role, display_name, hall_key, year FROM users WHERE id = ?');
+    $stmt = $db->prepare('SELECT id, username, role, display_name, hall_key, year, photo_path FROM users WHERE id = ?');
     $stmt->execute([$auth->user()['id']]);
     echo view('mypage-profile', [
         'title' => '내 정보 수정',
         'profile' => $stmt->fetch(),
-        'saved' => ($_GET['saved'] ?? '') === '1',
+        'saved' => $_GET['saved'] ?? '',
         'error' => $_GET['error'] ?? '',
     ]);
     exit;
+}
+
+if ($path === '/mypage/photo' && $method === 'POST') {
+    if (!$auth->user()) {
+        redirect('/login');
+    }
+
+    $userId = (int) $auth->user()['id'];
+    $stmt = $db->prepare('SELECT photo_path FROM users WHERE id = ?');
+    $stmt->execute([$userId]);
+    $currentPhoto = $stmt->fetchColumn() ?: null;
+    $uploadedPhoto = save_hall_photo('photo');
+
+    if ($uploadedPhoto) {
+        delete_upload($currentPhoto);
+        $stmt = $db->prepare('UPDATE users SET photo_path = ? WHERE id = ?');
+        $stmt->execute([$uploadedPhoto, $userId]);
+        sync_user_hall_member($db, $userId);
+
+        $_SESSION['user']['photo_path'] = $uploadedPhoto;
+        redirect('/mypage?saved=photo');
+    }
+
+    redirect('/mypage?error=photo');
 }
 
 if ($path === '/mypage/password' && $method === 'POST') {
@@ -310,7 +346,7 @@ if ($path === '/admin/halls/update' && $method === 'POST') {
     $auth->requireRole(['admin']);
     $halls = hall_definitions();
     $id = (int) ($_POST['id'] ?? 0);
-    $stmt = $db->prepare('SELECT photo_path, sort_order FROM hall_members WHERE id = ?');
+    $stmt = $db->prepare('SELECT user_id, photo_path, sort_order FROM hall_members WHERE id = ?');
     $stmt->execute([$id]);
     $current = $stmt->fetch();
 
@@ -335,6 +371,11 @@ if ($path === '/admin/halls/update' && $method === 'POST') {
                 WHERE id = ?
             ');
             $stmt->execute([$hallKey, $hall['name'], $hall['meaning'], $hall['color'], $studentName, $year, $roleLabel, $photoPath, $sortOrder, $id]);
+
+            if (!empty($current['user_id'])) {
+                $stmt = $db->prepare('UPDATE users SET display_name = ?, hall_key = ?, year = ?, photo_path = ? WHERE id = ?');
+                $stmt->execute([$studentName, $hallKey, $year, $photoPath, (int) $current['user_id']]);
+            }
         }
     }
 
@@ -345,15 +386,86 @@ if ($path === '/admin/halls/delete' && $method === 'POST') {
     $auth->requireRole(['admin']);
     $id = (int) ($_POST['id'] ?? 0);
     if ($id > 0) {
-        $stmt = $db->prepare('SELECT photo_path FROM hall_members WHERE id = ?');
+        $stmt = $db->prepare('SELECT user_id, photo_path FROM hall_members WHERE id = ?');
         $stmt->execute([$id]);
-        delete_upload($stmt->fetchColumn() ?: null);
+        $member = $stmt->fetch();
+        if ($member && empty($member['user_id'])) {
+            delete_upload($member['photo_path'] ?: null);
+        }
 
         $stmt = $db->prepare('DELETE FROM hall_members WHERE id = ?');
         $stmt->execute([$id]);
     }
 
     redirect('/admin/halls');
+}
+
+function sync_user_hall_member(PDO $db, int $userId): void
+{
+    $stmt = $db->prepare('SELECT id, role, display_name, hall_key, year, photo_path FROM users WHERE id = ?');
+    $stmt->execute([$userId]);
+    $user = $stmt->fetch();
+    if (!$user) {
+        return;
+    }
+
+    $halls = hall_definitions();
+    $hallKey = (string) ($user['hall_key'] ?? '');
+    $year = (int) ($user['year'] ?? 0);
+    $displayName = trim((string) ($user['display_name'] ?? ''));
+    $shouldAppear = $user['role'] !== 'admin'
+        && $displayName !== ''
+        && isset($halls[$hallKey])
+        && $year >= 1
+        && $year <= 3;
+
+    if (!$shouldAppear) {
+        $stmt = $db->prepare('DELETE FROM hall_members WHERE user_id = ?');
+        $stmt->execute([$userId]);
+        return;
+    }
+
+    $hall = $halls[$hallKey];
+    $stmt = $db->prepare('SELECT id FROM hall_members WHERE user_id = ? LIMIT 1');
+    $stmt->execute([$userId]);
+    $memberId = $stmt->fetchColumn();
+
+    if ($memberId) {
+        $stmt = $db->prepare('
+            UPDATE hall_members
+            SET hall_key = ?, hall_name = ?, hall_meaning = ?, hall_color = ?, student_name = ?, year = ?, photo_path = ?
+            WHERE id = ?
+        ');
+        $stmt->execute([
+            $hallKey,
+            $hall['name'],
+            $hall['meaning'],
+            $hall['color'],
+            $displayName,
+            $year,
+            $user['photo_path'] ?: null,
+            (int) $memberId,
+        ]);
+        return;
+    }
+
+    $stmt = $db->prepare('
+        INSERT INTO hall_members
+        (user_id, hall_key, hall_name, hall_meaning, hall_color, student_name, year, role_label, photo_path, sort_order)
+        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+    ');
+    $stmt->execute([
+        $userId,
+        $hallKey,
+        $hall['name'],
+        $hall['meaning'],
+        $hall['color'],
+        $displayName,
+        $year,
+        '',
+        $user['photo_path'] ?: null,
+        99,
+    ]);
 }
 
 function save_hall_photo(string $field): ?string

@@ -30,6 +30,7 @@ final class Database
                 display_name TEXT NOT NULL DEFAULT '',
                 hall_key TEXT NOT NULL DEFAULT '',
                 year INTEGER NOT NULL DEFAULT 0,
+                photo_path TEXT,
                 created_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP
             );
 
@@ -49,6 +50,7 @@ final class Database
 
             CREATE TABLE IF NOT EXISTS hall_members (
                 id INTEGER PRIMARY KEY AUTOINCREMENT,
+                user_id INTEGER,
                 hall_key TEXT NOT NULL,
                 hall_name TEXT NOT NULL,
                 hall_meaning TEXT NOT NULL,
@@ -58,7 +60,8 @@ final class Database
                 role_label TEXT NOT NULL,
                 photo_path TEXT,
                 sort_order INTEGER NOT NULL DEFAULT 0,
-                created_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP
+                created_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP,
+                FOREIGN KEY(user_id) REFERENCES users(id)
             );
 
             CREATE TABLE IF NOT EXISTS calendar_events (
@@ -90,6 +93,9 @@ final class Database
         if (!in_array('year', $userColumns, true)) {
             $pdo->exec("ALTER TABLE users ADD COLUMN year INTEGER NOT NULL DEFAULT 0");
         }
+        if (!in_array('photo_path', $userColumns, true)) {
+            $pdo->exec('ALTER TABLE users ADD COLUMN photo_path TEXT');
+        }
 
         $columns = $pdo->query("PRAGMA table_info(posts)")->fetchAll();
         $postColumns = array_column($columns, 'name');
@@ -104,6 +110,9 @@ final class Database
         $hallColumns = array_column($columns, 'name');
         if (!in_array('photo_path', $hallColumns, true)) {
             $pdo->exec('ALTER TABLE hall_members ADD COLUMN photo_path TEXT');
+        }
+        if (!in_array('user_id', $hallColumns, true)) {
+            $pdo->exec('ALTER TABLE hall_members ADD COLUMN user_id INTEGER');
         }
 
         $postCount = (int) $pdo->query('SELECT COUNT(*) FROM posts')->fetchColumn();
