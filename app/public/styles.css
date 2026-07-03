@@ -1317,6 +1317,18 @@ a {
     align-items: end;
 }
 
+.point-rule-inline-add-form button {
+    color: white;
+    background: var(--green);
+    border-color: var(--green);
+    white-space: nowrap;
+}
+
+.point-rule-inline-add-form button:hover {
+    background: var(--green-2);
+    border-color: var(--green-2);
+}
+
 .admin-point-rules-form > .form-actions {
     margin-top: 24px;
     padding-top: 18px;
@@ -5001,10 +5013,10 @@ select {
     }
 
     .point-rule-inline-add-form button {
-        grid-column: 3;
-        width: auto;
+        grid-column: 1 / -1;
+        width: 100%;
         min-height: 34px;
-        padding: 6px 10px;
+        padding: 7px 10px;
     }
 
     .points-assign-panel,
