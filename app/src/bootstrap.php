@@ -158,6 +158,7 @@ function nav_groups(): array
             ],
             ['label' => '학교생활 규정', 'href' => '/rules'],
             ['label' => '자료실', 'href' => '/board/resources'],
+            ['label' => '자유게시판', 'href' => '/board/free'],
         ],
         '학생 자치기구' => [
             ['label' => '학생회 소개', 'href' => '/council'],

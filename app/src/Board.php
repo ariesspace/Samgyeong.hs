@@ -19,6 +19,13 @@ final class Board
             'read_roles' => ['student', 'council', 'admin'],
             'write_roles' => ['council', 'admin'],
         ],
+        'free' => [
+            'name' => '자유게시판',
+            'badge' => '일반',
+            'tags' => ['일반', '질문', '정보', '의견'],
+            'read_roles' => ['student', 'council', 'admin'],
+            'write_roles' => ['student', 'council', 'admin'],
+        ],
         'council' => [
             'name' => '자유게시판(학생회)',
             'badge' => '의견',
