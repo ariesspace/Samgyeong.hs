@@ -89,6 +89,9 @@ final class Database
                 reason TEXT NOT NULL,
                 issuer_id INTEGER NOT NULL,
                 issued_at TEXT NOT NULL,
+                canceled_at TEXT,
+                canceled_by INTEGER,
+                cancellation_of_id INTEGER,
                 created_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP,
                 FOREIGN KEY(user_id) REFERENCES users(id),
                 FOREIGN KEY(issuer_id) REFERENCES users(id)
@@ -136,6 +139,18 @@ final class Database
         }
         if (!in_array('tag', $postColumns, true)) {
             $pdo->exec("ALTER TABLE posts ADD COLUMN tag TEXT NOT NULL DEFAULT '공지'");
+        }
+
+        $columns = $pdo->query("PRAGMA table_info(point_records)")->fetchAll();
+        $pointColumns = array_column($columns, 'name');
+        if (!in_array('canceled_at', $pointColumns, true)) {
+            $pdo->exec('ALTER TABLE point_records ADD COLUMN canceled_at TEXT');
+        }
+        if (!in_array('canceled_by', $pointColumns, true)) {
+            $pdo->exec('ALTER TABLE point_records ADD COLUMN canceled_by INTEGER');
+        }
+        if (!in_array('cancellation_of_id', $pointColumns, true)) {
+            $pdo->exec('ALTER TABLE point_records ADD COLUMN cancellation_of_id INTEGER');
         }
 
         $columns = $pdo->query("PRAGMA table_info(hall_members)")->fetchAll();

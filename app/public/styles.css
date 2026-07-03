@@ -4409,6 +4409,28 @@ select {
     background: #fff1f1;
 }
 
+.point-record-muted {
+    color: #98a2b3;
+    background: #fbfcfd;
+}
+
+.point-record-muted .title-cell {
+    color: #667085;
+}
+
+.point-status {
+    display: inline-flex;
+    width: fit-content;
+    margin-left: 6px;
+    padding: 2px 7px;
+    color: #667085;
+    background: #eef2f6;
+    border-radius: 999px;
+    font-size: 12px;
+    font-weight: 800;
+    white-space: nowrap;
+}
+
 .points-assign-page {
     display: grid;
     gap: 18px;

@@ -2,6 +2,9 @@
     $meritTotal = 0;
     $demeritTotal = 0;
     foreach ($records as $record) {
+        if (!empty($record['canceled_at']) || !empty($record['cancellation_of_id'])) {
+            continue;
+        }
         if ($record['type'] === 'merit') {
             $meritTotal += (int) $record['points'];
         } else {
@@ -47,11 +50,22 @@
                 </tr>
             <?php endif; ?>
             <?php foreach ($records as $record): ?>
-                <tr>
+                <?php
+                    $isCanceled = !empty($record['canceled_at']);
+                    $isCancellation = !empty($record['cancellation_of_id']);
+                ?>
+                <tr class="<?= $isCanceled || $isCancellation ? 'point-record-muted' : '' ?>">
                     <td data-label="일자"><?= e($record['issued_at']) ?></td>
                     <td data-label="구분"><span class="point-type <?= $record['type'] === 'merit' ? 'good' : 'bad' ?>"><?= $record['type'] === 'merit' ? '상점' : '벌점' ?></span></td>
                     <td data-label="점수"><?= e(($record['type'] === 'merit' ? '+' : '-') . (string) $record['points']) ?></td>
-                    <td data-label="사유" class="title-cell"><?= e($record['reason']) ?></td>
+                    <td data-label="사유" class="title-cell">
+                        <?= e($record['reason']) ?>
+                        <?php if ($isCanceled): ?>
+                            <span class="point-status">취소됨</span>
+                        <?php elseif ($isCancellation): ?>
+                            <span class="point-status">취소 기록</span>
+                        <?php endif; ?>
+                    </td>
                     <td data-label="담당"><?= e($record['issuer_name'] ?: $record['issuer_username']) ?></td>
                 </tr>
             <?php endforeach; ?>

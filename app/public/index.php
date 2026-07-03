@@ -543,10 +543,41 @@ if ($path === '/points/assign/delete' && $method === 'POST') {
     $auth->requireRole(['council', 'admin']);
     $id = (int) ($_POST['id'] ?? 0);
     if ($id > 0) {
-        $stmt = $db->prepare('DELETE FROM point_records WHERE id = ?');
+        $stmt = $db->prepare('SELECT * FROM point_records WHERE id = ?');
         $stmt->execute([$id]);
+        $record = $stmt->fetch();
+
+        if ($record && empty($record['canceled_at']) && empty($record['cancellation_of_id'])) {
+            $cancelType = $record['type'] === 'merit' ? 'demerit' : 'merit';
+            $cancelReason = ($record['type'] === 'merit' ? '상점 취소' : '벌점 취소') . ': ' . $record['reason'];
+            $today = date('Y-m-d');
+
+            $db->beginTransaction();
+            try {
+                $stmt = $db->prepare('
+                    INSERT INTO point_records (user_id, type, points, reason, issuer_id, issued_at, cancellation_of_id)
+                    VALUES (?, ?, ?, ?, ?, ?, ?)
+                ');
+                $stmt->execute([
+                    $record['user_id'],
+                    $cancelType,
+                    (int) $record['points'],
+                    $cancelReason,
+                    $auth->user()['id'],
+                    $today,
+                    $id,
+                ]);
+                $stmt = $db->prepare('UPDATE point_records SET canceled_at = ?, canceled_by = ? WHERE id = ?');
+                $stmt->execute([date('Y-m-d H:i:s'), $auth->user()['id'], $id]);
+
+                $db->commit();
+            } catch (Throwable $e) {
+                $db->rollBack();
+                throw $e;
+            }
+        }
     }
-    redirect('/points/assign?saved=deleted');
+    redirect('/points/assign?saved=canceled');
 }
 
 if ($path === '/admin/point-rules') {
