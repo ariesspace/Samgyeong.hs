@@ -30,7 +30,7 @@
         </article>
     </div>
 
-    <table class="board-table points-table">
+    <table class="board-table points-table my-points-table">
         <thead>
             <tr>
                 <th>일자</th>
@@ -48,11 +48,11 @@
             <?php endif; ?>
             <?php foreach ($records as $record): ?>
                 <tr>
-                    <td><?= e($record['issued_at']) ?></td>
-                    <td><span class="point-type <?= $record['type'] === 'merit' ? 'good' : 'bad' ?>"><?= $record['type'] === 'merit' ? '상점' : '벌점' ?></span></td>
-                    <td><?= e(($record['type'] === 'merit' ? '+' : '-') . (string) $record['points']) ?></td>
-                    <td class="title-cell"><?= e($record['reason']) ?></td>
-                    <td><?= e($record['issuer_name'] ?: $record['issuer_username']) ?></td>
+                    <td data-label="일자"><?= e($record['issued_at']) ?></td>
+                    <td data-label="구분"><span class="point-type <?= $record['type'] === 'merit' ? 'good' : 'bad' ?>"><?= $record['type'] === 'merit' ? '상점' : '벌점' ?></span></td>
+                    <td data-label="점수"><?= e(($record['type'] === 'merit' ? '+' : '-') . (string) $record['points']) ?></td>
+                    <td data-label="사유" class="title-cell"><?= e($record['reason']) ?></td>
+                    <td data-label="담당"><?= e($record['issuer_name'] ?: $record['issuer_username']) ?></td>
                 </tr>
             <?php endforeach; ?>
         </tbody>

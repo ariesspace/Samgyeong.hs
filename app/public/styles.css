@@ -3963,9 +3963,81 @@ select {
     .profile-grid,
     .profile-readonly-grid,
     .account-detail-form,
-    .profile-password-form,
-    .points-summary {
+    .profile-password-form {
         grid-template-columns: 1fr;
+    }
+
+    .mypage-page .points-summary {
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+        gap: 7px;
+        margin: 16px 0 18px;
+    }
+
+    .mypage-page .points-summary article {
+        padding: 12px 8px;
+        text-align: center;
+    }
+
+    .mypage-page .points-summary span {
+        font-size: 12px;
+    }
+
+    .mypage-page .points-summary strong {
+        margin-top: 4px;
+        font-size: 22px;
+        line-height: 1.15;
+    }
+
+    .my-points-table {
+        display: grid;
+        gap: 8px;
+        border-top: 0;
+        font-size: 13px;
+        white-space: normal;
+    }
+
+    .my-points-table thead {
+        display: none;
+    }
+
+    .my-points-table tbody,
+    .my-points-table tr,
+    .my-points-table td {
+        display: block;
+        width: 100%;
+    }
+
+    .my-points-table tr {
+        padding: 12px;
+        background: #fff;
+        border: 1px solid var(--line);
+        border-radius: 4px;
+    }
+
+    .my-points-table td {
+        display: grid;
+        grid-template-columns: 62px minmax(0, 1fr);
+        gap: 8px;
+        padding: 5px 0;
+        border-bottom: 0;
+        text-align: left;
+    }
+
+    .my-points-table td::before {
+        color: #667085;
+        font-size: 12px;
+        font-weight: 800;
+        content: attr(data-label);
+    }
+
+    .my-points-table .empty-board {
+        display: block;
+        padding: 18px 10px;
+        text-align: center;
+    }
+
+    .my-points-table .empty-board::before {
+        content: "";
     }
 
     .points-assign-panel,
