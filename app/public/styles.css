@@ -4697,32 +4697,121 @@ select {
     }
 
     .admissions-page {
-        gap: 22px;
+        gap: 20px;
     }
 
     .admissions-hero {
-        padding: 24px 20px;
+        padding: 22px 18px;
     }
 
     .admissions-hero h2 {
-        font-size: 24px;
+        font-size: 23px;
+        line-height: 1.45;
     }
 
     .admissions-hero p:last-child {
         font-size: 15px;
+        line-height: 1.7;
+    }
+
+    .admissions-section {
+        gap: 14px;
+    }
+
+    .admissions-section .section-title-row {
+        align-items: flex-start;
+        gap: 4px;
+    }
+
+    .admissions-note {
+        padding: 14px 15px;
+        font-size: 14px;
     }
 
     .admissions-hall-grid,
     .admissions-criteria {
         grid-template-columns: 1fr;
+        gap: 10px;
+    }
+
+    .admissions-hall-card {
+        display: grid;
+        grid-template-columns: minmax(92px, .9fr) minmax(0, 1.3fr);
+        align-items: stretch;
+        border-top-width: 0;
+        border-left: 4px solid var(--green);
+    }
+
+    .admissions-hall-card.blue {
+        border-left-color: #2c5282;
+    }
+
+    .admissions-hall-card.gold {
+        border-left-color: #b7791f;
+    }
+
+    .admissions-hall-card.green {
+        border-left-color: #276749;
     }
 
     .admissions-hall-card h3 {
-        font-size: 20px;
+        display: grid;
+        align-content: center;
+        padding: 14px 12px 2px;
+        font-size: 18px;
+        line-height: 1.25;
+    }
+
+    .admissions-hall-card > span {
+        grid-column: 1;
+        padding: 0 12px 14px;
+        font-size: 12px;
+    }
+
+    .admissions-hall-card dl {
+        grid-column: 2;
+        grid-row: 1 / span 2;
+        border-top: 0;
+        border-left: 1px solid var(--line);
+    }
+
+    .admissions-hall-card dl div {
+        padding: 9px 12px;
+    }
+
+    .admissions-hall-card dt {
+        font-size: 13px;
+    }
+
+    .admissions-hall-card dd {
+        font-size: 16px;
     }
 
     .admissions-total {
         justify-content: flex-start;
+        padding-top: 4px;
+    }
+
+    .admissions-total strong {
+        font-size: 21px;
+    }
+
+    .admissions-criteria article {
+        padding: 17px;
+    }
+
+    .admissions-criteria strong {
+        font-size: 20px;
+    }
+
+    .admissions-criteria h3 {
+        margin: 4px 0 6px;
+        font-size: 18px;
+    }
+
+    .admissions-criteria p {
+        font-size: 14px;
+        line-height: 1.65;
     }
 
     .admissions-process article {
@@ -4743,6 +4832,8 @@ select {
 
     .admissions-process li {
         width: 100%;
+        border-radius: 4px;
+        padding: 8px 10px;
     }
 
     .admissions-process li + li {
@@ -4756,10 +4847,12 @@ select {
     .admissions-closing {
         display: grid;
         padding-top: 22px;
+        gap: 14px;
     }
 
     .admissions-closing p {
-        font-size: 19px;
+        font-size: 17px;
+        line-height: 1.7;
     }
 
     .admissions-closing .button {
