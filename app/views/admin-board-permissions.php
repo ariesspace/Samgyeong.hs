@@ -25,11 +25,10 @@
                             <span>/board/<?= e($slug) ?></span>
                         </td>
                         <td>
+                            <?php if ($board['read_roles'] === []): ?>
+                                <p class="permission-state">전체 공개</p>
+                            <?php endif; ?>
                             <div class="permission-checks">
-                                <label class="permission-public">
-                                    <input type="checkbox" disabled <?= $board['read_roles'] === [] ? 'checked' : '' ?>>
-                                    전체 공개
-                                </label>
                                 <?php foreach ($roles as $role => $label): ?>
                                     <label>
                                         <input type="checkbox" name="read_roles[<?= e($slug) ?>][]" value="<?= e($role) ?>" <?= in_array($role, $board['read_roles'], true) ? 'checked' : '' ?>>
