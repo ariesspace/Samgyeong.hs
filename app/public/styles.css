@@ -889,6 +889,259 @@ a {
     background: #475467;
 }
 
+.admissions-page {
+    display: grid;
+    gap: 30px;
+}
+
+.admissions-page > h1 {
+    margin-bottom: 0;
+}
+
+.admissions-hero {
+    padding: 34px;
+    color: white;
+    background: linear-gradient(135deg, #1a4331 0%, #255f45 100%);
+    border-bottom: 4px solid var(--gold);
+    border-radius: 4px;
+}
+
+.admissions-hero .eyebrow {
+    color: var(--gold);
+}
+
+.admissions-hero h2 {
+    max-width: 760px;
+    margin: 0 0 14px;
+    font-size: 30px;
+    line-height: 1.35;
+    word-break: keep-all;
+}
+
+.admissions-hero p:last-child {
+    max-width: 780px;
+    margin: 0;
+    color: #e7eaee;
+    font-size: 17px;
+    line-height: 1.8;
+    word-break: keep-all;
+}
+
+.admissions-section {
+    display: grid;
+    gap: 18px;
+}
+
+.admissions-note {
+    margin: 0;
+    padding: 18px 20px;
+    color: #475467;
+    background: #f8faf9;
+    border-left: 4px solid var(--gold);
+    word-break: keep-all;
+}
+
+.admissions-hall-grid {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 14px;
+}
+
+.admissions-hall-card {
+    overflow: hidden;
+    background: white;
+    border: 1px solid var(--line);
+    border-top: 4px solid var(--green);
+    border-radius: 4px;
+}
+
+.admissions-hall-card.blue {
+    border-top-color: #2c5282;
+}
+
+.admissions-hall-card.gold {
+    border-top-color: #b7791f;
+}
+
+.admissions-hall-card.green {
+    border-top-color: #276749;
+}
+
+.admissions-hall-card h3 {
+    margin: 0;
+    padding: 18px 18px 4px;
+    color: var(--ink);
+    font-size: 22px;
+}
+
+.admissions-hall-card > span {
+    display: block;
+    padding: 0 18px 16px;
+    color: var(--muted);
+    font-size: 14px;
+}
+
+.admissions-hall-card dl {
+    display: grid;
+    margin: 0;
+    border-top: 1px solid var(--line);
+}
+
+.admissions-hall-card dl div {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 12px 18px;
+    border-bottom: 1px solid #edf0f3;
+}
+
+.admissions-hall-card dl div:last-child {
+    border-bottom: 0;
+}
+
+.admissions-hall-card dt {
+    color: #475467;
+    font-weight: 700;
+}
+
+.admissions-hall-card dd {
+    margin: 0;
+    color: var(--green);
+    font-size: 18px;
+    font-weight: 900;
+}
+
+.admissions-total {
+    display: flex;
+    justify-content: flex-end;
+    align-items: baseline;
+    gap: 12px;
+    padding: 14px 0 0;
+    color: #475467;
+}
+
+.admissions-total strong {
+    color: var(--green);
+    font-size: 24px;
+}
+
+.admissions-criteria {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 14px;
+}
+
+.admissions-criteria article {
+    padding: 24px;
+    background: white;
+    border: 1px solid var(--line);
+    border-radius: 4px;
+}
+
+.admissions-criteria strong {
+    color: var(--gold);
+    font-family: Georgia, "Times New Roman", serif;
+    font-size: 24px;
+}
+
+.admissions-criteria h3 {
+    margin: 8px 0 8px;
+    color: var(--green);
+    font-size: 21px;
+}
+
+.admissions-criteria p {
+    margin: 0;
+    color: #475467;
+    word-break: keep-all;
+}
+
+.admissions-process {
+    display: grid;
+    gap: 12px;
+}
+
+.admissions-process article {
+    display: grid;
+    grid-template-columns: 150px minmax(0, 1fr);
+    overflow: hidden;
+    background: white;
+    border: 1px solid var(--line);
+    border-radius: 4px;
+}
+
+.admissions-process article > div {
+    display: grid;
+    align-content: center;
+    gap: 4px;
+    padding: 20px;
+    background: #f8fafc;
+    border-right: 1px solid var(--line);
+}
+
+.admissions-process article > div strong {
+    color: var(--green);
+    font-size: 24px;
+}
+
+.admissions-process article > div span {
+    color: var(--muted);
+    font-size: 13px;
+    font-weight: 800;
+}
+
+.admissions-process ol {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    align-items: center;
+    padding: 22px;
+    margin: 0;
+    list-style: none;
+    counter-reset: step;
+}
+
+.admissions-process li {
+    counter-increment: step;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    color: #344054;
+    font-weight: 800;
+}
+
+.admissions-process li::before {
+    display: inline-grid;
+    place-items: center;
+    width: 26px;
+    height: 26px;
+    color: white;
+    background: var(--green);
+    border-radius: 999px;
+    font-size: 12px;
+    content: counter(step);
+}
+
+.admissions-closing {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 18px;
+    padding: 24px;
+    background: #f8faf9;
+    border: 1px solid var(--line);
+    border-top: 4px solid var(--green);
+    border-radius: 4px;
+}
+
+.admissions-closing p {
+    margin: 0;
+    color: var(--green);
+    font-size: 22px;
+    font-weight: 900;
+    word-break: keep-all;
+}
+
 .admin-point-rules-page {
     display: grid;
     gap: 22px;
@@ -4392,6 +4645,62 @@ select {
     .point-rule-row span {
         font-size: 14px;
         line-height: 1.65;
+    }
+
+    .admissions-page {
+        gap: 22px;
+    }
+
+    .admissions-hero {
+        padding: 24px 20px;
+    }
+
+    .admissions-hero h2 {
+        font-size: 24px;
+    }
+
+    .admissions-hero p:last-child {
+        font-size: 15px;
+    }
+
+    .admissions-hall-grid,
+    .admissions-criteria {
+        grid-template-columns: 1fr;
+    }
+
+    .admissions-hall-card h3 {
+        font-size: 20px;
+    }
+
+    .admissions-total {
+        justify-content: flex-start;
+    }
+
+    .admissions-process article {
+        grid-template-columns: 1fr;
+    }
+
+    .admissions-process article > div {
+        border-right: 0;
+        border-bottom: 1px solid var(--line);
+    }
+
+    .admissions-process ol {
+        display: grid;
+        gap: 10px;
+        padding: 18px;
+    }
+
+    .admissions-closing {
+        display: grid;
+    }
+
+    .admissions-closing p {
+        font-size: 19px;
+    }
+
+    .admissions-closing .button {
+        width: 100%;
     }
 
     .point-rule-admin-head {
