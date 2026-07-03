@@ -3143,6 +3143,11 @@ select {
     font-weight: 700;
 }
 
+.board-permission-form .form-actions {
+    gap: 14px;
+    margin-top: 18px;
+}
+
 .admin-role-form {
     justify-content: center;
 }
