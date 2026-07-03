@@ -44,10 +44,11 @@
                         <?php
                             $date = substr($item['created_at'], 0, 10);
                             $isNew = strtotime($item['created_at']) >= strtotime('-7 days');
+                            $isNoticePost = ($item['tag'] ?? '') === '공지';
                         ?>
                         <li>
                             <a href="/board/<?= e($board['slug']) ?>/post/<?= e((string) $item['id']) ?>">
-                                <span><?= e($item['title']) ?></span>
+                                <span class="<?= $isNoticePost ? 'is-notice-title' : '' ?>"><?= e($item['title']) ?></span>
                                 <?php if ($isNew): ?><strong>NEW</strong><?php endif; ?>
                             </a>
                             <time><?= e($date) ?></time>

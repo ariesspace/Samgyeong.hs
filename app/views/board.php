@@ -41,12 +41,13 @@
                 <?php endif; ?>
 
                 <?php foreach ($posts as $post): ?>
+                    <?php $isNoticePost = ($post['tag'] ?? '') === '공지'; ?>
                     <tr>
                         <td class="col-no">
                             <?= e((string) $post['id']) ?>
                         </td>
                         <td class="board-title-cell">
-                            <a class="board-title-link" href="/board/<?= e($board['slug']) ?>/post/<?= e((string) $post['id']) ?>">
+                            <a class="board-title-link <?= $isNoticePost ? 'is-notice-title' : '' ?>" href="/board/<?= e($board['slug']) ?>/post/<?= e((string) $post['id']) ?>">
                                 <?= e($post['title']) ?>
                             </a>
                         </td>

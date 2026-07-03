@@ -579,6 +579,11 @@ a {
     white-space: nowrap;
 }
 
+.is-notice-title {
+    color: #b42318 !important;
+    font-weight: 900;
+}
+
 .home-board li strong {
     flex: none;
     padding: 1px 5px;
