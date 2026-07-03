@@ -178,7 +178,7 @@ function nav_groups(): array
         ],
     ];
 
-    if (current_user()) {
+    if (current_user() && (current_user()['role'] ?? '') !== 'guest') {
         $groups['마이페이지'] = [
             ['label' => '내 정보 수정', 'href' => '/mypage'],
             ['label' => '상벌점 현황', 'href' => '/mypage/points'],

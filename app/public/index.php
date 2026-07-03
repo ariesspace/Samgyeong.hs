@@ -9,6 +9,25 @@ $auth = new Auth($db);
 $path = parse_url($_SERVER['REQUEST_URI'] ?? '/', PHP_URL_PATH) ?: '/';
 $method = $_SERVER['REQUEST_METHOD'] ?? 'GET';
 
+function require_mypage_access(Auth $auth): array
+{
+    $user = $auth->user();
+    if (!$user) {
+        redirect('/login');
+    }
+
+    if (($user['role'] ?? '') === 'guest') {
+        http_response_code(403);
+        echo view('access-denied', [
+            'title' => '권한 없음',
+            'message' => '게스트 계정은 마이페이지 기능을 사용할 수 없습니다.',
+        ]);
+        exit;
+    }
+
+    return $user;
+}
+
 if ($method === 'POST') {
     verify_csrf();
 }
@@ -308,11 +327,9 @@ if ($path === '/admin/boards/permissions/save' && $method === 'POST') {
 }
 
 if ($path === '/mypage') {
-    if (!$auth->user()) {
-        redirect('/login');
-    }
+    $mypageUser = require_mypage_access($auth);
     $stmt = $db->prepare('SELECT id, username, role, display_name, hall_key, year, photo_path FROM users WHERE id = ?');
-    $stmt->execute([$auth->user()['id']]);
+    $stmt->execute([$mypageUser['id']]);
     echo view('mypage-profile', [
         'title' => '내 정보 수정',
         'profile' => $stmt->fetch(),
@@ -323,11 +340,9 @@ if ($path === '/mypage') {
 }
 
 if ($path === '/mypage/profile' && $method === 'POST') {
-    if (!$auth->user()) {
-        redirect('/login');
-    }
+    $mypageUser = require_mypage_access($auth);
 
-    $userId = (int) $auth->user()['id'];
+    $userId = (int) $mypageUser['id'];
     $hasPhotoUpload = !empty($_FILES['photo']['tmp_name']) && ($_FILES['photo']['error'] ?? UPLOAD_ERR_NO_FILE) !== UPLOAD_ERR_NO_FILE;
 
     if ($hasPhotoUpload) {
@@ -351,11 +366,9 @@ if ($path === '/mypage/profile' && $method === 'POST') {
 }
 
 if ($path === '/mypage/photo' && $method === 'POST') {
-    if (!$auth->user()) {
-        redirect('/login');
-    }
+    $mypageUser = require_mypage_access($auth);
 
-    $userId = (int) $auth->user()['id'];
+    $userId = (int) $mypageUser['id'];
     $stmt = $db->prepare('SELECT photo_path FROM users WHERE id = ?');
     $stmt->execute([$userId]);
     $currentPhoto = $stmt->fetchColumn() ?: null;
@@ -375,9 +388,7 @@ if ($path === '/mypage/photo' && $method === 'POST') {
 }
 
 if ($path === '/mypage/password' && $method === 'POST') {
-    if (!$auth->user()) {
-        redirect('/login');
-    }
+    $mypageUser = require_mypage_access($auth);
     $password = (string) ($_POST['password'] ?? '');
     $confirm = (string) ($_POST['password_confirm'] ?? '');
     if ($password === '' || $password !== $confirm) {
@@ -385,15 +396,13 @@ if ($path === '/mypage/password' && $method === 'POST') {
     }
 
     $stmt = $db->prepare('UPDATE users SET password_hash = ? WHERE id = ?');
-    $stmt->execute([password_hash($password, PASSWORD_DEFAULT), $auth->user()['id']]);
+    $stmt->execute([password_hash($password, PASSWORD_DEFAULT), $mypageUser['id']]);
     redirect('/mypage?saved=password');
 }
 
 if ($path === '/mypage/points') {
-    if (!$auth->user()) {
-        redirect('/login');
-    }
-    $userId = (int) $auth->user()['id'];
+    $mypageUser = require_mypage_access($auth);
+    $userId = (int) $mypageUser['id'];
     $stmt = $db->prepare('
         SELECT point_records.*, issuer.display_name AS issuer_name, issuer.username AS issuer_username
         FROM point_records
