@@ -1143,19 +1143,39 @@ a {
     display: flex;
     align-items: center;
     justify-content: space-between;
-    gap: 24px;
-    padding: 28px 0 0;
-    border-top: 2px solid var(--green);
+    gap: 28px;
+    padding: 38px 46px;
+    background: #fbfcfd;
+    border: 1px solid var(--line);
+    border-radius: 4px;
 }
 
-.admissions-closing p {
+.admissions-closing div {
+    display: grid;
+    gap: 14px;
+}
+
+.admissions-closing strong {
     margin: 0;
     max-width: 720px;
     color: var(--ink);
-    font-size: 16px;
+    font-family: Georgia, "Times New Roman", "Noto Serif KR", serif;
+    font-size: 24px;
     font-weight: 700;
-    line-height: 1.8;
+    line-height: 1.55;
     word-break: keep-all;
+}
+
+.admissions-closing span {
+    color: var(--muted);
+    font-size: 15px;
+    line-height: 1.7;
+    word-break: keep-all;
+}
+
+.admissions-closing .button {
+    flex: 0 0 auto;
+    padding-inline: 34px;
 }
 
 .admin-point-rules-page {
@@ -4863,18 +4883,28 @@ select {
 
     .admissions-closing {
         display: grid;
-        padding-top: 18px;
+        padding: 22px 18px;
         gap: 12px;
     }
 
-    .admissions-closing p {
-        font-size: 14px;
+    .admissions-closing div {
+        gap: 9px;
+    }
+
+    .admissions-closing strong {
+        font-size: 18px;
         font-weight: 700;
-        line-height: 1.75;
+        line-height: 1.55;
+    }
+
+    .admissions-closing span {
+        font-size: 13px;
+        line-height: 1.65;
     }
 
     .admissions-closing .button {
         width: 100%;
+        padding-inline: 18px;
     }
 
     .point-rule-admin-head {
