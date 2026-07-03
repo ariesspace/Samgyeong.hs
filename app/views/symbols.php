@@ -33,7 +33,7 @@
             <article class="symbol-card">
                 <h2>교화 : 매화 <span>梅</span></h2>
                 <figure>
-                    <img src="https://images.unsplash.com/photo-1542601906990-b4d3fb778b09?auto=format&fit=crop&w=900&q=80" alt="매화">
+                    <img src="/assets/plum-blossom.jpg" alt="매화꽃">
                 </figure>
                 <p>
                     한겨울 추위를 이겨내고 고고한 향기를 피우는 매화는 삼경인이 지녀야 할
