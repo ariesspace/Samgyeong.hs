@@ -1058,30 +1058,28 @@ a {
 
 .admissions-process {
     display: grid;
-    gap: 12px;
+    gap: 0;
+    border-top: 2px solid var(--green);
 }
 
 .admissions-process article {
     display: grid;
-    grid-template-columns: 150px minmax(0, 1fr);
-    overflow: hidden;
-    background: white;
-    border: 1px solid var(--line);
-    border-radius: 4px;
+    grid-template-columns: 132px minmax(0, 1fr);
+    align-items: center;
+    padding: 20px 0;
+    border-bottom: 1px solid var(--line);
 }
 
 .admissions-process article > div {
     display: grid;
     align-content: center;
     gap: 4px;
-    padding: 20px;
-    background: #f8fafc;
-    border-right: 1px solid var(--line);
 }
 
 .admissions-process article > div strong {
     color: var(--green);
-    font-size: 24px;
+    font-size: 25px;
+    line-height: 1.1;
 }
 
 .admissions-process article > div span {
@@ -1093,28 +1091,47 @@ a {
 .admissions-process ol {
     display: flex;
     flex-wrap: wrap;
-    gap: 10px;
+    gap: 8px;
     align-items: center;
-    padding: 22px;
+    padding: 0;
     margin: 0;
     list-style: none;
     counter-reset: step;
 }
 
 .admissions-process li {
+    position: relative;
     counter-increment: step;
     display: inline-flex;
     align-items: center;
     gap: 8px;
     color: #344054;
+    background: #f8fafc;
+    border: 1px solid var(--line);
+    border-radius: 999px;
+    padding: 6px 13px 6px 7px;
     font-weight: 800;
+}
+
+.admissions-process li + li {
+    margin-left: 8px;
+}
+
+.admissions-process li + li::after {
+    position: absolute;
+    top: 50%;
+    left: -15px;
+    width: 14px;
+    height: 1px;
+    background: #cfd6df;
+    content: "";
 }
 
 .admissions-process li::before {
     display: inline-grid;
     place-items: center;
-    width: 26px;
-    height: 26px;
+    width: 24px;
+    height: 24px;
     color: white;
     background: var(--green);
     border-radius: 999px;
@@ -1126,19 +1143,18 @@ a {
     display: flex;
     align-items: center;
     justify-content: space-between;
-    gap: 18px;
-    padding: 24px;
-    background: #f8faf9;
-    border: 1px solid var(--line);
-    border-top: 4px solid var(--green);
-    border-radius: 4px;
+    gap: 24px;
+    padding: 28px 0 0;
+    border-top: 2px solid var(--green);
 }
 
 .admissions-closing p {
     margin: 0;
-    color: var(--green);
-    font-size: 22px;
+    max-width: 720px;
+    color: var(--ink);
+    font-size: 21px;
     font-weight: 900;
+    line-height: 1.7;
     word-break: keep-all;
 }
 
@@ -4711,21 +4727,35 @@ select {
 
     .admissions-process article {
         grid-template-columns: 1fr;
+        gap: 12px;
+        padding: 18px 0;
     }
 
     .admissions-process article > div {
-        border-right: 0;
-        border-bottom: 1px solid var(--line);
+        border: 0;
     }
 
     .admissions-process ol {
         display: grid;
         gap: 10px;
-        padding: 18px;
+        padding: 0;
+    }
+
+    .admissions-process li {
+        width: 100%;
+    }
+
+    .admissions-process li + li {
+        margin-left: 0;
+    }
+
+    .admissions-process li + li::after {
+        display: none;
     }
 
     .admissions-closing {
         display: grid;
+        padding-top: 22px;
     }
 
     .admissions-closing p {

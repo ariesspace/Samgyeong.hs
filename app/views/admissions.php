@@ -124,7 +124,7 @@
     </section>
 
     <section class="admissions-closing">
-        <p>당신이 있기에 삼경의 전통이 더욱 빛납니다.</p>
+        <p>하늘을 우러러 이치를 깨닫고, 사람을 공경하며, 만물을 아끼는 참된 삼경인(三敬人)이 되자</p>
         <a class="button" href="/board/notice">입학 게시판 보기</a>
     </section>
 </section>
