@@ -51,7 +51,7 @@ $routes = [
         if (!$auth->user()) {
             return view('access-denied', ['title' => '권한 없음', 'message' => '재학생 이상 로그인 후 접근이 가능한 메뉴입니다.']);
         }
-        return view('page', ['title' => '상벌점 리스트', 'body' => "상점과 벌점 항목을 정리하는 공간입니다.\n\n항목별 기준 점수, 적용 예시, 누적 점수 처리 기준을 게시할 수 있습니다."]);
+        return view('point-rules', ['title' => '상벌점 리스트']);
     },
     '/rules/discipline' => function () use ($auth) {
         if (!$auth->user()) {

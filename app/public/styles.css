@@ -743,6 +743,152 @@ a {
     font-size: 20px;
 }
 
+.point-rules-page {
+    display: grid;
+    gap: 26px;
+}
+
+.point-rules-page > h1 {
+    margin-bottom: 0;
+}
+
+.point-rules-intro {
+    padding: 30px;
+    background: #f8faf9;
+    border-left: 4px solid var(--green);
+}
+
+.point-rules-intro h2 {
+    margin: 0 0 10px;
+    color: var(--ink);
+    font-size: 26px;
+}
+
+.point-rules-intro p:last-child {
+    max-width: 760px;
+    margin: 0;
+    color: #475467;
+    font-size: 17px;
+    line-height: 1.8;
+    word-break: keep-all;
+}
+
+.point-rule-sections {
+    display: grid;
+    gap: 24px;
+}
+
+.point-rule-block {
+    overflow: hidden;
+    background: white;
+    border: 1px solid var(--line);
+    border-radius: 4px;
+}
+
+.point-rule-head {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 18px;
+    padding: 18px 22px;
+    background: #f8fafc;
+    border-top: 4px solid var(--green);
+    border-bottom: 1px solid var(--line);
+}
+
+.point-rule-head h2 {
+    margin: 0;
+    color: var(--ink);
+    font-size: 21px;
+}
+
+.point-rule-head p {
+    margin: 0;
+    color: var(--muted);
+    font-size: 14px;
+    word-break: keep-all;
+}
+
+.point-rule-list {
+    display: grid;
+}
+
+.point-rule-row {
+    display: grid;
+    grid-template-columns: 96px minmax(0, 1fr);
+    gap: 16px;
+    align-items: start;
+    padding: 16px 22px;
+    border-bottom: 1px solid #edf0f3;
+}
+
+.point-rule-row:last-child {
+    border-bottom: 0;
+}
+
+.point-rule-row strong {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 30px;
+    padding: 3px 10px;
+    color: white;
+    background: var(--green);
+    border-radius: 999px;
+    font-size: 14px;
+    line-height: 1;
+    white-space: nowrap;
+}
+
+.point-rule-row span {
+    color: #344054;
+    font-size: 16px;
+    line-height: 1.75;
+    word-break: keep-all;
+}
+
+.point-rule-row.is-emphasis {
+    background: #fbfcfd;
+}
+
+.point-rule-row.is-emphasis span {
+    color: var(--green);
+    font-weight: 800;
+}
+
+.point-rule-red .point-rule-head {
+    border-top-color: #b42318;
+}
+
+.point-rule-red .point-rule-row strong {
+    background: #b42318;
+}
+
+.point-rule-orange .point-rule-head {
+    border-top-color: #b7791f;
+}
+
+.point-rule-orange .point-rule-row strong {
+    background: #b7791f;
+}
+
+.point-rule-gold .point-rule-head {
+    border-top-color: var(--gold);
+}
+
+.point-rule-gold .point-rule-row strong {
+    color: #1f2937;
+    background: #e7d19b;
+}
+
+.point-rule-gray .point-rule-head {
+    border-top-color: #475467;
+}
+
+.point-rule-gray .point-rule-row strong {
+    background: #475467;
+}
+
 .council-principles div {
     display: grid;
     align-content: center;
@@ -4048,6 +4194,58 @@ select {
 
     .my-points-table .empty-board::before {
         content: "";
+    }
+
+    .point-rules-page {
+        gap: 18px;
+    }
+
+    .point-rules-intro {
+        padding: 20px;
+    }
+
+    .point-rules-intro h2 {
+        font-size: 22px;
+    }
+
+    .point-rules-intro p:last-child {
+        font-size: 15px;
+        line-height: 1.7;
+    }
+
+    .point-rule-sections {
+        gap: 16px;
+    }
+
+    .point-rule-head {
+        display: grid;
+        gap: 6px;
+        padding: 15px 16px;
+    }
+
+    .point-rule-head h2 {
+        font-size: 18px;
+    }
+
+    .point-rule-head p {
+        font-size: 13px;
+    }
+
+    .point-rule-row {
+        grid-template-columns: 1fr;
+        gap: 9px;
+        padding: 14px 16px;
+    }
+
+    .point-rule-row strong {
+        justify-self: start;
+        min-height: 26px;
+        font-size: 13px;
+    }
+
+    .point-rule-row span {
+        font-size: 14px;
+        line-height: 1.65;
     }
 
     .points-assign-panel,
