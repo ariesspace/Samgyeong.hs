@@ -124,7 +124,7 @@
     </section>
 
     <section class="admissions-closing">
-        <p>하늘을 우러러 이치를 깨닫고, 사람을 공경하며, 만물을 아끼는 참된 삼경인(三敬人)이 되자</p>
+        <p>하늘을 바라보는 마음, 사람을 대하는 품격, 만물을 아끼는 태도. 삼경에서 함께 키워갈 다음 삼경인을 기다립니다.</p>
         <a class="button" href="/student-halls">관별 인원 현황 보기</a>
     </section>
 </section>

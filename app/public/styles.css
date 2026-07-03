@@ -4815,25 +4815,41 @@ select {
     }
 
     .admissions-process article {
-        grid-template-columns: 1fr;
-        gap: 12px;
-        padding: 18px 0;
+        grid-template-columns: 74px minmax(0, 1fr);
+        gap: 10px;
+        padding: 12px 0;
     }
 
     .admissions-process article > div {
         border: 0;
+        gap: 2px;
+    }
+
+    .admissions-process article > div strong {
+        font-size: 18px;
+    }
+
+    .admissions-process article > div span {
+        font-size: 11px;
     }
 
     .admissions-process ol {
-        display: grid;
-        gap: 10px;
+        display: flex;
+        flex-wrap: wrap;
+        gap: 5px;
         padding: 0;
     }
 
     .admissions-process li {
-        width: 100%;
-        border-radius: 4px;
-        padding: 8px 10px;
+        width: auto;
+        gap: 0;
+        padding: 4px 8px;
+        color: #475467;
+        background: transparent;
+        border: 1px solid #dbe1e8;
+        border-radius: 999px;
+        font-size: 12px;
+        font-weight: 800;
     }
 
     .admissions-process li + li {
@@ -4841,6 +4857,10 @@ select {
     }
 
     .admissions-process li + li::after {
+        display: none;
+    }
+
+    .admissions-process li::before {
         display: none;
     }
 
