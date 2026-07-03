@@ -3749,13 +3749,69 @@ select {
     }
 
     .council-intro {
-        padding: 22px;
+        grid-template-columns: 46px minmax(0, 1fr);
+        gap: 12px;
+        padding: 16px;
+        border-left-width: 3px;
     }
 
     .council-mark {
-        width: 62px;
-        height: 62px;
-        font-size: 34px;
+        width: 42px;
+        height: 42px;
+        border-bottom-width: 3px;
+        font-size: 24px;
+    }
+
+    .council-page {
+        gap: 18px;
+    }
+
+    .council-intro h2 {
+        margin-bottom: 6px;
+        font-size: 18px;
+    }
+
+    .council-intro p:last-child {
+        font-size: 14px;
+        line-height: 1.65;
+    }
+
+    .council-role-grid {
+        gap: 10px;
+    }
+
+    .council-role-grid article {
+        padding: 16px;
+        border-top-width: 2px;
+    }
+
+    .council-role-grid span {
+        font-size: 17px;
+    }
+
+    .council-role-grid h3 {
+        margin: 5px 0 9px;
+        font-size: 17px;
+    }
+
+    .council-role-grid ul {
+        gap: 7px;
+    }
+
+    .council-role-grid li {
+        padding-left: 14px;
+        font-size: 13px;
+        line-height: 1.45;
+    }
+
+    .council-role-grid li::before {
+        width: 5px;
+        height: 5px;
+    }
+
+    .council-principles h2 {
+        padding: 15px 16px;
+        font-size: 17px;
     }
 
     .council-principles {
@@ -3763,8 +3819,19 @@ select {
     }
 
     .council-principles div {
+        gap: 3px;
+        padding: 13px 16px;
         border-top: 1px solid var(--line);
         border-left: 0;
+    }
+
+    .council-principles strong {
+        font-size: 15px;
+    }
+
+    .council-principles span {
+        font-size: 13px;
+        line-height: 1.45;
     }
 
     .hall-edit-photo {
