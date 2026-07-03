@@ -83,7 +83,12 @@ $routes = [
         return view('page', ['title' => '징계 및 포상', 'body' => "징계 절차와 포상 기준을 안내하는 공간입니다.\n\n지도 절차, 심의 기준, 포상 추천 및 승인 절차 등을 정리해 게시할 수 있습니다."]);
     },
     '/student-halls' => function () use ($db) {
-        $rows = $db->query('SELECT * FROM hall_members ORDER BY hall_key, sort_order, id')->fetchAll();
+        $rows = $db->query("
+            SELECT hall_members.*, users.role AS account_role
+            FROM hall_members
+            LEFT JOIN users ON users.id = hall_members.user_id
+            ORDER BY hall_members.hall_key, hall_members.sort_order, hall_members.id
+        ")->fetchAll();
         $halls = hall_definitions();
         $selectedHall = $_GET['hall'] ?? '';
         return view('student-halls', [
@@ -204,16 +209,23 @@ if ($path === '/admin/users/profile' && $method === 'POST') {
     $roleLabel = trim($_POST['role_label'] ?? '');
 
     if ($userId > 1 && $userId !== (int) ($auth->user()['id'] ?? 0) && $displayName !== '' && in_array($role, ['guest', 'student', 'council', 'admin'], true)) {
-        $stmt = $db->prepare('SELECT id FROM users WHERE id = ?');
+        $stmt = $db->prepare('SELECT id, photo_path FROM users WHERE id = ?');
         $stmt->execute([$userId]);
-        $exists = $stmt->fetchColumn();
+        $account = $stmt->fetch();
         if ($role === 'admin' || $role === 'guest') {
             $hallKey = '';
             $year = 0;
         }
-        if ($exists !== false) {
-            $stmt = $db->prepare('UPDATE users SET display_name = ?, hall_key = ?, year = ?, role = ? WHERE id = ?');
-            $stmt->execute([$displayName, $hallKey, $year, $role, $userId]);
+        if ($account) {
+            $photoPath = $account['photo_path'] ?: null;
+            $uploadedPhoto = save_hall_photo('photo');
+            if ($uploadedPhoto) {
+                delete_upload($photoPath);
+                $photoPath = $uploadedPhoto;
+            }
+
+            $stmt = $db->prepare('UPDATE users SET display_name = ?, hall_key = ?, year = ?, role = ?, photo_path = ? WHERE id = ?');
+            $stmt->execute([$displayName, $hallKey, $year, $role, $photoPath, $userId]);
             sync_user_hall_member($db, $userId);
             if ($role !== 'admin' && $role !== 'guest') {
                 $stmt = $db->prepare('UPDATE hall_members SET role_label = ? WHERE user_id = ?');

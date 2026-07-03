@@ -11,9 +11,17 @@
             <span class="role-badge role-badge-<?= e($account['role']) ?>"><?= e(role_label($account['role'])) ?></span>
         </div>
 
-        <form method="post" action="/admin/users/profile" class="admin-create-form account-detail-form">
+        <form method="post" action="/admin/users/profile" enctype="multipart/form-data" class="admin-create-form account-detail-form">
             <input type="hidden" name="csrf" value="<?= e(csrf_token()) ?>">
             <input type="hidden" name="user_id" value="<?= e((string) $account['id']) ?>">
+
+            <div class="account-photo-edit">
+                <img src="<?= !empty($account['photo_path']) ? '/uploads/' . e($account['photo_path']) : '/assets/samgyeong-emblem.png' ?>" alt="" onerror="this.src='/assets/samgyeong-emblem.png'">
+                <label>
+                    사진 변경
+                    <input type="file" name="photo" accept="image/*">
+                </label>
+            </div>
 
             <label>
                 이름

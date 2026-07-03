@@ -1787,9 +1787,21 @@ select {
     font-weight: 800;
 }
 
+.hall-album-tags {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 6px;
+}
+
 .hall-album-card em.has-role {
     color: #b42318;
     background: #fee4e2;
+}
+
+.hall-album-card em.council-role {
+    color: #1d4ed8;
+    background: #eff6ff;
 }
 
 .hall-tabs {
@@ -3830,6 +3842,31 @@ select {
 .account-detail-form label:last-of-type,
 .account-detail-form .admin-create-actions {
     grid-column: 1 / -1;
+}
+
+.account-photo-edit {
+    grid-column: 1 / -1;
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    padding: 16px;
+    background: #f8fafc;
+    border: 1px solid var(--line);
+    border-radius: 4px;
+}
+
+.account-photo-edit img {
+    width: 88px;
+    height: 88px;
+    object-fit: cover;
+    background: white;
+    border: 1px solid var(--line);
+    border-radius: 4px;
+}
+
+.account-photo-edit label {
+    flex: 1;
+    min-width: 0;
 }
 
 .account-danger-panel {
