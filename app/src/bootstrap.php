@@ -166,6 +166,7 @@ function nav_groups(): array
                     ['label' => '징계 및 포상', 'href' => '/rules/discipline'],
                 ],
             ],
+            ['label' => '관별 자치활동', 'href' => '/hall-activities'],
             ['label' => '자료실', 'href' => '/board/resources'],
             ['label' => '자유게시판', 'href' => '/board/free'],
         ],

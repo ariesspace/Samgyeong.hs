@@ -99,6 +99,7 @@ $routes = [
             'selectedHall' => isset($halls[$selectedHall]) ? $selectedHall : '',
         ]);
     },
+    '/hall-activities' => fn () => view('hall-activities', ['title' => '관별 자치활동']),
     '/council' => fn () => view('council', ['title' => '삼경원 소개']),
     '/calendar' => function () use ($auth, $db) {
         if (!$auth->hasRole(['council', 'admin'])) {
