@@ -1607,6 +1607,99 @@ a {
     border-top: 1px solid var(--line);
 }
 
+.admin-hall-activities-page {
+    display: grid;
+    gap: 16px;
+}
+
+.admin-hall-activities-page h1 {
+    margin-bottom: 0;
+}
+
+.admin-hall-activities-page > .muted {
+    margin: 0;
+}
+
+.admin-hall-activity-form,
+.admin-hall-activity-list {
+    display: grid;
+    gap: 18px;
+}
+
+.admin-hall-activity-row,
+.admin-hall-activity-add {
+    display: grid;
+    gap: 12px;
+    padding: 18px 0;
+    border-top: 2px solid var(--green);
+}
+
+.admin-hall-activity-row + .admin-hall-activity-row {
+    border-top-width: 1px;
+    border-top-color: var(--line);
+}
+
+.admin-hall-activity-add {
+    margin-top: 10px;
+}
+
+.admin-hall-activity-add h2 {
+    margin: 0;
+    color: var(--ink);
+    font-size: 22px;
+}
+
+.admin-hall-activity-main,
+.admin-hall-activity-detail {
+    display: grid;
+    grid-template-columns: 180px minmax(0, 1fr) 38px;
+    gap: 12px;
+    align-items: end;
+}
+
+.admin-hall-activity-detail {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    align-items: start;
+}
+
+.admin-hall-activity-row label,
+.admin-hall-activity-add label {
+    display: grid;
+    gap: 6px;
+    color: #344054;
+    font-size: 13px;
+    font-weight: 900;
+}
+
+.admin-hall-activity-row input,
+.admin-hall-activity-row select,
+.admin-hall-activity-row textarea,
+.admin-hall-activity-add input,
+.admin-hall-activity-add select,
+.admin-hall-activity-add textarea {
+    width: 100%;
+    min-height: 38px;
+    padding: 8px 10px;
+    color: #111827;
+    background: #fff;
+    border: 1px solid #cfd6df;
+    border-radius: 4px;
+    font-size: 14px;
+    font-weight: 700;
+}
+
+.admin-hall-activity-row textarea,
+.admin-hall-activity-add textarea {
+    resize: vertical;
+    line-height: 1.55;
+}
+
+.admin-hall-activity-form > .form-actions {
+    margin-top: 8px;
+    padding-top: 18px;
+    border-top: 1px solid var(--line);
+}
+
 .council-principles div {
     display: grid;
     align-content: center;
@@ -2610,6 +2703,11 @@ select {
     word-break: keep-all;
 }
 
+.hall-activity-body dd {
+    font-size: 14px;
+    line-height: 1.55;
+}
+
 .hall-activity-body dl {
     display: grid;
     grid-template-columns: repeat(2, minmax(0, 1fr));
@@ -2622,6 +2720,7 @@ select {
     background: #f8fafc;
     border: 1px solid #edf0f3;
     border-radius: 4px;
+    min-height: 118px;
 }
 
 .hall-activity-body dt {
@@ -5164,6 +5263,10 @@ select {
         grid-template-columns: 1fr;
     }
 
+    .hall-activity-body dl div {
+        min-height: 0;
+    }
+
     .symbol-card h2 {
         font-size: 19px;
     }
@@ -5696,6 +5799,49 @@ select {
         width: 100%;
         min-height: 34px;
         padding: 7px 10px;
+    }
+
+    .admin-hall-activities-page {
+        gap: 11px;
+    }
+
+    .admin-hall-activities-page h1 {
+        font-size: 25px;
+    }
+
+    .admin-hall-activities-page > .muted {
+        font-size: 13px;
+        line-height: 1.6;
+    }
+
+    .admin-hall-activity-row,
+    .admin-hall-activity-add {
+        gap: 10px;
+        padding: 14px 0;
+    }
+
+    .admin-hall-activity-add h2 {
+        font-size: 19px;
+    }
+
+    .admin-hall-activity-main,
+    .admin-hall-activity-detail {
+        grid-template-columns: 1fr;
+        gap: 9px;
+    }
+
+    .admin-hall-activity-main .icon-button {
+        justify-self: end;
+    }
+
+    .admin-hall-activity-row input,
+    .admin-hall-activity-row select,
+    .admin-hall-activity-row textarea,
+    .admin-hall-activity-add input,
+    .admin-hall-activity-add select,
+    .admin-hall-activity-add textarea {
+        min-height: 36px;
+        font-size: 13px;
     }
 
     .points-assign-panel,

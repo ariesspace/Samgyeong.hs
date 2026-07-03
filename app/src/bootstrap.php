@@ -198,6 +198,7 @@ function nav_groups(): array
             ],
             ['label' => '게시판 권한 설정', 'href' => '/admin/boards/permissions'],
             ['label' => '상벌점 기준 관리', 'href' => '/admin/point-rules'],
+            ['label' => '관별 자치활동 관리', 'href' => '/admin/hall-activities'],
         ];
     }
 

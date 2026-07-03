@@ -99,7 +99,13 @@ $routes = [
             'selectedHall' => isset($halls[$selectedHall]) ? $selectedHall : '',
         ]);
     },
-    '/hall-activities' => fn () => view('hall-activities', ['title' => '관별 자치활동']),
+    '/hall-activities' => function () use ($db) {
+        $activities = $db->query('SELECT * FROM hall_activities ORDER BY sort_order, id')->fetchAll();
+        return view('hall-activities', [
+            'title' => '관별 자치활동',
+            'activities' => $activities,
+        ]);
+    },
     '/council' => fn () => view('council', ['title' => '삼경원 소개']),
     '/calendar' => function () use ($auth, $db) {
         if (!$auth->hasRole(['council', 'admin'])) {
@@ -661,6 +667,87 @@ if ($path === '/admin/point-rules/delete' && $method === 'POST') {
     }
 
     redirect('/admin/point-rules?deleted=1');
+}
+
+if ($path === '/admin/hall-activities') {
+    $auth->requireRole(['admin']);
+    $activities = $db->query('SELECT * FROM hall_activities ORDER BY sort_order, id')->fetchAll();
+    echo view('admin-hall-activities', [
+        'title' => '관별 자치활동 관리',
+        'activities' => $activities,
+        'halls' => hall_definitions(),
+        'saved' => ($_GET['saved'] ?? '') === '1',
+        'deleted' => ($_GET['deleted'] ?? '') === '1',
+    ]);
+    exit;
+}
+
+if ($path === '/admin/hall-activities/save' && $method === 'POST') {
+    $auth->requireRole(['admin']);
+    $ids = $_POST['id'] ?? [];
+    $hallKeys = $_POST['hall_key'] ?? [];
+    $titles = $_POST['title'] ?? [];
+    $summaries = $_POST['summary'] ?? [];
+    $methods = $_POST['method'] ?? [];
+    $values = $_POST['value'] ?? [];
+    $halls = hall_definitions();
+
+    if (is_array($ids) && is_array($hallKeys) && is_array($titles) && is_array($summaries) && is_array($methods) && is_array($values)) {
+        $stmt = $db->prepare('
+            UPDATE hall_activities
+            SET hall_key = ?, title = ?, summary = ?, method = ?, value = ?, sort_order = ?, updated_at = CURRENT_TIMESTAMP
+            WHERE id = ?
+        ');
+        $count = min(count($ids), count($hallKeys), count($titles), count($summaries), count($methods), count($values));
+        for ($i = 0; $i < $count; $i++) {
+            $id = (int) $ids[$i];
+            $hallKey = (string) $hallKeys[$i];
+            $title = trim((string) $titles[$i]);
+            $summary = trim((string) $summaries[$i]);
+            $methodText = trim((string) $methods[$i]);
+            $valueText = trim((string) $values[$i]);
+
+            if ($id <= 0 || !isset($halls[$hallKey]) || $title === '' || $summary === '' || $methodText === '' || $valueText === '') {
+                continue;
+            }
+
+            $stmt->execute([$hallKey, $title, $summary, $methodText, $valueText, ($i + 1) * 10, $id]);
+        }
+    }
+
+    redirect('/admin/hall-activities?saved=1');
+}
+
+if ($path === '/admin/hall-activities/add' && $method === 'POST') {
+    $auth->requireRole(['admin']);
+    $hallKey = $_POST['hall_key'] ?? '';
+    $title = trim((string) ($_POST['title'] ?? ''));
+    $summary = trim((string) ($_POST['summary'] ?? ''));
+    $methodText = trim((string) ($_POST['method'] ?? ''));
+    $valueText = trim((string) ($_POST['value'] ?? ''));
+    $halls = hall_definitions();
+
+    if (isset($halls[$hallKey]) && $title !== '' && $summary !== '' && $methodText !== '' && $valueText !== '') {
+        $sortOrder = (int) $db->query('SELECT COALESCE(MAX(sort_order), 0) + 10 FROM hall_activities')->fetchColumn();
+        $stmt = $db->prepare('
+            INSERT INTO hall_activities (hall_key, title, summary, method, value, sort_order)
+            VALUES (?, ?, ?, ?, ?, ?)
+        ');
+        $stmt->execute([$hallKey, $title, $summary, $methodText, $valueText, $sortOrder]);
+    }
+
+    redirect('/admin/hall-activities?saved=1');
+}
+
+if ($path === '/admin/hall-activities/delete' && $method === 'POST') {
+    $auth->requireRole(['admin']);
+    $id = (int) ($_POST['id'] ?? 0);
+    if ($id > 0) {
+        $stmt = $db->prepare('DELETE FROM hall_activities WHERE id = ?');
+        $stmt->execute([$id]);
+    }
+
+    redirect('/admin/hall-activities?deleted=1');
 }
 
 if ($path === '/admin/halls') {

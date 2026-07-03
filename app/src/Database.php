@@ -106,6 +106,18 @@ final class Database
                 sort_order INTEGER NOT NULL DEFAULT 0,
                 updated_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP
             );
+
+            CREATE TABLE IF NOT EXISTS hall_activities (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                hall_key TEXT NOT NULL CHECK(hall_key IN ('gyeongcheon', 'gyeongin', 'gyeongmul')),
+                title TEXT NOT NULL,
+                summary TEXT NOT NULL,
+                method TEXT NOT NULL,
+                value TEXT NOT NULL,
+                sort_order INTEGER NOT NULL DEFAULT 0,
+                created_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP,
+                updated_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP
+            );
         ");
 
         $count = (int) $pdo->query('SELECT COUNT(*) FROM users')->fetchColumn();
@@ -224,6 +236,33 @@ final class Database
         }
 
         self::seedPointRules($pdo);
+        self::seedHallActivities($pdo);
+    }
+
+    private static function seedHallActivities(PDO $pdo): void
+    {
+        $count = (int) $pdo->query('SELECT COUNT(*) FROM hall_activities')->fetchColumn();
+        if ($count > 0) {
+            return;
+        }
+
+        $activities = [
+            ['gyeongcheon', '명언 필사', '고전 문학, 사자성어, 오늘의 명언을 자필로 필사하고 인증합니다.', '필사 사진과 짧은 소감을 삼경원에 제출합니다.', '하늘의 이치를 배우고 바른 생각을 세우는 경천의 기상을 기릅니다.', 10],
+            ['gyeongcheon', '하늘 관찰 일지', '날씨, 구름, 계절의 변화를 기록하며 하루를 성찰합니다.', '관찰 사진 1장과 3줄 일지를 함께 제출합니다.', '작은 변화 속에서 질서와 이치를 발견하는 태도를 기릅니다.', 20],
+            ['gyeongin', '경인 우체통', '감사하거나 칭찬하고 싶은 선후배, 동료에게 예의를 갖춘 편지를 씁니다.', '삼경원이 편지를 모아 점호 또는 공지 시간에 전달합니다.', '타인을 존중하고 공동체의 온도를 높이는 경인 정신을 실천합니다.', 30],
+            ['gyeongin', '인사 실천 챌린지', '하루 동안 먼저 인사하고 상대를 배려한 사례를 기록합니다.', '실천 사례와 느낀 점을 간단한 카드 형식으로 제출합니다.', '말과 태도로 사람을 공경하는 습관을 만듭니다.', 40],
+            ['gyeongmul', '사물 감사 그림일기', '하루 동안 도움을 준 사물을 그리고 감사한 이유를 적습니다.', '그림 또는 사진과 감사 문장을 함께 제출합니다.', '주변의 사물과 환경을 아끼는 경물 정신을 표현합니다.', 50],
+            ['gyeongmul', '공간 돌봄 캠페인', '자습실, 복도, 공용 공간을 정리하고 개선점을 제안합니다.', '정리 전후 사진 또는 개선 제안서를 제출합니다.', '함께 쓰는 공간을 존중하고 책임 있게 관리하는 태도를 기릅니다.', 60],
+        ];
+
+        $stmt = $pdo->prepare('
+            INSERT INTO hall_activities (hall_key, title, summary, method, value, sort_order)
+            VALUES (?, ?, ?, ?, ?, ?)
+        ');
+
+        foreach ($activities as $activity) {
+            $stmt->execute($activity);
+        }
     }
 
     private static function seedPointRules(PDO $pdo): void
