@@ -24,8 +24,8 @@
             <tr>
                 <th class="col-no">번호</th>
                 <th>제목</th>
-                <th class="col-author">작성자</th>
-                <th class="col-date">작성일</th>
+                <th class="col-file">첨부파일</th>
+                <th class="col-date">등록일</th>
                 <th class="col-views">조회수</th>
                 <?php if ($hasManageColumn): ?>
                     <th class="col-manage">관리</th>
@@ -42,18 +42,23 @@
             <?php foreach ($posts as $post): ?>
                 <tr>
                     <td>
-                        <span class="board-badge"><?= e($post['tag'] ?? $board['badge']) ?></span>
+                        <?= e((string) $post['id']) ?>
                     </td>
                     <td class="board-title-cell">
                         <a class="board-title-link" href="/board/<?= e($board['slug']) ?>/post/<?= e((string) $post['id']) ?>">
                             <?= e($post['title']) ?>
                         </a>
+                    </td>
+                    <td class="board-file-cell">
                         <?php if ($post['file_path']): ?>
-                            <a class="file-link" href="/uploads/<?= e($post['file_path']) ?>" download title="첨부파일 다운로드" aria-label="첨부파일 다운로드"></a>
+                            <a class="file-download-link" href="/uploads/<?= e($post['file_path']) ?>" download title="<?= e($post['file_name'] ?: '첨부파일') ?> 다운로드">
+                                <span aria-hidden="true">↓</span> 다운로드
+                            </a>
+                        <?php else: ?>
+                            <span class="no-file">-</span>
                         <?php endif; ?>
                     </td>
-                    <td><?= e($post['username']) ?></td>
-                    <td><?= e(substr($post['created_at'], 0, 10)) ?></td>
+                    <td><?= e(str_replace('-', '.', substr($post['created_at'], 0, 10))) ?></td>
                     <td><?= e((string) ($post['views'] ?? 0)) ?></td>
                     <?php if ($hasManageColumn): ?>
                         <td>
