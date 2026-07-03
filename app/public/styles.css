@@ -1180,7 +1180,17 @@ a {
 
 .admin-point-rules-page {
     display: grid;
-    gap: 24px;
+    gap: 16px;
+}
+
+.admin-point-rules-page h1 {
+    margin-bottom: 0;
+}
+
+.admin-point-rules-page > .muted {
+    margin: 0;
+    max-width: 760px;
+    line-height: 1.7;
 }
 
 .point-rule-admin-sections {
@@ -4905,6 +4915,23 @@ select {
     .admissions-closing .button {
         width: 100%;
         padding-inline: 18px;
+    }
+
+    .admin-point-rules-page {
+        gap: 11px;
+    }
+
+    .admin-point-rules-page h1 {
+        font-size: 25px;
+    }
+
+    .admin-point-rules-page > .muted {
+        font-size: 13px;
+        line-height: 1.6;
+    }
+
+    .admin-point-rules-page .point-rule-admin-sections {
+        margin-top: 4px;
     }
 
     .point-rule-admin-head {
