@@ -52,7 +52,7 @@
 
     <?php foreach ($users as $user): ?>
         <?php if ((int) $user['id'] !== 1 && (int) $user['id'] !== (int) (current_user()['id'] ?? 0)): ?>
-            <form id="delete-user-<?= e((string) $user['id']) ?>" method="post" action="/admin/users/delete" onsubmit="return confirm('이 계정을 삭제할까요?');">
+            <form id="delete-user-<?= e((string) $user['id']) ?>" method="post" action="/admin/users/delete" onsubmit="return confirm('삭제하시겠습니까?');">
                 <input type="hidden" name="csrf" value="<?= e(csrf_token()) ?>">
                 <input type="hidden" name="user_id" value="<?= e((string) $user['id']) ?>">
             </form>

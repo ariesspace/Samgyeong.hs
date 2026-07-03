@@ -38,7 +38,7 @@
         <?php if ($canManage): ?>
             <div class="post-manage-actions">
                 <a class="button ghost-button" href="/board/<?= e($board['slug']) ?>/post/<?= e((string) $post['id']) ?>/edit">수정</a>
-                <form method="post" action="/board/<?= e($board['slug']) ?>/post/<?= e((string) $post['id']) ?>/delete" onsubmit="return confirm('이 게시글을 삭제할까요?');">
+                <form method="post" action="/board/<?= e($board['slug']) ?>/post/<?= e((string) $post['id']) ?>/delete" onsubmit="return confirm('삭제하시겠습니까?');">
                     <input type="hidden" name="csrf" value="<?= e(csrf_token()) ?>">
                     <button class="danger-button" type="submit">삭제</button>
                 </form>

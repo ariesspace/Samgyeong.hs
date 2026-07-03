@@ -3839,10 +3839,57 @@ select {
         padding: 10px 8px;
     }
 
-    .public-board-table .col-views,
     .admin-user-table th:nth-child(4),
     .admin-user-table td:nth-child(4) {
         display: none;
+    }
+
+    .public-board-table {
+        min-width: 520px;
+    }
+
+    .public-board-table th,
+    .public-board-table td {
+        font-size: 13px;
+    }
+
+    .public-board-table .col-no {
+        width: 42px;
+    }
+
+    .public-board-table .col-file {
+        width: 84px;
+    }
+
+    .public-board-table .col-date {
+        width: 92px;
+    }
+
+    .public-board-table .col-views {
+        display: table-cell;
+        width: 54px;
+    }
+
+    .public-board-table .col-manage {
+        width: 58px;
+    }
+
+    .public-board-table .board-title-link {
+        font-size: 13px;
+    }
+
+    .public-board-table .file-download-link {
+        gap: 3px;
+        font-size: 12px;
+    }
+
+    .public-board-table .file-download-link span {
+        font-size: 16px;
+    }
+
+    .board-row-delete button {
+        padding: 4px 5px;
+        font-size: 12px;
     }
 
     .admin-row-actions,

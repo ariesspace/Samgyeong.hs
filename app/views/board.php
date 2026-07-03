@@ -41,7 +41,7 @@
 
             <?php foreach ($posts as $post): ?>
                 <tr>
-                    <td>
+                    <td class="col-no">
                         <?= e((string) $post['id']) ?>
                     </td>
                     <td class="board-title-cell">
@@ -58,12 +58,12 @@
                             <span class="no-file">-</span>
                         <?php endif; ?>
                     </td>
-                    <td><?= e(str_replace('-', '.', substr($post['created_at'], 0, 10))) ?></td>
-                    <td><?= e((string) ($post['views'] ?? 0)) ?></td>
+                    <td class="col-date"><?= e(str_replace('-', '.', substr($post['created_at'], 0, 10))) ?></td>
+                    <td class="col-views"><?= e((string) ($post['views'] ?? 0)) ?></td>
                     <?php if ($hasManageColumn): ?>
-                        <td>
+                        <td class="col-manage">
                             <?php if ($post['can_manage']): ?>
-                                <form class="board-row-delete" method="post" action="/board/<?= e($board['slug']) ?>/post/<?= e((string) $post['id']) ?>/delete" onsubmit="return confirm('이 게시글을 삭제할까요?');">
+                                <form class="board-row-delete" method="post" action="/board/<?= e($board['slug']) ?>/post/<?= e((string) $post['id']) ?>/delete" onsubmit="return confirm('삭제하시겠습니까?');">
                                     <input type="hidden" name="csrf" value="<?= e(csrf_token()) ?>">
                                     <button type="submit" aria-label="게시글 삭제">삭제</button>
                                 </form>

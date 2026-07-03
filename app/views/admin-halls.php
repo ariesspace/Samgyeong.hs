@@ -84,7 +84,7 @@
     </div>
 
     <?php foreach ($members as $member): ?>
-        <form id="delete-hall-member-<?= e((string) $member['id']) ?>" method="post" action="/admin/halls/delete" onsubmit="return confirm('이 인원을 삭제할까요?');">
+        <form id="delete-hall-member-<?= e((string) $member['id']) ?>" method="post" action="/admin/halls/delete" onsubmit="return confirm('삭제하시겠습니까?');">
             <input type="hidden" name="csrf" value="<?= e(csrf_token()) ?>">
             <input type="hidden" name="id" value="<?= e((string) $member['id']) ?>">
         </form>

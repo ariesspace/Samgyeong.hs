@@ -52,7 +52,7 @@
                     <?php foreach ($eventsByDay[$date] ?? [] as $event): ?>
                         <div class="calendar-event <?= e($event['category']) ?>">
                             <span><?= e($event['title']) ?></span>
-                            <form method="post" action="/calendar/events/delete" onsubmit="return confirm('이 일정을 삭제할까요?');">
+                            <form method="post" action="/calendar/events/delete" onsubmit="return confirm('삭제하시겠습니까?');">
                                 <input type="hidden" name="csrf" value="<?= e(csrf_token()) ?>">
                                 <input type="hidden" name="id" value="<?= e((string) $event['id']) ?>">
                                 <input type="hidden" name="month" value="<?= e($month) ?>">
