@@ -307,6 +307,34 @@ if ($path === '/mypage') {
     exit;
 }
 
+if ($path === '/mypage/profile' && $method === 'POST') {
+    if (!$auth->user()) {
+        redirect('/login');
+    }
+
+    $userId = (int) $auth->user()['id'];
+    $hasPhotoUpload = !empty($_FILES['photo']['tmp_name']) && ($_FILES['photo']['error'] ?? UPLOAD_ERR_NO_FILE) !== UPLOAD_ERR_NO_FILE;
+
+    if ($hasPhotoUpload) {
+        $stmt = $db->prepare('SELECT photo_path FROM users WHERE id = ?');
+        $stmt->execute([$userId]);
+        $currentPhoto = $stmt->fetchColumn() ?: null;
+        $uploadedPhoto = save_hall_photo('photo');
+
+        if (!$uploadedPhoto) {
+            redirect('/mypage?error=photo');
+        }
+
+        delete_upload($currentPhoto);
+        $stmt = $db->prepare('UPDATE users SET photo_path = ? WHERE id = ?');
+        $stmt->execute([$uploadedPhoto, $userId]);
+        sync_user_hall_member($db, $userId);
+        $_SESSION['user']['photo_path'] = $uploadedPhoto;
+    }
+
+    redirect('/mypage?saved=profile');
+}
+
 if ($path === '/mypage/photo' && $method === 'POST') {
     if (!$auth->user()) {
         redirect('/login');
@@ -343,7 +371,7 @@ if ($path === '/mypage/password' && $method === 'POST') {
 
     $stmt = $db->prepare('UPDATE users SET password_hash = ? WHERE id = ?');
     $stmt->execute([password_hash($password, PASSWORD_DEFAULT), $auth->user()['id']]);
-    redirect('/mypage?saved=1');
+    redirect('/mypage?saved=password');
 }
 
 if ($path === '/mypage/points') {

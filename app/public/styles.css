@@ -2946,6 +2946,7 @@ select {
     line-height: 1.7;
 }
 
+.profile-manage-form,
 .profile-photo-form {
     display: grid;
     justify-items: center;
@@ -2993,6 +2994,27 @@ select {
     min-height: 36px;
     padding: 7px 18px;
     font-size: 14px;
+}
+
+.profile-manage-form .profile-readonly-grid {
+    width: 100%;
+    margin-top: 16px;
+}
+
+.profile-form-actions {
+    display: flex;
+    justify-content: center;
+    gap: 10px;
+    width: 100%;
+    margin-top: 16px;
+    padding-top: 24px;
+    border-top: 1px solid #d7dce4;
+}
+
+.profile-form-actions button {
+    min-width: 132px;
+    min-height: 40px;
+    padding: 8px 18px;
 }
 
 .profile-readonly-grid {
@@ -3045,6 +3067,56 @@ select {
 .profile-password-panel .profile-password-form button {
     min-height: 44px;
     padding: 9px 28px;
+}
+
+.profile-password-modal[hidden] {
+    display: none;
+}
+
+.profile-password-modal {
+    position: fixed;
+    inset: 0;
+    z-index: 1000;
+    display: grid;
+    place-items: center;
+    padding: 20px;
+    background: rgba(15, 23, 42, .48);
+}
+
+.profile-password-dialog {
+    width: min(460px, 100%);
+    padding: 24px;
+    background: white;
+    border: 1px solid #d8dee8;
+    border-radius: 4px;
+    box-shadow: 0 24px 70px rgba(15, 23, 42, .22);
+}
+
+.profile-password-head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    margin-bottom: 18px;
+    padding-bottom: 14px;
+    border-bottom: 1px solid #e3e8ef;
+}
+
+.profile-password-head h2 {
+    margin: 0;
+    color: #2a2f38;
+    font-size: 20px;
+}
+
+.profile-password-actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: 8px;
+    grid-column: 1 / -1;
+}
+
+.profile-password-actions button {
+    min-width: 86px;
 }
 
 .points-summary {
@@ -3652,6 +3724,15 @@ select {
 
     .profile-manage-head p {
         font-size: 15px;
+    }
+
+    .profile-form-actions {
+        flex-direction: row;
+    }
+
+    .profile-form-actions button {
+        flex: 1 1 0;
+        min-width: 0;
     }
 
     .profile-photo-frame {
