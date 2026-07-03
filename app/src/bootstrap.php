@@ -157,7 +157,15 @@ function nav_groups(): array
                     ['label' => '경물관', 'href' => '/student-halls?hall=gyeongmul'],
                 ],
             ],
-            ['label' => '학교생활 규정', 'href' => '/rules'],
+            [
+                'label' => '학교생활 규정',
+                'href' => '/rules',
+                'children' => [
+                    ['label' => '생활 규정', 'href' => '/rules'],
+                    ['label' => '상벌점 리스트', 'href' => '/rules/points'],
+                    ['label' => '징계 및 포상', 'href' => '/rules/discipline'],
+                ],
+            ],
             ['label' => '자료실', 'href' => '/board/resources'],
             ['label' => '자유게시판', 'href' => '/board/free'],
         ],

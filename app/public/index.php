@@ -45,7 +45,19 @@ $routes = [
         if (!$auth->user()) {
             return view('access-denied', ['title' => '권한 없음', 'message' => '재학생 이상 로그인 후 접근이 가능한 메뉴입니다.']);
         }
-        return view('page', ['title' => '학교생활 규정', 'body' => '학교 생활 규정과 학생회 운영 규정을 게시하는 공간입니다.']);
+        return view('page', ['title' => '생활 규정', 'body' => "삼경인의 학교생활 기본 규정을 안내하는 공간입니다.\n\n기숙사 생활, 자습실 이용, 복장 및 예절, 공동체 생활 규칙 등을 정리해 게시할 수 있습니다."]);
+    },
+    '/rules/points' => function () use ($auth) {
+        if (!$auth->user()) {
+            return view('access-denied', ['title' => '권한 없음', 'message' => '재학생 이상 로그인 후 접근이 가능한 메뉴입니다.']);
+        }
+        return view('page', ['title' => '상벌점 리스트', 'body' => "상점과 벌점 항목을 정리하는 공간입니다.\n\n항목별 기준 점수, 적용 예시, 누적 점수 처리 기준을 게시할 수 있습니다."]);
+    },
+    '/rules/discipline' => function () use ($auth) {
+        if (!$auth->user()) {
+            return view('access-denied', ['title' => '권한 없음', 'message' => '재학생 이상 로그인 후 접근이 가능한 메뉴입니다.']);
+        }
+        return view('page', ['title' => '징계 및 포상', 'body' => "징계 절차와 포상 기준을 안내하는 공간입니다.\n\n지도 절차, 심의 기준, 포상 추천 및 승인 절차 등을 정리해 게시할 수 있습니다."]);
     },
     '/student-halls' => function () use ($db) {
         $rows = $db->query('SELECT * FROM hall_members ORDER BY hall_key, sort_order, id')->fetchAll();
