@@ -64,7 +64,7 @@ $routes = [
         if (!$auth->user()) {
             return view('access-denied', ['title' => '권한 없음', 'message' => '재학생 이상 로그인 후 접근이 가능한 메뉴입니다.']);
         }
-        return view('page', ['title' => '생활 규정', 'body' => "삼경인의 학교생활 기본 규정을 안내하는 공간입니다.\n\n기숙사 생활, 자습실 이용, 복장 및 예절, 공동체 생활 규칙 등을 정리해 게시할 수 있습니다."]);
+        return view('school-rules', ['title' => '생활 규정']);
     },
     '/rules/points' => function () use ($auth, $db) {
         if (!$auth->user()) {

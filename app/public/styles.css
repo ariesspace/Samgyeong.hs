@@ -894,6 +894,129 @@ a {
     background: #475467;
 }
 
+.school-rules-page {
+    display: grid;
+    gap: 28px;
+}
+
+.school-rules-title {
+    padding-bottom: 22px;
+    border-bottom: 2px solid #1f2937;
+    text-align: center;
+}
+
+.school-rules-title h1 {
+    margin: 0 0 10px;
+    color: var(--green);
+    font-size: 28px;
+    line-height: 1.45;
+    word-break: keep-all;
+}
+
+.school-rules-title p {
+    margin: 0;
+    color: var(--muted);
+    font-size: 13px;
+    font-weight: 800;
+    letter-spacing: .08em;
+}
+
+.school-rules-body {
+    display: grid;
+    gap: 34px;
+}
+
+.school-rule-chapter {
+    display: grid;
+    gap: 18px;
+}
+
+.school-rule-chapter h2 {
+    width: fit-content;
+    margin: 0;
+    padding: 8px 14px;
+    color: white;
+    background: var(--green);
+    border-radius: 3px;
+    font-size: 18px;
+    line-height: 1.2;
+}
+
+.school-rule-chapter article {
+    padding-left: 14px;
+    border-left: 3px solid #e5d4a8;
+}
+
+.school-rule-chapter h3 {
+    margin: 0 0 7px;
+    color: #947a36;
+    font-size: 17px;
+}
+
+.school-rule-chapter p,
+.school-rule-chapter li {
+    color: #344054;
+    font-size: 15px;
+    line-height: 1.9;
+    word-break: keep-all;
+}
+
+.school-rule-chapter p {
+    margin: 0 0 8px;
+}
+
+.school-rule-chapter ul {
+    display: grid;
+    gap: 4px;
+    margin: 8px 0 10px;
+    padding-left: 22px;
+}
+
+.rule-example-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 12px;
+}
+
+.rule-example-grid div {
+    padding: 15px 16px;
+    background: #f8fafc;
+    border: 1px solid var(--line);
+    border-radius: 4px;
+}
+
+.rule-example-grid strong {
+    display: block;
+    margin-bottom: 8px;
+    color: var(--green);
+    font-weight: 900;
+}
+
+.rule-example-grid p {
+    margin: 0;
+    font-size: 14px;
+    line-height: 1.75;
+}
+
+.rule-example-grid b,
+.school-rule-chapter li b {
+    color: var(--ink);
+    margin-right: 6px;
+}
+
+.rule-order {
+    padding: 12px 14px;
+    color: var(--green) !important;
+    background: #f1f4f2;
+    border-radius: 4px;
+    font-weight: 900;
+    text-align: center;
+}
+
+.rule-alert {
+    color: #b42318;
+}
+
 .points-guide-page,
 .discipline-awards-page {
     display: grid;
@@ -4878,6 +5001,58 @@ select {
     .point-rule-row span {
         font-size: 14px;
         line-height: 1.65;
+    }
+
+    .school-rules-page {
+        gap: 20px;
+    }
+
+    .school-rules-title {
+        padding-bottom: 16px;
+        text-align: left;
+    }
+
+    .school-rules-title h1 {
+        font-size: 23px;
+    }
+
+    .school-rules-body {
+        gap: 26px;
+    }
+
+    .school-rule-chapter {
+        gap: 14px;
+    }
+
+    .school-rule-chapter h2 {
+        font-size: 16px;
+    }
+
+    .school-rule-chapter article {
+        padding-left: 10px;
+    }
+
+    .school-rule-chapter h3 {
+        font-size: 16px;
+    }
+
+    .school-rule-chapter p,
+    .school-rule-chapter li {
+        font-size: 14px;
+        line-height: 1.75;
+    }
+
+    .rule-example-grid {
+        grid-template-columns: 1fr;
+        gap: 9px;
+    }
+
+    .rule-example-grid div {
+        padding: 13px;
+    }
+
+    .rule-order {
+        text-align: left;
     }
 
     .points-guide-page,
