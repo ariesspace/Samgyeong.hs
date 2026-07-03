@@ -2230,11 +2230,11 @@ select {
 .about-motto-panel p {
     max-width: 860px;
     margin: 0;
-    color: #23362f;
+    color: #293548;
     font-family: Georgia, "Times New Roman", serif;
-    font-size: clamp(20px, 3vw, 27px);
-    font-weight: 800;
-    line-height: 1.75;
+    font-size: 19px;
+    font-weight: 700;
+    line-height: 1.9;
     word-break: keep-all;
 }
 
@@ -3453,7 +3453,8 @@ select {
         padding: 24px 18px;
     }
 
-    .about-copy {
+    .about-copy,
+    .about-motto-panel p {
         font-size: 16px;
         line-height: 1.75;
     }
