@@ -19,59 +19,61 @@
         </div>
     </div>
 
-    <table class="board-table public-board-table">
-        <thead>
-            <tr>
-                <th class="col-no">번호</th>
-                <th>제목</th>
-                <th class="col-file">첨부파일</th>
-                <th class="col-date">등록일</th>
-                <th class="col-views">조회수</th>
-                <?php if ($hasManageColumn): ?>
-                    <th class="col-manage">관리</th>
-                <?php endif; ?>
-            </tr>
-        </thead>
-        <tbody>
-            <?php if (!$posts): ?>
+    <div class="board-table-wrap">
+        <table class="board-table public-board-table">
+            <thead>
                 <tr>
-                    <td colspan="<?= $hasManageColumn ? 6 : 5 ?>" class="empty-board">게시글이 없습니다.</td>
-                </tr>
-            <?php endif; ?>
-
-            <?php foreach ($posts as $post): ?>
-                <tr>
-                    <td class="col-no">
-                        <?= e((string) $post['id']) ?>
-                    </td>
-                    <td class="board-title-cell">
-                        <a class="board-title-link" href="/board/<?= e($board['slug']) ?>/post/<?= e((string) $post['id']) ?>">
-                            <?= e($post['title']) ?>
-                        </a>
-                    </td>
-                    <td class="board-file-cell">
-                        <?php if ($post['file_path']): ?>
-                            <a class="file-download-link" href="/uploads/<?= e($post['file_path']) ?>" download title="<?= e($post['file_name'] ?: '첨부파일') ?> 다운로드">
-                                <span aria-hidden="true">↓</span> 다운로드
-                            </a>
-                        <?php else: ?>
-                            <span class="no-file">-</span>
-                        <?php endif; ?>
-                    </td>
-                    <td class="col-date"><?= e(str_replace('-', '.', substr($post['created_at'], 0, 10))) ?></td>
-                    <td class="col-views"><?= e((string) ($post['views'] ?? 0)) ?></td>
+                    <th class="col-no">번호</th>
+                    <th>제목</th>
+                    <th class="col-file">첨부파일</th>
+                    <th class="col-date">등록일</th>
+                    <th class="col-views">조회수</th>
                     <?php if ($hasManageColumn): ?>
-                        <td class="col-manage">
-                            <?php if ($post['can_manage']): ?>
-                                <form class="board-row-delete" method="post" action="/board/<?= e($board['slug']) ?>/post/<?= e((string) $post['id']) ?>/delete" onsubmit="return confirm('삭제하시겠습니까?');">
-                                    <input type="hidden" name="csrf" value="<?= e(csrf_token()) ?>">
-                                    <button type="submit" aria-label="게시글 삭제">삭제</button>
-                                </form>
-                            <?php endif; ?>
-                        </td>
+                        <th class="col-manage">관리</th>
                     <?php endif; ?>
                 </tr>
-            <?php endforeach; ?>
-        </tbody>
-    </table>
+            </thead>
+            <tbody>
+                <?php if (!$posts): ?>
+                    <tr>
+                        <td colspan="<?= $hasManageColumn ? 6 : 5 ?>" class="empty-board">게시글이 없습니다.</td>
+                    </tr>
+                <?php endif; ?>
+
+                <?php foreach ($posts as $post): ?>
+                    <tr>
+                        <td class="col-no">
+                            <?= e((string) $post['id']) ?>
+                        </td>
+                        <td class="board-title-cell">
+                            <a class="board-title-link" href="/board/<?= e($board['slug']) ?>/post/<?= e((string) $post['id']) ?>">
+                                <?= e($post['title']) ?>
+                            </a>
+                        </td>
+                        <td class="board-file-cell">
+                            <?php if ($post['file_path']): ?>
+                                <a class="file-download-link" href="/uploads/<?= e($post['file_path']) ?>" download title="<?= e($post['file_name'] ?: '첨부파일') ?> 다운로드">
+                                    <span aria-hidden="true">↓</span> 다운로드
+                                </a>
+                            <?php else: ?>
+                                <span class="no-file">-</span>
+                            <?php endif; ?>
+                        </td>
+                        <td class="col-date"><?= e(str_replace('-', '.', substr($post['created_at'], 0, 10))) ?></td>
+                        <td class="col-views"><?= e((string) ($post['views'] ?? 0)) ?></td>
+                        <?php if ($hasManageColumn): ?>
+                            <td class="col-manage">
+                                <?php if ($post['can_manage']): ?>
+                                    <form class="board-row-delete" method="post" action="/board/<?= e($board['slug']) ?>/post/<?= e((string) $post['id']) ?>/delete" onsubmit="return confirm('삭제하시겠습니까?');">
+                                        <input type="hidden" name="csrf" value="<?= e(csrf_token()) ?>">
+                                        <button type="submit" aria-label="게시글 삭제">삭제</button>
+                                    </form>
+                                <?php endif; ?>
+                            </td>
+                        <?php endif; ?>
+                    </tr>
+                <?php endforeach; ?>
+            </tbody>
+        </table>
+    </div>
 </section>

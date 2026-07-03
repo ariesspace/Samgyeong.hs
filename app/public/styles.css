@@ -959,7 +959,14 @@ select {
 }
 
 .public-board-table {
+    min-width: 620px;
     border-top: 2px solid #1f2937;
+}
+
+.board-table-wrap {
+    width: 100%;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
 }
 
 .public-board-table th,
@@ -3531,6 +3538,7 @@ select {
     .content-panel {
         min-width: 0;
         padding: 22px;
+        overflow: hidden;
     }
 
     .breadcrumb {
@@ -3781,11 +3789,6 @@ select {
     }
 
     .board-table {
-        display: block;
-        width: 100%;
-        overflow-x: auto;
-        white-space: nowrap;
-        -webkit-overflow-scrolling: touch;
         font-size: 13px;
     }
 
@@ -3844,8 +3847,16 @@ select {
         display: none;
     }
 
+    .board-table-wrap {
+        max-width: 100%;
+        margin-top: 6px;
+        overflow-x: auto;
+    }
+
     .public-board-table {
-        min-width: 520px;
+        width: 100%;
+        min-width: 560px;
+        table-layout: fixed;
     }
 
     .public-board-table th,
