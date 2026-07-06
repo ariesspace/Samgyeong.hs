@@ -4,7 +4,7 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title><?= e($title ?? '삼경고') ?></title>
-    <link rel="stylesheet" href="/styles.css?v=2026070619">
+    <link rel="stylesheet" href="/styles.css?v=2026070620">
     <link rel="stylesheet" href="/rules-document.css?v=2026070544">
     <link rel="stylesheet" href="/post-files.css?v=2026070538">
     <link rel="stylesheet" href="/point-rules.css?v=2026070615">

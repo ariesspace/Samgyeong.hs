@@ -29,19 +29,6 @@
         </div>
     </header>
 
-    <section class="shop-promo">
-        <div>
-            <span>REWARD BENEFIT</span>
-            <h2>삼경인의 상점을 혜택으로 바꾸는 곳</h2>
-            <p>장바구니에 담고 결제하면 구매 내역이 기록됩니다. 실제 적용은 삼경원 확인 후 진행됩니다.</p>
-        </div>
-        <div class="shop-promo-points">
-            <span>보유 상점</span>
-            <strong><?= e((string) ($points['merit_total'] ?? 0)) ?> P</strong>
-            <small>사용 <?= e((string) ($points['spent_total'] ?? 0)) ?> P</small>
-        </div>
-    </section>
-
     <div class="shop-layout">
         <section class="shop-products">
             <div class="shop-products-head">
@@ -56,17 +43,19 @@
                 <?php foreach ($items as $index => $item): ?>
                     <article class="shop-product-card tone-<?= e((string) (($index % 5) + 1)) ?>">
                         <div class="shop-product-visual">
-                            <span><?= e(str_pad((string) ($index + 1), 2, '0', STR_PAD_LEFT)) ?></span>
-                            <strong><?= e((string) $item['price']) ?> P</strong>
+                            <span><?= e(mb_substr($item['name'], 0, 1)) ?></span>
                         </div>
                         <div class="shop-product-body">
-                            <h3><?= e($item['name']) ?></h3>
+                            <div class="shop-product-title-row">
+                                <h3><?= e($item['name']) ?></h3>
+                                <strong><?= e((string) $item['price']) ?> P</strong>
+                            </div>
                             <p><?= e($item['description']) ?></p>
                         </div>
                         <form method="post" action="/samgyeong-mall/cart/add">
                             <input type="hidden" name="csrf" value="<?= e(csrf_token()) ?>">
                             <input type="hidden" name="item_id" value="<?= e((string) $item['id']) ?>">
-                            <button type="submit">장바구니 담기</button>
+                            <button type="submit">담기</button>
                         </form>
                     </article>
                 <?php endforeach; ?>

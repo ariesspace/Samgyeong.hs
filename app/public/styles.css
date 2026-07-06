@@ -6557,6 +6557,244 @@ select {
     }
 }
 
+/* Compact mall refinement */
+.shop-page {
+    gap: 16px;
+}
+
+.shop-topbar {
+    min-height: 132px;
+    padding: 20px 24px;
+}
+
+.shop-wallet {
+    min-width: 160px;
+    padding: 12px 14px;
+}
+
+.shop-wallet strong {
+    font-size: 22px;
+}
+
+.shop-layout {
+    grid-template-columns: minmax(0, 1fr) 320px;
+    gap: 18px;
+}
+
+.shop-product-grid {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 16px;
+}
+
+.shop-product-card {
+    gap: 10px;
+    box-shadow: none;
+}
+
+.shop-product-visual {
+    min-height: 0;
+    aspect-ratio: 1 / .82;
+    align-items: center;
+    justify-content: center;
+    padding: 16px;
+    background: #f7f9fb;
+    border-bottom: 1px solid #eef2f6;
+}
+
+.shop-product-visual::after {
+    right: 12px;
+    bottom: 12px;
+    width: 58px;
+    height: 58px;
+    border-color: rgba(255, 255, 255, .35);
+}
+
+.shop-product-visual span {
+    display: grid;
+    width: 56px;
+    height: 56px;
+    place-items: center;
+    font-size: 24px;
+    color: #fff;
+    background: rgba(255, 255, 255, .18);
+    border: 1px solid rgba(255, 255, 255, .32);
+    border-radius: 18px;
+    opacity: 1;
+}
+
+.shop-product-card.tone-1 .shop-product-visual {
+    background: #eaf2fb;
+}
+
+.shop-product-card.tone-2 .shop-product-visual {
+    background: #fff5df;
+}
+
+.shop-product-card.tone-3 .shop-product-visual {
+    background: #eaf7f0;
+}
+
+.shop-product-card.tone-4 .shop-product-visual {
+    background: #f0f2f5;
+}
+
+.shop-product-card.tone-5 .shop-product-visual {
+    background: #fff0ef;
+}
+
+.shop-product-card.tone-1 .shop-product-visual span {
+    background: #28598f;
+}
+
+.shop-product-card.tone-2 .shop-product-visual span {
+    background: #b7791f;
+}
+
+.shop-product-card.tone-3 .shop-product-visual span {
+    background: #276749;
+}
+
+.shop-product-card.tone-4 .shop-product-visual span {
+    background: #4a5568;
+}
+
+.shop-product-card.tone-5 .shop-product-visual span {
+    background: #9f1f1f;
+}
+
+.shop-product-body {
+    gap: 7px;
+    padding: 0 14px;
+}
+
+.shop-product-title-row {
+    display: flex;
+    align-items: start;
+    justify-content: space-between;
+    gap: 10px;
+}
+
+.shop-product-title-row h3 {
+    margin: 0;
+    color: var(--ink);
+    font-size: 16px;
+    line-height: 1.35;
+}
+
+.shop-product-title-row strong {
+    color: var(--green);
+    font-size: 15px;
+    white-space: nowrap;
+}
+
+.shop-product-body > h3 {
+    display: none;
+}
+
+.shop-product-body p {
+    min-height: 42px;
+    color: #667085;
+    font-size: 13px;
+    line-height: 1.5;
+}
+
+.shop-product-card form {
+    padding: 0 14px 14px;
+}
+
+.shop-product-card button {
+    min-height: 34px;
+    font-size: 13px;
+}
+
+.shop-cart {
+    gap: 12px;
+    padding: 16px;
+    box-shadow: none;
+}
+
+.shop-cart-head {
+    padding-bottom: 12px;
+}
+
+.shop-cart-head h2 {
+    font-size: 18px;
+}
+
+.shop-cart-head > span {
+    font-size: 20px;
+}
+
+.shop-cart-list {
+    gap: 10px;
+    max-height: 360px;
+}
+
+.shop-empty-cart {
+    padding: 28px 12px;
+}
+
+.shop-cart-item {
+    grid-template-columns: 42px minmax(0, 1fr) auto;
+    gap: 9px;
+}
+
+.shop-cart-thumb {
+    width: 42px;
+    height: 42px;
+    border-radius: 10px;
+    font-size: 14px;
+}
+
+.shop-cart-info strong {
+    font-size: 14px;
+}
+
+.shop-quantity {
+    margin-top: 6px;
+}
+
+.shop-quantity button {
+    width: 24px;
+    min-height: 24px;
+}
+
+.shop-checkout button {
+    min-height: 38px;
+    font-size: 14px;
+}
+
+@media (max-width: 1200px) {
+    .shop-product-grid {
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+    }
+}
+
+@media (max-width: 900px) {
+    .shop-layout {
+        grid-template-columns: 1fr;
+    }
+
+    .shop-product-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+}
+
+@media (max-width: 700px) {
+    .shop-topbar {
+        min-height: 0;
+        padding: 16px;
+    }
+
+    .shop-product-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .shop-product-visual {
+        aspect-ratio: 1 / .55;
+    }
+}
+
 .admin-create-actions .secondary {
     color: var(--green);
     background: white;
