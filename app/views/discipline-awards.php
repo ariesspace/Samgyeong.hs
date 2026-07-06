@@ -1,58 +1,136 @@
-<section class="page discipline-awards-page">
+<section class="page mypage-page discipline-awards-page">
     <h1>징계 및 포상</h1>
-    <p class="muted">상벌점 기록을 바탕으로 한 지도 절차와 포상 기준을 안내합니다.</p>
+    <p class="muted">상벌점 기록을 바탕으로 적용되는 징계 기준과 상점 혜택을 정리한 안내표입니다.</p>
 
-    <section class="discipline-awards-lead">
+    <div class="points-summary discipline-summary">
         <article>
-            <span>지도</span>
-            <h2>기록보다 먼저 회복을 봅니다</h2>
-            <p>벌점은 처벌 자체보다 약속을 다시 세우기 위한 기준입니다. 누적 기준에 따라 개인, 학년, 관, 전체 단위의 지도가 적용됩니다.</p>
+            <span>징계 단위</span>
+            <strong>개인·학년·관·전체</strong>
         </article>
         <article>
-            <span>포상</span>
-            <h2>좋은 태도는 분명히 남깁니다</h2>
-            <p>공동체를 위해 기여한 행동, 예절 실천, 자발적인 봉사와 모범 사례는 상점과 추천 기록으로 남겨 포상 심의에 반영합니다.</p>
+            <span>상점 혜택</span>
+            <strong>10~40점</strong>
         </article>
+        <article>
+            <span>적용 원칙</span>
+            <strong>삼경원 심의</strong>
+        </article>
+    </div>
+
+    <section class="discipline-section">
+        <div class="discipline-section-head">
+            <h2>상점 혜택 기준</h2>
+            <span>Benefits & Rewards</span>
+        </div>
+
+        <div class="reward-card-grid">
+            <article class="reward-card">
+                <div>
+                    <strong>기본 면제권</strong>
+                    <span>10점</span>
+                </div>
+                <ul>
+                    <li>인사 생략 1일</li>
+                    <li>관등 생략 1일</li>
+                    <li>반차, 단대 출석 1회 인정</li>
+                </ul>
+            </article>
+            <article class="reward-card">
+                <div>
+                    <strong>휴식 및 소속 변경</strong>
+                    <span>15점</span>
+                </div>
+                <ul>
+                    <li>연차, 단대 출석 1회 면제</li>
+                    <li>타 인원 소속 관 변경권 24시간</li>
+                </ul>
+            </article>
+            <article class="reward-card">
+                <div>
+                    <strong>직속 교류권</strong>
+                    <span>20점</span>
+                </div>
+                <ul>
+                    <li>타 직속 1회 체험권 24시간</li>
+                </ul>
+            </article>
+            <article class="reward-card">
+                <div>
+                    <strong>학년 교류권</strong>
+                    <span>30점</span>
+                </div>
+                <ul>
+                    <li>타 인원 학년 변경권 24시간</li>
+                    <li>본인 학년 체험권 24시간</li>
+                </ul>
+            </article>
+            <article class="reward-card reward-card-featured">
+                <div>
+                    <strong>특별 사면권</strong>
+                    <span>40점</span>
+                </div>
+                <p>개인 징계 1회를 즉시 무효화할 수 있습니다. 단, 퇴학 조치 등 중대 사안은 삼경원 심의를 거쳐 적용합니다.</p>
+            </article>
+        </div>
     </section>
 
-    <section class="award-flow">
-        <h2>포상 절차</h2>
-        <ol>
-            <li><strong>추천</strong><span>삼경원, 교사, 관장단이 모범 사례를 추천합니다.</span></li>
-            <li><strong>확인</strong><span>상점 기록과 활동 내용을 확인합니다.</span></li>
-            <li><strong>심의</strong><span>포상 기준에 따라 대상자를 선정합니다.</span></li>
-            <li><strong>기록</strong><span>포상 결과를 학생 기록과 안내 자료에 반영합니다.</span></li>
-        </ol>
-    </section>
+    <section class="discipline-section">
+        <div class="discipline-section-head">
+            <h2>단위별 징계 기준</h2>
+            <span>Penalties & Actions</span>
+        </div>
 
-    <details class="discipline-rule-details">
-        <summary>징계 기준 보기</summary>
-        <div class="point-rule-sections">
+        <div class="discipline-rule-grid">
             <?php foreach ($sections as $section): ?>
-                <section class="point-rule-block point-rule-<?= e($section['tone']) ?>">
-                    <div class="point-rule-head">
-                        <h2><?= e($section['title']) ?></h2>
+                <section class="discipline-rule-block">
+                    <div class="discipline-rule-head">
+                        <h3><?= e($section['title']) ?></h3>
                         <?php if (!empty($section['description'])): ?>
                             <p><?= e($section['description']) ?></p>
                         <?php endif; ?>
                     </div>
 
-                    <div class="point-rule-list">
+                    <div class="discipline-rule-list">
                         <?php if (empty($section['items'])): ?>
-                            <div class="point-rule-row">
-                                <strong>-</strong>
-                                <span>등록된 기준이 없습니다.</span>
-                            </div>
+                            <p class="empty-board">등록된 기준이 없습니다.</p>
                         <?php endif; ?>
                         <?php foreach ($section['items'] as $item): ?>
-                            <div class="point-rule-row <?= !empty($item['emphasis']) ? 'is-emphasis' : '' ?>">
-                                <strong><?= e($item['score']) ?></strong>
-                                <span><?= e($item['text']) ?></span>
+                            <div class="discipline-rule-item <?= !empty($item['emphasis']) ? 'is-emphasis' : '' ?>">
+                                <span class="discipline-score"><?= e($item['score']) ?></span>
+                                <p><?= e($item['text']) ?></p>
                             </div>
                         <?php endforeach; ?>
                     </div>
                 </section>
             <?php endforeach; ?>
         </div>
-    </details>
+    </section>
+
+    <section class="discipline-section discipline-note-section">
+        <div class="discipline-section-head">
+            <h2>관리 및 적용 원칙</h2>
+            <span>Rules of Application</span>
+        </div>
+
+        <div class="discipline-note-grid">
+            <article>
+                <h3>상벌점 관리</h3>
+                <ul>
+                    <li>상점은 월 단위로 누적되며, 월말 초기화 이전에 혜택을 구매할 수 있습니다.</li>
+                    <li>혜택 구매 후 남은 잔여 상점은 다음 달로 이월되지 않고 소멸합니다.</li>
+                    <li>월말 부과된 벌점은 익월 1일까지 이전 달 상점으로 상쇄할 수 있습니다.</li>
+                    <li>벌점은 상쇄 전까지 다음 달로 계속 이월됩니다.</li>
+                </ul>
+            </article>
+            <article>
+                <h3>적용 원칙</h3>
+                <ul>
+                    <li>징계가 적용 중인 자 또는 단위는 상점 혜택을 사용할 수 없습니다.</li>
+                    <li>벌점 부과 후 24시간 이내 상점으로 상쇄한 경우 해당 징계는 면제됩니다.</li>
+                    <li>동일 사안 복수 기준 적용 및 미명시 사항은 삼경원 판단에 따릅니다.</li>
+                    <li>징계 및 혜택 적용 시 대상자에게 분류와 사유를 명확히 고지합니다.</li>
+                </ul>
+            </article>
+        </div>
+    </section>
 </section>

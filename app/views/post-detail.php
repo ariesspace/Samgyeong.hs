@@ -5,11 +5,12 @@
         <dl class="post-meta">
             <div>
                 <dt>분류</dt>
-                <dd><span class="board-badge"><?= e($post['tag'] ?? $board['badge']) ?></span></dd>
+                <?php $tag = $post['tag'] ?? $board['badge']; ?>
+                <dd><span class="board-badge <?= $tag === '공지' ? 'board-badge-notice' : '' ?>"><?= e($tag) ?></span></dd>
             </div>
             <div>
                 <dt>작성자</dt>
-                <dd><?= e($post['username']) ?></dd>
+                <dd><?= e(($post['author_name'] ?? '') ?: $post['username']) ?></dd>
             </div>
             <div>
                 <dt>작성일</dt>
@@ -26,10 +27,16 @@
         <?= render_post_body($post['body']) ?>
     </div>
 
-    <?php if ($post['file_path']): ?>
+    <?php if (!empty($files)): ?>
         <div class="post-file">
             <span>첨부파일</span>
-            <a href="/uploads/<?= e($post['file_path']) ?>" download><?= e($post['file_name']) ?></a>
+            <ul>
+                <?php foreach ($files as $file): ?>
+                    <li>
+                        <a href="/uploads/<?= e($file['file_path']) ?>" download><?= e($file['file_name']) ?></a>
+                    </li>
+                <?php endforeach; ?>
+            </ul>
         </div>
     <?php endif; ?>
 

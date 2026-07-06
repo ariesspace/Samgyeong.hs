@@ -4,7 +4,13 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title><?= e($title ?? '삼경고') ?></title>
-    <link rel="stylesheet" href="/styles.css">
+    <link rel="stylesheet" href="/styles.css?v=2026070531">
+    <link rel="stylesheet" href="/rules-document.css?v=2026070544">
+    <link rel="stylesheet" href="/post-files.css?v=2026070538">
+    <link rel="stylesheet" href="/point-rules.css?v=2026070545">
+    <link rel="stylesheet" href="/discipline-awards.css?v=2026070602">
+    <link rel="stylesheet" href="/board-tags.css?v=2026070542">
+    <link rel="stylesheet" href="/admin-point-rules.css?v=2026070541">
 </head>
 <body>
     <?php
@@ -19,9 +25,7 @@
         <div class="utility-actions">
             <?php if (!empty($_SESSION['user'])): ?>
                 <span><?= e(($_SESSION['user']['display_name'] ?? '') ?: $_SESSION['user']['username']) ?> · <?= e(role_label($_SESSION['user']['role'])) ?></span>
-                <?php if (($_SESSION['user']['role'] ?? '') !== 'guest'): ?>
-                    <a class="utility-button primary" href="/mypage"><span aria-hidden="true">⚙</span> 내 정보</a>
-                <?php endif; ?>
+                <a class="utility-button primary" href="/mypage"><span aria-hidden="true">⚙</span> 내 정보</a>
                 <?php if (($_SESSION['user']['role'] ?? '') === 'admin'): ?>
                     <a class="utility-button system" href="/admin/users"><span aria-hidden="true">▦</span> 시스템</a>
                 <?php endif; ?>

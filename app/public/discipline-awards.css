@@ -1,0 +1,260 @@
+.discipline-awards-page {
+    display: grid;
+    gap: 22px;
+}
+
+.discipline-summary {
+    margin: 4px 0 2px;
+}
+
+.discipline-section {
+    display: grid;
+    gap: 14px;
+}
+
+.discipline-section-head {
+    display: flex;
+    align-items: end;
+    justify-content: space-between;
+    gap: 14px;
+    padding-bottom: 10px;
+    border-bottom: 1px solid var(--line);
+}
+
+.discipline-section-head h2 {
+    margin: 0;
+    color: #1f2937;
+    font-size: 20px;
+}
+
+.discipline-section-head span {
+    color: #98a2b3;
+    font-size: 12px;
+    font-weight: 800;
+    letter-spacing: .12em;
+    text-transform: uppercase;
+    white-space: nowrap;
+}
+
+.reward-card-grid {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 12px;
+}
+
+.reward-card {
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+    min-height: 170px;
+    padding: 18px;
+    background: #fff;
+    border: 1px solid var(--line);
+    border-radius: 4px;
+}
+
+.reward-card > div {
+    display: flex;
+    align-items: start;
+    justify-content: space-between;
+    gap: 10px;
+    padding-bottom: 12px;
+    border-bottom: 1px solid #eef2f6;
+}
+
+.reward-card strong {
+    color: #1f2937;
+    font-size: 16px;
+}
+
+.reward-card span {
+    color: #b58b2b;
+    font-size: 14px;
+    font-weight: 900;
+    white-space: nowrap;
+}
+
+.reward-card ul,
+.reward-card p {
+    margin: 0;
+    color: #475467;
+    font-size: 14px;
+    line-height: 1.7;
+}
+
+.reward-card ul {
+    display: grid;
+    gap: 6px;
+    padding-left: 18px;
+}
+
+.reward-card-featured {
+    grid-column: 1 / -1;
+    min-height: 0;
+    color: white;
+    background: #173f31;
+    border-color: #173f31;
+}
+
+.reward-card-featured strong {
+    color: white;
+}
+
+.reward-card-featured p {
+    color: rgba(255, 255, 255, .82);
+}
+
+.discipline-rule-grid {
+    display: grid;
+    gap: 12px;
+}
+
+.discipline-rule-block {
+    display: grid;
+    gap: 0;
+    overflow: hidden;
+    background: #fff;
+    border: 1px solid var(--line);
+    border-radius: 4px;
+}
+
+.discipline-rule-head {
+    padding: 16px 18px 12px;
+    background: #f8fafc;
+    border-bottom: 1px solid var(--line);
+}
+
+.discipline-rule-head h3 {
+    margin: 0;
+    color: #1f2937;
+    font-size: 16px;
+}
+
+.discipline-rule-head p {
+    margin: 4px 0 0;
+    color: #667085;
+    font-size: 13px;
+}
+
+.discipline-rule-list {
+    display: grid;
+}
+
+.discipline-rule-item {
+    display: grid;
+    grid-template-columns: 84px minmax(0, 1fr);
+    gap: 14px;
+    align-items: start;
+    padding: 14px 18px;
+    border-bottom: 1px solid #eef2f6;
+}
+
+.discipline-rule-item:last-child {
+    border-bottom: 0;
+}
+
+.discipline-score {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: fit-content;
+    min-width: 54px;
+    padding: 4px 9px;
+    color: #b42318;
+    background: #fff1f1;
+    border-radius: 999px;
+    font-size: 13px;
+    font-weight: 900;
+    line-height: 1.2;
+    white-space: nowrap;
+}
+
+.discipline-rule-item p {
+    margin: 0;
+    color: #344054;
+    font-size: 14px;
+    line-height: 1.75;
+    word-break: keep-all;
+    overflow-wrap: anywhere;
+}
+
+.discipline-rule-item.is-emphasis {
+    background: #fffafa;
+}
+
+.discipline-rule-item.is-emphasis .discipline-score {
+    color: white;
+    background: #b42318;
+}
+
+.discipline-rule-item.is-emphasis p {
+    color: #912018;
+    font-weight: 900;
+}
+
+.discipline-note-section {
+    padding-top: 4px;
+}
+
+.discipline-note-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 14px;
+}
+
+.discipline-note-grid article {
+    padding: 18px;
+    background: #f8fafc;
+    border: 1px solid var(--line);
+    border-radius: 4px;
+}
+
+.discipline-note-grid h3 {
+    margin: 0 0 10px;
+    color: #1f2937;
+    font-size: 16px;
+}
+
+.discipline-note-grid ul {
+    display: grid;
+    gap: 7px;
+    margin: 0;
+    padding-left: 18px;
+    color: #475467;
+    font-size: 14px;
+    line-height: 1.7;
+}
+
+@media (max-width: 900px) {
+    .reward-card-grid,
+    .discipline-note-grid {
+        grid-template-columns: 1fr;
+    }
+}
+
+@media (max-width: 700px) {
+    .discipline-section-head {
+        display: grid;
+        gap: 4px;
+        align-items: start;
+    }
+
+    .discipline-section-head span {
+        white-space: normal;
+    }
+
+    .reward-card {
+        min-height: 0;
+        padding: 16px;
+    }
+
+    .discipline-rule-head {
+        padding: 14px 16px 10px;
+    }
+
+    .discipline-rule-item {
+        grid-template-columns: 64px minmax(0, 1fr);
+        gap: 10px;
+        padding: 13px 16px;
+    }
+}

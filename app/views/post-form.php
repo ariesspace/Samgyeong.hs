@@ -29,6 +29,7 @@
                     <button type="button" data-command="bold" title="굵게"><strong>B</strong></button>
                     <button type="button" data-command="italic" title="기울임"><em>I</em></button>
                     <button type="button" data-command="underline" title="밑줄"><u>U</u></button>
+                    <button type="button" data-image-upload title="이미지 삽입">그림</button>
                     <select data-font-family aria-label="글꼴">
                         <option value="Noto Sans KR">기본</option>
                         <option value="Malgun Gothic">맑은 고딕</option>
@@ -48,13 +49,24 @@
             </div>
         </div>
 
-        <label class="write-field">
+        <div class="write-field">
             <span>첨부 파일</span>
-            <input class="write-file-input" type="file" name="file">
-            <?php if (!empty($post['file_path'])): ?>
-                <small class="current-file">현재 첨부: <?= e($post['file_name']) ?> · 새 파일을 선택하면 교체됩니다.</small>
+            <input class="write-file-input" type="file" name="files[]" multiple>
+            <?php $currentFiles = $post['files'] ?? []; ?>
+            <?php if ($currentFiles): ?>
+                <div class="current-file-list">
+                    <strong>현재 첨부</strong>
+                    <?php foreach ($currentFiles as $index => $file): ?>
+                        <?php $deleteValue = $file['id'] ?? ('legacy:' . $file['file_path']); ?>
+                        <div class="current-file-item" data-current-file-item>
+                            <span><?= e($file['file_name']) ?></span>
+                            <button type="button" class="current-file-remove" data-delete-file="<?= e((string) $deleteValue) ?>" aria-label="<?= e($file['file_name']) ?> 삭제">×</button>
+                        </div>
+                    <?php endforeach; ?>
+                    <small class="current-file">×를 누른 파일은 화면에서 사라지고, 저장 시 삭제됩니다. 새 파일은 기존 첨부에 추가됩니다.</small>
+                </div>
             <?php endif; ?>
-        </label>
+        </div>
 
         <div class="write-actions">
             <a class="button ghost-button" href="/board/<?= e($board['slug']) ?>">취소</a>

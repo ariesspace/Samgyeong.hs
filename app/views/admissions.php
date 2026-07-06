@@ -128,6 +128,9 @@
             <strong>하늘을 우러러보는 마음, 사람을 존중하는 품격,<br>만물을 아끼는 태도.</strong>
             <span>삼경에서 함께 키워갈 다음 삼경인을 기다립니다.</span>
         </div>
-        <a class="button" href="/student-halls">관별 인원 현황 보기</a>
+        <div class="admissions-closing-actions">
+            <a class="button" href="/student-halls">관별 인원 현황 보기</a>
+            <a class="button admissions-apply-button" href="https://band.us/n/a0a1b6b7Nfne9" target="_blank" rel="noopener noreferrer">가입 신청 바로가기</a>
+        </div>
     </section>
 </section>

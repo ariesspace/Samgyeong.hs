@@ -21,6 +21,29 @@
         bodyInput.value = editor.innerHTML.trim();
     }
 
+    function insertImage(src) {
+        editor.focus();
+        const img = document.createElement('img');
+        img.src = src;
+        img.alt = '';
+        img.loading = 'lazy';
+        img.className = 'post-inline-image';
+        const selection = window.getSelection();
+        if (selection && selection.rangeCount > 0) {
+            const range = selection.getRangeAt(0);
+            range.deleteContents();
+            range.insertNode(img);
+            range.setStartAfter(img);
+            range.setEndAfter(img);
+            selection.removeAllRanges();
+            selection.addRange(range);
+        } else {
+            editor.appendChild(img);
+        }
+        editor.appendChild(document.createElement('br'));
+        syncBody();
+    }
+
     function normalizeFonts() {
         editor.querySelectorAll('font').forEach((font) => {
             const span = document.createElement('span');
@@ -60,6 +83,53 @@
         runCommand('fontSize', size);
     });
 
+    document.querySelector('[data-image-upload]')?.addEventListener('click', () => {
+        const input = document.createElement('input');
+        input.type = 'file';
+        input.accept = 'image/jpeg,image/png,image/webp,image/gif';
+        input.addEventListener('change', async () => {
+            const file = input.files?.[0];
+            if (!file) {
+                return;
+            }
+
+            const formData = new FormData();
+            formData.append('csrf', form.querySelector('input[name="csrf"]')?.value || '');
+            formData.append('image', file);
+
+            const response = await fetch('/editor/image-upload', {
+                method: 'POST',
+                body: formData
+            });
+            const result = await response.json().catch(() => null);
+
+            if (!response.ok || !result?.url) {
+                alert(result?.error || '이미지를 업로드할 수 없습니다.');
+                return;
+            }
+
+            insertImage(result.url);
+        });
+        input.click();
+    });
+
+    document.querySelectorAll('[data-delete-file]').forEach((button) => {
+        button.addEventListener('click', () => {
+            const value = button.dataset.deleteFile;
+            const item = button.closest('[data-current-file-item]');
+            if (!value || !item) {
+                return;
+            }
+
+            const hidden = document.createElement('input');
+            hidden.type = 'hidden';
+            hidden.name = 'delete_files[]';
+            hidden.value = value;
+            form.appendChild(hidden);
+            item.remove();
+        });
+    });
+
     editor.addEventListener('input', () => {
         editor.classList.remove('is-invalid');
         syncBody();
@@ -67,7 +137,7 @@
 
     form.addEventListener('submit', (event) => {
         syncBody();
-        if (editor.textContent.trim() === '') {
+        if (editor.textContent.trim() === '' && !editor.querySelector('img')) {
             event.preventDefault();
             editor.focus();
             editor.classList.add('is-invalid');

@@ -1,0 +1,186 @@
+.school-rules-body {
+    display: block;
+    padding: 30px 2px 0;
+    color: #1f2937;
+    font-family: "Noto Sans KR", "Malgun Gothic", "Apple SD Gothic Neo", system-ui, sans-serif;
+}
+
+.school-rules-body::before {
+    content: none;
+}
+
+.school-rules-title {
+    text-align: center;
+}
+
+.school-rules-title h1 {
+    width: 100%;
+    margin-right: auto;
+    margin-left: auto;
+    text-align: center;
+}
+
+.school-rules-title p {
+    text-align: right;
+    line-height: 1.7;
+}
+
+.school-rule-chapter {
+    display: block;
+    margin: 0;
+    padding: 0;
+    background: transparent;
+    border: 0;
+    box-shadow: none;
+}
+
+.school-rule-chapter + .school-rule-chapter {
+    margin-top: 38px;
+}
+
+.school-rule-chapter h2 {
+    display: block;
+    width: auto;
+    margin: 0 0 24px;
+    padding: 0;
+    color: #111827;
+    background: transparent;
+    border-radius: 0;
+    font-family: "Noto Sans KR", "Malgun Gothic", "Apple SD Gothic Neo", system-ui, sans-serif;
+    font-size: 20px;
+    font-weight: 700;
+    line-height: 1.5;
+    letter-spacing: .08em;
+    text-align: center;
+}
+
+.school-rule-chapter article {
+    display: block;
+    margin: 0 0 10px;
+    padding: 0;
+    background: transparent;
+    border: 0;
+}
+
+.school-rule-chapter article::after {
+    display: block;
+    height: 2px;
+    content: "";
+}
+
+.school-rule-chapter h3 {
+    display: inline;
+    margin: 0 8px 0 0;
+    color: #111827;
+    font-size: 16px;
+    font-weight: 900;
+    line-height: 1.95;
+}
+
+.school-rule-chapter p,
+.school-rule-chapter li {
+    color: #1f2937;
+    font-size: 16px;
+    line-height: 1.95;
+    letter-spacing: 0;
+    word-break: keep-all;
+}
+
+.school-rule-chapter p {
+    display: inline;
+    margin: 0;
+}
+
+.school-rule-chapter ol,
+.school-rule-chapter ul {
+    display: block;
+    margin: 6px 0 10px;
+    padding-left: 0;
+}
+
+.school-rule-chapter ol {
+    counter-reset: school-rule-item;
+    list-style: none;
+}
+
+.school-rule-chapter ol > li {
+    position: relative;
+    padding-left: 25px;
+}
+
+.school-rule-chapter ol > li::before {
+    position: absolute;
+    top: .48em;
+    left: 0;
+    display: inline-grid;
+    place-items: center;
+    width: 1.18em;
+    height: 1.18em;
+    color: #344054;
+    border: 1px solid #344054;
+    border-radius: 999px;
+    content: counter(school-rule-item);
+    counter-increment: school-rule-item;
+    font-family: "Noto Sans KR", "Malgun Gothic", "Apple SD Gothic Neo", system-ui, sans-serif;
+    font-size: .72em;
+    font-weight: 700;
+    line-height: 1;
+}
+
+.school-rule-chapter ol ol {
+    margin: 5px 0 5px;
+    padding-left: 22px;
+    list-style: decimal;
+}
+
+.school-rule-chapter ol ol > li {
+    padding-left: 0;
+}
+
+.school-rule-chapter ol ol > li::before {
+    content: none;
+}
+
+.school-rule-chapter ul {
+    padding-left: 22px;
+}
+
+.school-rule-chapter ul > li {
+    padding-left: 2px;
+}
+
+@media (max-width: 700px) {
+    .school-rules-title {
+        text-align: center;
+    }
+
+    .school-rules-title h1 {
+        width: 100%;
+        text-align: center;
+    }
+
+    .school-rules-title p {
+        text-align: right;
+    }
+
+    .school-rules-body {
+        padding-top: 22px;
+    }
+
+    .school-rule-chapter + .school-rule-chapter {
+        margin-top: 30px;
+    }
+
+    .school-rule-chapter h2 {
+        margin-bottom: 18px;
+        font-size: 18px;
+        letter-spacing: .04em;
+    }
+
+    .school-rule-chapter h3,
+    .school-rule-chapter p,
+    .school-rule-chapter li {
+        font-size: 15px;
+        line-height: 1.9;
+    }
+}

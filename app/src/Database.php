@@ -48,6 +48,15 @@ final class Database
                 FOREIGN KEY(author_id) REFERENCES users(id)
             );
 
+            CREATE TABLE IF NOT EXISTS post_files (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                post_id INTEGER NOT NULL,
+                file_name TEXT NOT NULL,
+                file_path TEXT NOT NULL,
+                created_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP,
+                FOREIGN KEY(post_id) REFERENCES posts(id)
+            );
+
             CREATE TABLE IF NOT EXISTS hall_members (
                 id INTEGER PRIMARY KEY AUTOINCREMENT,
                 user_id INTEGER,
@@ -107,6 +116,15 @@ final class Database
                 updated_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP
             );
 
+            CREATE TABLE IF NOT EXISTS point_list_rules (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                category TEXT NOT NULL CHECK(category IN ('demerit', 'merit', 'submit')),
+                score_label TEXT NOT NULL DEFAULT '',
+                rule_text TEXT NOT NULL,
+                sort_order INTEGER NOT NULL DEFAULT 0,
+                updated_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP
+            );
+
             CREATE TABLE IF NOT EXISTS hall_activities (
                 id INTEGER PRIMARY KEY AUTOINCREMENT,
                 hall_key TEXT NOT NULL CHECK(hall_key IN ('gyeongcheon', 'gyeongin', 'gyeongmul')),
@@ -153,6 +171,21 @@ final class Database
             $pdo->exec("ALTER TABLE posts ADD COLUMN tag TEXT NOT NULL DEFAULT '공지'");
         }
 
+        $pdo->exec('CREATE INDEX IF NOT EXISTS idx_post_files_post_id ON post_files(post_id)');
+        $pdo->exec("
+            INSERT INTO post_files (post_id, file_name, file_path)
+            SELECT posts.id, posts.file_name, posts.file_path
+            FROM posts
+            WHERE posts.file_path IS NOT NULL
+              AND posts.file_path != ''
+              AND NOT EXISTS (
+                  SELECT 1
+                  FROM post_files
+                  WHERE post_files.post_id = posts.id
+                    AND post_files.file_path = posts.file_path
+              )
+        ");
+
         $columns = $pdo->query("PRAGMA table_info(point_records)")->fetchAll();
         $pointColumns = array_column($columns, 'name');
         if (!in_array('canceled_at', $pointColumns, true)) {
@@ -175,6 +208,7 @@ final class Database
         }
 
         self::ensureGuestBoardReadPermissions($pdo);
+        self::ensureCouncilMinutesReadPermissions($pdo);
 
         $postCount = (int) $pdo->query('SELECT COUNT(*) FROM posts')->fetchColumn();
         if ($postCount === 0) {
@@ -184,15 +218,10 @@ final class Database
                 VALUES (?, ?, ?, ?, ?, ?, ?)
             ');
             $samples = [
-                ['notice', '모집', '2027학년도 삼경인문고등학교 신입생 모집 요강', '신입생 모집 일정과 제출 서류를 안내합니다.', 152, '2026-07-02 09:00:00'],
-                ['notice', '안내', '1학기 기말고사 시행 및 경천/경인/경물관 자습실 운영 안내', '기말고사 기간 중 자습실 운영 시간을 확인해 주세요.', 89, '2026-06-25 09:00:00'],
-                ['notice', '공지', '전통 예절 교육 주간 명사 특강 안내', '전통 예절 교육 주간 특강 일정을 안내합니다.', 45, '2026-06-10 09:00:00'],
                 ['resources', '규정', '학교생활 규정 개정본', '2026학년도 학교생활 규정 개정본입니다.', 320, '2026-03-02 09:00:00'],
                 ['resources', '안내', '관별 자습실 이용 안내', '경천관, 경인관, 경물관 자습실 이용 수칙입니다.', 215, '2026-03-02 09:00:00'],
                 ['council', '회의', '1학년 신입생 교육 진행 상황 공유', '학생회 신입생 교육 진행 상황을 공유합니다.', 12, '2026-07-01 09:00:00'],
                 ['council', '의견', '경물관 시설 보수 의견 처리 방안', '접수된 시설 보수 의견의 처리 방안을 논의합니다.', 8, '2026-06-28 09:00:00'],
-                ['minutes', '공지', '삼경원 회의록 열람 안내', '삼경원 회의록은 재학생 이상 로그인 후 열람할 수 있습니다.', 18, '2026-07-02 09:00:00'],
-                ['minutes', '회의', '7월 정기 회의록', '7월 정기 회의 주요 안건과 결정 사항을 공유합니다.', 14, '2026-07-01 09:00:00'],
             ];
 
             foreach ($samples as $sample) {
@@ -200,20 +229,29 @@ final class Database
             }
         }
 
-        $minutesCount = (int) $pdo->query("SELECT COUNT(*) FROM posts WHERE board = 'minutes'")->fetchColumn();
-        if ($minutesCount === 0) {
-            $adminId = (int) $pdo->query("SELECT id FROM users WHERE username = 'admin'")->fetchColumn();
-            $stmt = $pdo->prepare('
-                INSERT INTO posts (board, tag, title, body, author_id, views, created_at)
-                VALUES (?, ?, ?, ?, ?, ?, ?)
-            ');
-            $minutesSamples = [
-                ['minutes', '공지', '삼경원 회의록 열람 안내', '삼경원 회의록은 재학생 이상 로그인 후 열람할 수 있습니다.', 18, '2026-07-02 09:00:00'],
-                ['minutes', '회의', '7월 정기 회의록', '7월 정기 회의 주요 안건과 결정 사항을 공유합니다.', 14, '2026-07-01 09:00:00'],
+        $activityCount = (int) $pdo->query('SELECT COUNT(*) FROM hall_activities')->fetchColumn();
+        if ($activityCount === 0) {
+            $activities = [
+                ['gyeongcheon', '명언 필사', '고전 문학, 사자성어, 오늘의 명언을 자필로 필사하고 인증합니다.', '필사 사진과 짧은 소감을 삼경원에 제출합니다.', '하늘의 이치를 배우고 바른 생각을 세우는 경천의 기상을 기릅니다.', 10],
+                ['gyeongcheon', '하늘 관찰 일지', '날씨, 구름, 계절의 변화를 기록하며 하루를 성찰합니다.', '관찰 사진 1장과 3줄 일지를 함께 제출합니다.', '작은 변화 속에서 질서와 이치를 발견하는 태도를 기릅니다.', 20],
+                ['gyeongin', '경인 우체통', '감사하거나 칭찬하고 싶은 선후배, 동료에게 예의를 갖춘 편지를 씁니다.', '삼경원이 편지를 모아 점호 또는 공지 시간에 전달합니다.', '타인을 존중하고 공동체의 온도를 높이는 경인 정신을 실천합니다.', 30],
+                ['gyeongin', '인사 실천 챌린지', '하루 동안 먼저 인사하고 상대를 배려한 사례를 기록합니다.', '실천 사례와 느낀 점을 간단한 카드 형식으로 제출합니다.', '말과 태도로 사람을 공경하는 습관을 만듭니다.', 40],
+                ['gyeongmul', '사물 감사 그림일기', '하루 동안 도움을 준 사물을 그리고 감사한 이유를 적습니다.', '그림 또는 사진과 감사 문장을 함께 제출합니다.', '주변의 사물과 환경을 아끼는 경물 정신을 표현합니다.', 50],
+                ['gyeongmul', '공간 돌봄 캠페인', '자습실, 복도, 공용 공간을 정리하고 개선점을 제안합니다.', '정리 전후 사진 또는 개선 제안서를 제출합니다.', '함께 쓰는 공간을 존중하고 책임 있게 관리하는 태도를 기릅니다.', 60],
+                ['gyeongcheon', '당일 시사 요약', '당일 주요 시사 이슈와 지식을 공유하며 정세 파악 능력을 기릅니다.', '학업에 도움이 되거나 보도 가치가 있는 뉴스의 핵심 내용을 골라 2줄 이상 요약해 단대에 보고합니다.', '매일 12:00(KST)부터 선착순 3인만 인정하며, 비방·미확인 루머·정치적 편향이 있으면 제외합니다.', 70],
+                ['gyeongin', '언어 트렌드 분석', '최신 문화 트렌드와 유행어를 분석해 선후배 간 소통 역량을 높입니다.', '최근 커뮤니티나 SNS 유행어 또는 의미 있는 사자성어 1개와 유래, 경어체 예문 3개를 단대에 공유합니다.', '상시 제출 가능하지만 일일 선착순 3인만 상점을 부여하며, 중복 단어는 인정하지 않습니다.', 80],
+                ['gyeongin', '난제 발제', '재학생 간 논리적 토론을 유도하고 단대의 상호 작용을 활성화합니다.', '선후배와 동기가 한마디씩 거들 수밖에 없는 난제를 제시해 대화를 이끕니다.', '본인 제외 재학생 3명 이상의 유효 답변이 필요하며, 상시 제출 가능하되 일일 1회만 인정합니다.', 90],
+                ['gyeongmul', '심야 학업 간식 추천', '야간 자율학습 중 메뉴 선정 문제를 데이터와 논리로 해결해 학우를 돕습니다.', '편의점 메뉴 레시피 또는 기온·습도·학업량을 바탕으로 최적의 야식 메뉴 2개를 추천합니다.', '메뉴명만 쓰지 않고 선택 근거를 함께 제시해야 하며, 19:00 이후 심야 학업 시간대 1회만 인정합니다.', 100],
+                ['gyeongcheon', '지식 나눔 카드뉴스 제작', '학교 구성원에게 도움이 되는 정보와 지식을 카드뉴스 또는 요약 노트로 공유합니다.', '학업 팁, 교칙 해설, 학교생활 안내 등을 제목이 있는 표지 1장 이상과 본문 1장 이상으로 구성해 제출합니다.', '핵심 내용과 활용 포인트가 분명해야 하며, 유사 주제 반복이나 정보성이 부족한 경우 삼경원 심사로 기각될 수 있습니다.', 110],
             ];
 
-            foreach ($minutesSamples as $sample) {
-                $stmt->execute([$sample[0], $sample[1], $sample[2], $sample[3], $adminId, $sample[4], $sample[5]]);
+            $stmt = $pdo->prepare('
+                INSERT INTO hall_activities (hall_key, title, summary, method, value, sort_order)
+                VALUES (?, ?, ?, ?, ?, ?)
+            ');
+
+            foreach ($activities as $activity) {
+                $stmt->execute($activity);
             }
         }
 
@@ -235,75 +273,64 @@ final class Database
             }
         }
 
-        self::seedPointRules($pdo);
-        self::seedHallActivities($pdo);
-    }
+        $ruleCount = (int) $pdo->query('SELECT COUNT(*) FROM point_rules')->fetchColumn();
+        if ($ruleCount === 0) {
+            $rules = [
+                ['personal', '-3점', '참회록(반성문) 작성', 0, 10],
+                ['personal', '-5점', '버피 또는 토끼뜀 20회, 참회록(반성문) 작성', 0, 20],
+                ['personal', '-8점', '버피 또는 토끼뜀 30회, 참회록(반성문) 작성, 삼경원 관찰 꼬리표 3일 부착', 0, 30],
+                ['personal', '-10점', '버피 또는 토끼뜀 40회, 예절 교육기간 1일', 0, 40],
+                ['personal', '-13점', '버피 또는 토끼뜀 50회, 예절 교육기간 2일, 직속 3학년 선배(관장) 연대 참회록 작성', 0, 50],
+                ['personal', '-15점', '퇴학 처리 (재입학 불가)', 1, 60],
+                ['year', '-10점', '학년 전체 꼬리표 3일 부착, 학년 전체 참회록(반성문) 작성', 0, 10],
+                ['year', '-15점', '학년 릴레이 버피 또는 토끼뜀 20회, 릴레이 참회록(반성문) 작성, 삼경원 관찰 꼬리표 3일 부착', 0, 20],
+                ['year', '-20점', '학년 릴레이 버피 또는 토끼뜀 30회, 학년 예절 교육기간 1일', 0, 30],
+                ['year', '-25점', '학년 릴레이 버피 또는 토끼뜀 40회, 학년 예절 교육기간 2일', 0, 40],
+                ['year', '-30점', '학년 전체 집합', 1, 50],
+                ['hall', '-10점', '관 전체 꼬리표 3일 부착, 관 전체 참회록(반성문) 작성', 0, 10],
+                ['hall', '-15점', '관 소속 인원 릴레이 버피 또는 토끼뜀 20회, 릴레이 참회록(반성문) 작성, 삼경원 관찰 꼬리표 3일 부착', 0, 20],
+                ['hall', '-20점', '관 소속 인원 릴레이 버피 또는 토끼뜀 30회, 관 예절 교육기간 1일', 0, 30],
+                ['hall', '-25점', '관 소속 인원 릴레이 버피 또는 토끼뜀 40회, 관 예절 교육기간 2일', 0, 40],
+                ['hall', '-30점', '관 전체 집합', 1, 50],
+                ['school', '-25점', '전체 점호 실시 (삼경원 및 3학년 주도)', 1, 10],
+            ];
 
-    private static function seedHallActivities(PDO $pdo): void
-    {
-        $count = (int) $pdo->query('SELECT COUNT(*) FROM hall_activities')->fetchColumn();
-        if ($count > 0) {
-            return;
+            $stmt = $pdo->prepare('
+                INSERT INTO point_rules (category, score_label, rule_text, is_emphasis, sort_order)
+                VALUES (?, ?, ?, ?, ?)
+            ');
+
+            foreach ($rules as $rule) {
+                $stmt->execute($rule);
+            }
         }
 
-        $activities = [
-            ['gyeongcheon', '명언 필사', '고전 문학, 사자성어, 오늘의 명언을 자필로 필사하고 인증합니다.', '필사 사진과 짧은 소감을 삼경원에 제출합니다.', '하늘의 이치를 배우고 바른 생각을 세우는 경천의 기상을 기릅니다.', 10],
-            ['gyeongcheon', '하늘 관찰 일지', '날씨, 구름, 계절의 변화를 기록하며 하루를 성찰합니다.', '관찰 사진 1장과 3줄 일지를 함께 제출합니다.', '작은 변화 속에서 질서와 이치를 발견하는 태도를 기릅니다.', 20],
-            ['gyeongin', '경인 우체통', '감사하거나 칭찬하고 싶은 선후배, 동료에게 예의를 갖춘 편지를 씁니다.', '삼경원이 편지를 모아 점호 또는 공지 시간에 전달합니다.', '타인을 존중하고 공동체의 온도를 높이는 경인 정신을 실천합니다.', 30],
-            ['gyeongin', '인사 실천 챌린지', '하루 동안 먼저 인사하고 상대를 배려한 사례를 기록합니다.', '실천 사례와 느낀 점을 간단한 카드 형식으로 제출합니다.', '말과 태도로 사람을 공경하는 습관을 만듭니다.', 40],
-            ['gyeongmul', '사물 감사 그림일기', '하루 동안 도움을 준 사물을 그리고 감사한 이유를 적습니다.', '그림 또는 사진과 감사 문장을 함께 제출합니다.', '주변의 사물과 환경을 아끼는 경물 정신을 표현합니다.', 50],
-            ['gyeongmul', '공간 돌봄 캠페인', '자습실, 복도, 공용 공간을 정리하고 개선점을 제안합니다.', '정리 전후 사진 또는 개선 제안서를 제출합니다.', '함께 쓰는 공간을 존중하고 책임 있게 관리하는 태도를 기릅니다.', 60],
-            ['gyeongcheon', '당일 시사 요약', '당일 주요 시사 이슈와 지식을 공유하며 정세 파악 능력을 기릅니다.', '학업에 도움이 되거나 보도 가치가 있는 뉴스의 핵심 내용을 골라 2줄 이상 요약해 단대에 보고합니다.', '매일 12:00(KST)부터 선착순 3인만 인정하며, 비방·미확인 루머·정치적 편향이 있으면 제외합니다.', 70],
-            ['gyeongin', '언어 트렌드 분석', '최신 문화 트렌드와 유행어를 분석해 선후배 간 소통 역량을 높입니다.', '최근 커뮤니티나 SNS 유행어 또는 의미 있는 사자성어 1개와 유래, 경어체 예문 3개를 단대에 공유합니다.', '상시 제출 가능하지만 일일 선착순 3인만 상점을 부여하며, 중복 단어는 인정하지 않습니다.', 80],
-            ['gyeongin', '난제 발제', '재학생 간 논리적 토론을 유도하고 단대의 상호 작용을 활성화합니다.', '선후배와 동기가 한마디씩 거들 수밖에 없는 난제를 제시해 대화를 이끕니다.', '본인 제외 재학생 3명 이상의 유효 답변이 필요하며, 상시 제출 가능하되 일일 1회만 인정합니다.', 90],
-            ['gyeongmul', '심야 학업 간식 추천', '야간 자율학습 중 메뉴 선정 문제를 데이터와 논리로 해결해 학우를 돕습니다.', '편의점 메뉴 레시피 또는 기온·습도·학업량을 바탕으로 최적의 야식 메뉴 2개를 추천합니다.', '메뉴명만 쓰지 않고 선택 근거를 함께 제시해야 하며, 19:00 이후 심야 학업 시간대 1회만 인정합니다.', 100],
-            ['gyeongcheon', '지식 나눔 카드뉴스 제작', '학교 구성원에게 도움이 되는 정보와 지식을 카드뉴스 또는 요약 노트로 공유합니다.', '학업 팁, 교칙 해설, 학교생활 안내 등을 제목이 있는 표지 1장 이상과 본문 1장 이상으로 구성해 제출합니다.', '핵심 내용과 활용 포인트가 분명해야 하며, 유사 주제 반복이나 정보성이 부족한 경우 삼경원 심사로 기각될 수 있습니다.', 110],
-        ];
+        $listRuleCount = (int) $pdo->query('SELECT COUNT(*) FROM point_list_rules')->fetchColumn();
+        if ($listRuleCount === 0) {
+            $rules = [
+                ['demerit', '1점', '메시지 삭제(혼란을 줄 만한 공지사항의 오류 및 개인정보 관련 사항은 제외), 인튀, 읽씹, 무단결석', 10],
+                ['demerit', '2점', '인사 미흡, 관등 미흡, 대답 미흡, 현활 중 5분 내 미대답 (예절 기간)', 20],
+                ['demerit', '3점', '호칭/경어 미흡, 일지 미작성, 무단불참', 30],
+                ['demerit', '4점', '비속어 사용, 지시 불이행, 단체 대화방 내 싸움, 보안 규정 위반, 잠수 중 읽음', 40],
+                ['demerit', '1~5점', '선배 재량', 50],
+                ['merit', '1점', '일지 작성, 회의록 작성, 자유 게시판 작성, 갈매기 홍보 상점, 출석 4회 이상, 근무 상점(삼경원)', 10],
+                ['merit', '2점', '교내 자치 활동 (하루 1회 제한), 한자 깜지 200회(한글 포함), 삼경인 선서문 3회 작성 (하루 1회 제한), 예절 테스트, 문장 깜지', 20],
+                ['merit', '3점', '후배 교육 자료 작성 (하루 1회 제한)', 30],
+                ['merit', '4점', '추가 규정 작성 예정', 40],
+                ['merit', '1~5점', '선배 재량', 50],
+                ['submit', '', '모든 상점 제출물은 성의 있게 작성되어야 하며, 삼경원 과반수 동의 시 기각될 수 있다.', 10],
+                ['submit', '', '상점 제출은 삼경원 개인 채팅방으로 하며, 사진 첨부를 통해 얻는 모든 상점은 상단 또는 하단에 "2026.OO.OO (관명) O학년 OOO"을 작성하고 그 위에 형광펜으로 표시해야 인정된다.', 20],
+                ['submit', '', '상점 제출 시, [(관명) O학년 OOO, (상점 사유) + O점]의 양식을 갖춰야 한다.', 30],
+            ];
 
-        $stmt = $pdo->prepare('
-            INSERT INTO hall_activities (hall_key, title, summary, method, value, sort_order)
-            VALUES (?, ?, ?, ?, ?, ?)
-        ');
+            $stmt = $pdo->prepare('
+                INSERT INTO point_list_rules (category, score_label, rule_text, sort_order)
+                VALUES (?, ?, ?, ?)
+            ');
 
-        foreach ($activities as $activity) {
-            $stmt->execute($activity);
-        }
-    }
-
-    private static function seedPointRules(PDO $pdo): void
-    {
-        $count = (int) $pdo->query('SELECT COUNT(*) FROM point_rules')->fetchColumn();
-        if ($count > 0) {
-            return;
-        }
-
-        $rules = [
-            ['personal', '-3점', '참회록(반성문) 작성', 0, 10],
-            ['personal', '-5점', '버피 또는 토끼뜀 20회, 참회록(반성문) 작성', 0, 20],
-            ['personal', '-8점', '버피 또는 토끼뜀 30회, 참회록(반성문) 작성, 삼경원 관찰 꼬리표 3일 부착', 0, 30],
-            ['personal', '-10점', '버피 또는 토끼뜀 40회, 예절 교육기간 1일', 0, 40],
-            ['personal', '-13점', '버피 또는 토끼뜀 50회, 예절 교육기간 2일, 직속 3학년 선배(관장) 연대 참회록 작성', 0, 50],
-            ['personal', '-15점', '퇴학 처리 (재입학 불가)', 1, 60],
-            ['year', '-10점', '학년 전체 꼬리표 3일 부착, 학년 전체 참회록(반성문) 작성', 0, 10],
-            ['year', '-15점', '학년 릴레이 버피 또는 토끼뜀 20회, 릴레이 참회록(반성문) 작성, 삼경원 관찰 꼬리표 3일 부착', 0, 20],
-            ['year', '-20점', '학년 릴레이 버피 또는 토끼뜀 30회, 학년 예절 교육기간 1일', 0, 30],
-            ['year', '-25점', '학년 릴레이 버피 또는 토끼뜀 40회, 학년 예절 교육기간 2일', 0, 40],
-            ['year', '-30점', '학년 전체 집합', 1, 50],
-            ['hall', '-10점', '관 전체 꼬리표 3일 부착, 관 전체 참회록(반성문) 작성', 0, 10],
-            ['hall', '-15점', '관 소속 인원 릴레이 버피 또는 토끼뜀 20회, 릴레이 참회록(반성문) 작성, 삼경원 관찰 꼬리표 3일 부착', 0, 20],
-            ['hall', '-20점', '관 소속 인원 릴레이 버피 또는 토끼뜀 30회, 관 예절 교육기간 1일', 0, 30],
-            ['hall', '-25점', '관 소속 인원 릴레이 버피 또는 토끼뜀 40회, 관 예절 교육기간 2일', 0, 40],
-            ['hall', '-30점', '관 전체 집합', 1, 50],
-            ['school', '-25점', '전체 점호 실시 (삼경원 및 3학년 주도)', 1, 10],
-        ];
-
-        $stmt = $pdo->prepare('
-            INSERT INTO point_rules (category, score_label, rule_text, is_emphasis, sort_order)
-            VALUES (?, ?, ?, ?, ?)
-        ');
-
-        foreach ($rules as $rule) {
-            $stmt->execute($rule);
+            foreach ($rules as $rule) {
+                $stmt->execute($rule);
+            }
         }
     }
 
@@ -374,5 +401,30 @@ final class Database
             $roles[] = 'guest';
             $stmt->execute([json_encode(array_values(array_unique($roles)), JSON_UNESCAPED_UNICODE), $row['board_slug']]);
         }
+    }
+
+    private static function ensureCouncilMinutesReadPermissions(PDO $pdo): void
+    {
+        $stmt = $pdo->prepare('SELECT read_roles FROM board_permissions WHERE board_slug = ?');
+        $stmt->execute(['council-minutes']);
+        $rawRoles = $stmt->fetchColumn();
+        if ($rawRoles === false) {
+            return;
+        }
+
+        $roles = json_decode((string) $rawRoles, true);
+        if (!is_array($roles)) {
+            $roles = [];
+        }
+
+        foreach (['student', 'council', 'admin'] as $role) {
+            if (!in_array($role, $roles, true)) {
+                $roles[] = $role;
+            }
+        }
+
+        $roles = array_values(array_diff(array_unique($roles), ['guest']));
+        $stmt = $pdo->prepare('UPDATE board_permissions SET read_roles = ?, updated_at = CURRENT_TIMESTAMP WHERE board_slug = ?');
+        $stmt->execute([json_encode($roles, JSON_UNESCAPED_UNICODE), 'council-minutes']);
     }
 }

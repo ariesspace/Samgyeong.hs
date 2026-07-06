@@ -28,6 +28,12 @@ function require_mypage_access(Auth $auth): array
     return $user;
 }
 
+if (str_starts_with($path, '/api/')) {
+    require_once __DIR__ . '/../src/Api.php';
+    samgyeong_api_handle_request($db, $path, $method);
+}
+
+
 if ($method === 'POST') {
     verify_csrf();
 }
@@ -37,10 +43,34 @@ if ($path === '/login' && $method === 'POST') {
     exit;
 }
 
+if ($path === '/editor/image-upload' && $method === 'POST') {
+    if (!$auth->user()) {
+        http_response_code(403);
+        header('Content-Type: application/json; charset=utf-8');
+        echo json_encode(['error' => '로그인이 필요합니다.'], JSON_UNESCAPED_UNICODE);
+        exit;
+    }
+
+    $uploaded = save_editor_image('image');
+    header('Content-Type: application/json; charset=utf-8');
+    if (!$uploaded) {
+        http_response_code(400);
+        echo json_encode(['error' => 'jpg, png, webp, gif 이미지만 업로드할 수 있습니다.'], JSON_UNESCAPED_UNICODE);
+        exit;
+    }
+
+    echo json_encode(['url' => '/uploads/' . $uploaded], JSON_UNESCAPED_UNICODE);
+    exit;
+}
+
 $routes = [
     '/' => function () use ($db) {
         $homeBoards = [];
         foreach (Board::all($db) as $slug => $board) {
+            if ($slug === 'notice') {
+                continue;
+            }
+
             $stmt = $db->prepare("
                 SELECT id, title, tag, created_at
                 FROM posts
@@ -57,21 +87,29 @@ $routes = [
     '/about' => fn () => view('about', ['title' => '학교소개 및 교훈']),
     '/symbols' => fn () => view('symbols', ['title' => '학교 상징']),
     '/pledge' => fn () => view('pledge', ['title' => '삼경인 선서문']),
-    '/history' => fn () => view('page', ['title' => '학교 연혁', 'body' => "학교 연혁을 정리하는 페이지입니다. 설립, 주요 행사, 교육과정 변화 등을 순서대로 게시할 수 있습니다."]),
-    '/location' => fn () => view('page', ['title' => '오시는 길', 'body' => "주소, 교통편, 문의처를 정리하는 페이지입니다."]),
+    '/history' => fn () => view('history', ['title' => '학교 연혁']),
+    '/location' => fn () => view('location', ['title' => '오시는 길']),
     '/admissions' => fn () => view('admissions', ['title' => '모집요강']),
     '/rules' => function () use ($auth) {
         if (!$auth->user()) {
             return view('access-denied', ['title' => '권한 없음', 'message' => '재학생 이상 로그인 후 접근이 가능한 메뉴입니다.']);
         }
-        return view('school-rules', ['title' => '생활 규정']);
+        return view('school-rules', ['title' => '학교규칙']);
+    },
+    '/rules/life' => function () use ($auth) {
+        if (!$auth->user()) {
+            return view('access-denied', ['title' => '권한 없음', 'message' => '재학생 이상 로그인 후 접근이 가능한 메뉴입니다.']);
+        }
+        return view('student-life-rules', ['title' => '학교생활규정']);
     },
     '/rules/points' => function () use ($auth, $db) {
         if (!$auth->user()) {
             return view('access-denied', ['title' => '권한 없음', 'message' => '재학생 이상 로그인 후 접근이 가능한 메뉴입니다.']);
         }
-        return view('points-guide', [
+        $rules = $db->query('SELECT * FROM point_list_rules ORDER BY category, sort_order, id')->fetchAll();
+        return view('point-rules', [
             'title' => '상벌점 리스트',
+            'sections' => build_point_list_sections($rules),
         ]);
     },
     '/rules/discipline' => function () use ($auth, $db) {
@@ -85,12 +123,7 @@ $routes = [
         ]);
     },
     '/student-halls' => function () use ($db) {
-        $rows = $db->query("
-            SELECT hall_members.*, users.role AS account_role
-            FROM hall_members
-            LEFT JOIN users ON users.id = hall_members.user_id
-            ORDER BY hall_members.hall_key, hall_members.sort_order, hall_members.id
-        ")->fetchAll();
+        $rows = $db->query('SELECT * FROM hall_members ORDER BY hall_key, sort_order, id')->fetchAll();
         $halls = hall_definitions();
         $selectedHall = $_GET['hall'] ?? '';
         return view('student-halls', [
@@ -273,6 +306,7 @@ if ($path === '/admin/users/delete' && $method === 'POST') {
         if (!$user || ($user['username'] ?? '') === 'guest') {
             redirect('/admin/users');
         }
+
         delete_upload($user['photo_path'] ?? null);
 
         $stmt = $db->prepare('DELETE FROM hall_members WHERE user_id = ?');
@@ -315,7 +349,7 @@ if ($path === '/admin/boards/permissions/save' && $method === 'POST') {
     $auth->requireRole(['admin']);
     $readPresets = [
         'public' => [],
-        'student' => ['guest', 'student', 'council', 'admin'],
+        'student' => ['student', 'council', 'admin'],
         'council' => ['council', 'admin'],
         'admin' => ['admin'],
     ];
@@ -351,6 +385,253 @@ if ($path === '/admin/boards/permissions/save' && $method === 'POST') {
     redirect('/admin/boards/permissions?saved=1');
 }
 
+if ($path === '/admin/point-rules') {
+    $auth->requireRole(['admin']);
+    $rules = $db->query('SELECT * FROM point_rules ORDER BY category, sort_order, id')->fetchAll();
+    echo view('admin-point-rules', [
+        'title' => '상벌점 기준 관리',
+        'sections' => build_point_rule_sections($rules),
+        'saved' => ($_GET['saved'] ?? '') === '1',
+        'deleted' => ($_GET['deleted'] ?? '') === '1',
+    ]);
+    exit;
+}
+
+if ($path === '/admin/point-rules/save' && $method === 'POST') {
+    $auth->requireRole(['admin']);
+    $ids = $_POST['id'] ?? [];
+    $categories = $_POST['category'] ?? [];
+    $scoreLabels = $_POST['score_label'] ?? [];
+    $ruleTexts = $_POST['rule_text'] ?? [];
+    $emphasisIds = $_POST['is_emphasis'] ?? [];
+
+    if (is_array($ids) && is_array($categories) && is_array($scoreLabels) && is_array($ruleTexts)) {
+        $checkedIds = is_array($emphasisIds) ? array_map('intval', $emphasisIds) : [];
+        $sortCounters = [];
+        $stmt = $db->prepare('
+            UPDATE point_rules
+            SET score_label = ?, rule_text = ?, is_emphasis = ?, sort_order = ?, updated_at = CURRENT_TIMESTAMP
+            WHERE id = ?
+        ');
+
+        $count = min(count($ids), count($categories), count($scoreLabels), count($ruleTexts));
+        for ($i = 0; $i < $count; $i++) {
+            $id = (int) $ids[$i];
+            $category = (string) $categories[$i];
+            $scoreLabel = trim((string) $scoreLabels[$i]);
+            $ruleText = trim((string) $ruleTexts[$i]);
+            if (!isset(point_rule_categories()[$category])) {
+                continue;
+            }
+
+            $sortCounters[$category] = ($sortCounters[$category] ?? 0) + 10;
+            $sortOrder = $sortCounters[$category];
+            if ($id > 0 && $scoreLabel !== '' && $ruleText !== '') {
+                $stmt->execute([$scoreLabel, $ruleText, in_array($id, $checkedIds, true) ? 1 : 0, $sortOrder, $id]);
+            }
+        }
+    }
+
+    redirect('/admin/point-rules?saved=1');
+}
+
+if ($path === '/admin/point-rules/add' && $method === 'POST') {
+    $auth->requireRole(['admin']);
+    $category = $_POST['category'] ?? '';
+    $scoreLabel = trim((string) ($_POST['score_label'] ?? ''));
+    $ruleText = trim((string) ($_POST['rule_text'] ?? ''));
+    $isEmphasis = isset($_POST['is_emphasis']) ? 1 : 0;
+
+    if (isset(point_rule_categories()[$category]) && $scoreLabel !== '' && $ruleText !== '') {
+        $stmt = $db->prepare('SELECT COALESCE(MAX(sort_order), 0) + 10 FROM point_rules WHERE category = ?');
+        $stmt->execute([$category]);
+        $sortOrder = (int) $stmt->fetchColumn();
+
+        $stmt = $db->prepare('
+            INSERT INTO point_rules (category, score_label, rule_text, is_emphasis, sort_order)
+            VALUES (?, ?, ?, ?, ?)
+        ');
+        $stmt->execute([$category, $scoreLabel, $ruleText, $isEmphasis, $sortOrder]);
+    }
+
+    redirect('/admin/point-rules?saved=1');
+}
+
+if ($path === '/admin/point-rules/delete' && $method === 'POST') {
+    $auth->requireRole(['admin']);
+    $id = (int) ($_POST['id'] ?? 0);
+    if ($id > 0) {
+        $stmt = $db->prepare('DELETE FROM point_rules WHERE id = ?');
+        $stmt->execute([$id]);
+    }
+
+    redirect('/admin/point-rules?deleted=1');
+}
+
+if ($path === '/admin/point-list-rules') {
+    require_superadmin($auth);
+    $rules = $db->query('SELECT * FROM point_list_rules ORDER BY category, sort_order, id')->fetchAll();
+    echo view('admin-point-list-rules', [
+        'title' => '상벌점 리스트 관리',
+        'sections' => build_point_list_sections($rules),
+        'saved' => ($_GET['saved'] ?? '') === '1',
+        'deleted' => ($_GET['deleted'] ?? '') === '1',
+    ]);
+    exit;
+}
+
+if ($path === '/admin/point-list-rules/save' && $method === 'POST') {
+    require_superadmin($auth);
+    $ids = $_POST['id'] ?? [];
+    $categories = $_POST['category'] ?? [];
+    $scoreLabels = $_POST['score_label'] ?? [];
+    $ruleTexts = $_POST['rule_text'] ?? [];
+
+    if (is_array($ids) && is_array($categories) && is_array($scoreLabels) && is_array($ruleTexts)) {
+        $sortCounters = [];
+        $stmt = $db->prepare('
+            UPDATE point_list_rules
+            SET score_label = ?, rule_text = ?, sort_order = ?, updated_at = CURRENT_TIMESTAMP
+            WHERE id = ?
+        ');
+
+        $count = min(count($ids), count($categories), count($scoreLabels), count($ruleTexts));
+        for ($i = 0; $i < $count; $i++) {
+            $id = (int) $ids[$i];
+            $category = (string) $categories[$i];
+            $scoreLabel = trim((string) $scoreLabels[$i]);
+            $ruleText = trim((string) $ruleTexts[$i]);
+            if (!isset(point_list_rule_categories()[$category])) {
+                continue;
+            }
+            if ($category !== 'submit' && $scoreLabel === '') {
+                continue;
+            }
+
+            $sortCounters[$category] = ($sortCounters[$category] ?? 0) + 10;
+            $sortOrder = $sortCounters[$category];
+            if ($id > 0 && $ruleText !== '') {
+                $stmt->execute([$scoreLabel, $ruleText, $sortOrder, $id]);
+            }
+        }
+    }
+
+    redirect('/admin/point-list-rules?saved=1');
+}
+
+if ($path === '/admin/point-list-rules/add' && $method === 'POST') {
+    require_superadmin($auth);
+    $category = $_POST['category'] ?? '';
+    $scoreLabel = trim((string) ($_POST['score_label'] ?? ''));
+    $ruleText = trim((string) ($_POST['rule_text'] ?? ''));
+
+    if (isset(point_list_rule_categories()[$category]) && $ruleText !== '' && ($category === 'submit' || $scoreLabel !== '')) {
+        $stmt = $db->prepare('SELECT COALESCE(MAX(sort_order), 0) + 10 FROM point_list_rules WHERE category = ?');
+        $stmt->execute([$category]);
+        $sortOrder = (int) $stmt->fetchColumn();
+
+        $stmt = $db->prepare('
+            INSERT INTO point_list_rules (category, score_label, rule_text, sort_order)
+            VALUES (?, ?, ?, ?)
+        ');
+        $stmt->execute([$category, $scoreLabel, $ruleText, $sortOrder]);
+    }
+
+    redirect('/admin/point-list-rules?saved=1');
+}
+
+if ($path === '/admin/point-list-rules/delete' && $method === 'POST') {
+    require_superadmin($auth);
+    $id = (int) ($_POST['id'] ?? 0);
+    if ($id > 0) {
+        $stmt = $db->prepare('DELETE FROM point_list_rules WHERE id = ?');
+        $stmt->execute([$id]);
+    }
+
+    redirect('/admin/point-list-rules?deleted=1');
+}
+
+if ($path === '/admin/hall-activities') {
+    $auth->requireRole(['admin']);
+    $activities = $db->query('SELECT * FROM hall_activities ORDER BY sort_order, id')->fetchAll();
+    echo view('admin-hall-activities', [
+        'title' => '관별 자치활동 관리',
+        'activities' => $activities,
+        'halls' => hall_definitions(),
+        'saved' => ($_GET['saved'] ?? '') === '1',
+        'deleted' => ($_GET['deleted'] ?? '') === '1',
+    ]);
+    exit;
+}
+
+if ($path === '/admin/hall-activities/save' && $method === 'POST') {
+    $auth->requireRole(['admin']);
+    $ids = $_POST['id'] ?? [];
+    $hallKeys = $_POST['hall_key'] ?? [];
+    $titles = $_POST['title'] ?? [];
+    $summaries = $_POST['summary'] ?? [];
+    $methods = $_POST['method'] ?? [];
+    $values = $_POST['value'] ?? [];
+    $halls = hall_definitions();
+
+    if (is_array($ids) && is_array($hallKeys) && is_array($titles) && is_array($summaries) && is_array($methods) && is_array($values)) {
+        $stmt = $db->prepare('
+            UPDATE hall_activities
+            SET hall_key = ?, title = ?, summary = ?, method = ?, value = ?, sort_order = ?, updated_at = CURRENT_TIMESTAMP
+            WHERE id = ?
+        ');
+        $count = min(count($ids), count($hallKeys), count($titles), count($summaries), count($methods), count($values));
+        for ($i = 0; $i < $count; $i++) {
+            $id = (int) $ids[$i];
+            $hallKey = (string) $hallKeys[$i];
+            $title = trim((string) $titles[$i]);
+            $summary = trim((string) $summaries[$i]);
+            $methodText = trim((string) $methods[$i]);
+            $valueText = trim((string) $values[$i]);
+
+            if ($id <= 0 || !isset($halls[$hallKey]) || $title === '' || $summary === '' || $methodText === '' || $valueText === '') {
+                continue;
+            }
+
+            $stmt->execute([$hallKey, $title, $summary, $methodText, $valueText, ($i + 1) * 10, $id]);
+        }
+    }
+
+    redirect('/admin/hall-activities?saved=1');
+}
+
+if ($path === '/admin/hall-activities/add' && $method === 'POST') {
+    $auth->requireRole(['admin']);
+    $hallKey = $_POST['hall_key'] ?? '';
+    $title = trim((string) ($_POST['title'] ?? ''));
+    $summary = trim((string) ($_POST['summary'] ?? ''));
+    $methodText = trim((string) ($_POST['method'] ?? ''));
+    $valueText = trim((string) ($_POST['value'] ?? ''));
+    $halls = hall_definitions();
+
+    if (isset($halls[$hallKey]) && $title !== '' && $summary !== '' && $methodText !== '' && $valueText !== '') {
+        $sortOrder = (int) $db->query('SELECT COALESCE(MAX(sort_order), 0) + 10 FROM hall_activities')->fetchColumn();
+        $stmt = $db->prepare('
+            INSERT INTO hall_activities (hall_key, title, summary, method, value, sort_order)
+            VALUES (?, ?, ?, ?, ?, ?)
+        ');
+        $stmt->execute([$hallKey, $title, $summary, $methodText, $valueText, $sortOrder]);
+    }
+
+    redirect('/admin/hall-activities?saved=1');
+}
+
+if ($path === '/admin/hall-activities/delete' && $method === 'POST') {
+    $auth->requireRole(['admin']);
+    $id = (int) ($_POST['id'] ?? 0);
+    if ($id > 0) {
+        $stmt = $db->prepare('DELETE FROM hall_activities WHERE id = ?');
+        $stmt->execute([$id]);
+    }
+
+    redirect('/admin/hall-activities?deleted=1');
+}
+
 if ($path === '/mypage') {
     $mypageUser = require_mypage_access($auth);
     $stmt = $db->prepare('SELECT id, username, role, display_name, hall_key, year, photo_path FROM users WHERE id = ?');
@@ -365,9 +646,9 @@ if ($path === '/mypage') {
 }
 
 if ($path === '/mypage/profile' && $method === 'POST') {
-    $mypageUser = require_mypage_access($auth);
+    require_mypage_access($auth);
 
-    $userId = (int) $mypageUser['id'];
+    $userId = (int) $auth->user()['id'];
     $hasPhotoUpload = !empty($_FILES['photo']['tmp_name']) && ($_FILES['photo']['error'] ?? UPLOAD_ERR_NO_FILE) !== UPLOAD_ERR_NO_FILE;
 
     if ($hasPhotoUpload) {
@@ -391,9 +672,9 @@ if ($path === '/mypage/profile' && $method === 'POST') {
 }
 
 if ($path === '/mypage/photo' && $method === 'POST') {
-    $mypageUser = require_mypage_access($auth);
+    require_mypage_access($auth);
 
-    $userId = (int) $mypageUser['id'];
+    $userId = (int) $auth->user()['id'];
     $stmt = $db->prepare('SELECT photo_path FROM users WHERE id = ?');
     $stmt->execute([$userId]);
     $currentPhoto = $stmt->fetchColumn() ?: null;
@@ -413,7 +694,7 @@ if ($path === '/mypage/photo' && $method === 'POST') {
 }
 
 if ($path === '/mypage/password' && $method === 'POST') {
-    $mypageUser = require_mypage_access($auth);
+    require_mypage_access($auth);
     $password = (string) ($_POST['password'] ?? '');
     $confirm = (string) ($_POST['password_confirm'] ?? '');
     if ($password === '' || $password !== $confirm) {
@@ -421,13 +702,13 @@ if ($path === '/mypage/password' && $method === 'POST') {
     }
 
     $stmt = $db->prepare('UPDATE users SET password_hash = ? WHERE id = ?');
-    $stmt->execute([password_hash($password, PASSWORD_DEFAULT), $mypageUser['id']]);
+    $stmt->execute([password_hash($password, PASSWORD_DEFAULT), $auth->user()['id']]);
     redirect('/mypage?saved=password');
 }
 
 if ($path === '/mypage/points') {
-    $mypageUser = require_mypage_access($auth);
-    $userId = (int) $mypageUser['id'];
+    require_mypage_access($auth);
+    $userId = (int) $auth->user()['id'];
     $stmt = $db->prepare('
         SELECT point_records.*, issuer.display_name AS issuer_name, issuer.username AS issuer_username
         FROM point_records
@@ -451,6 +732,7 @@ if ($path === '/points/assign') {
     ")->fetchAll();
     $records = $db->query('
         SELECT point_records.*, target.display_name AS target_name, target.username AS target_username,
+               target.hall_key AS target_hall_key, target.year AS target_year,
                issuer.display_name AS issuer_name, issuer.username AS issuer_username
         FROM point_records
         JOIN users AS target ON target.id = point_records.user_id
@@ -555,26 +837,26 @@ if ($path === '/points/assign/delete' && $method === 'POST') {
 
         if ($record && empty($record['canceled_at']) && empty($record['cancellation_of_id'])) {
             $cancelType = $record['type'] === 'merit' ? 'demerit' : 'merit';
-            $cancelReason = ($record['type'] === 'merit' ? '상점 취소' : '벌점 취소') . ': ' . $record['reason'];
-            $today = date('Y-m-d');
+            $cancelReason = ($record['type'] === 'merit' ? '상점 취소: ' : '벌점 취소: ') . (string) $record['reason'];
 
             $db->beginTransaction();
             try {
-                $stmt = $db->prepare('
+                $insert = $db->prepare('
                     INSERT INTO point_records (user_id, type, points, reason, issuer_id, issued_at, cancellation_of_id)
                     VALUES (?, ?, ?, ?, ?, ?, ?)
                 ');
-                $stmt->execute([
-                    $record['user_id'],
+                $insert->execute([
+                    (int) $record['user_id'],
                     $cancelType,
                     (int) $record['points'],
                     $cancelReason,
-                    $auth->user()['id'],
-                    $today,
+                    (int) $auth->user()['id'],
+                    date('Y-m-d'),
                     $id,
                 ]);
-                $stmt = $db->prepare('UPDATE point_records SET canceled_at = ?, canceled_by = ? WHERE id = ?');
-                $stmt->execute([date('Y-m-d H:i:s'), $auth->user()['id'], $id]);
+
+                $update = $db->prepare('UPDATE point_records SET canceled_at = CURRENT_TIMESTAMP, canceled_by = ? WHERE id = ?');
+                $update->execute([(int) $auth->user()['id'], $id]);
 
                 $db->commit();
             } catch (Throwable $e) {
@@ -584,170 +866,6 @@ if ($path === '/points/assign/delete' && $method === 'POST') {
         }
     }
     redirect('/points/assign?saved=canceled');
-}
-
-if ($path === '/admin/point-rules') {
-    $auth->requireRole(['admin']);
-    $rules = $db->query('SELECT * FROM point_rules ORDER BY category, sort_order, id')->fetchAll();
-    echo view('admin-point-rules', [
-        'title' => '상벌점 기준 관리',
-        'sections' => build_point_rule_sections($rules),
-        'saved' => ($_GET['saved'] ?? '') === '1',
-        'deleted' => ($_GET['deleted'] ?? '') === '1',
-    ]);
-    exit;
-}
-
-if ($path === '/admin/point-rules/save' && $method === 'POST') {
-    $auth->requireRole(['admin']);
-    $ids = $_POST['id'] ?? [];
-    $categories = $_POST['category'] ?? [];
-    $scoreLabels = $_POST['score_label'] ?? [];
-    $ruleTexts = $_POST['rule_text'] ?? [];
-    $emphasisIds = $_POST['is_emphasis'] ?? [];
-
-    if (is_array($ids) && is_array($categories) && is_array($scoreLabels) && is_array($ruleTexts)) {
-        $checkedIds = is_array($emphasisIds) ? array_map('intval', $emphasisIds) : [];
-        $sortCounters = [];
-        $stmt = $db->prepare('
-            UPDATE point_rules
-            SET score_label = ?, rule_text = ?, is_emphasis = ?, sort_order = ?, updated_at = CURRENT_TIMESTAMP
-            WHERE id = ?
-        ');
-
-        $count = min(count($ids), count($categories), count($scoreLabels), count($ruleTexts));
-        for ($i = 0; $i < $count; $i++) {
-            $id = (int) $ids[$i];
-            $category = (string) $categories[$i];
-            $scoreLabel = trim((string) $scoreLabels[$i]);
-            $ruleText = trim((string) $ruleTexts[$i]);
-            if (!isset(point_rule_categories()[$category])) {
-                continue;
-            }
-
-            $sortCounters[$category] = ($sortCounters[$category] ?? 0) + 10;
-            $sortOrder = $sortCounters[$category];
-            if ($id > 0 && $scoreLabel !== '' && $ruleText !== '') {
-                $stmt->execute([$scoreLabel, $ruleText, in_array($id, $checkedIds, true) ? 1 : 0, $sortOrder, $id]);
-            }
-        }
-    }
-
-    redirect('/admin/point-rules?saved=1');
-}
-
-if ($path === '/admin/point-rules/add' && $method === 'POST') {
-    $auth->requireRole(['admin']);
-    $category = $_POST['category'] ?? '';
-    $scoreLabel = trim((string) ($_POST['score_label'] ?? ''));
-    $ruleText = trim((string) ($_POST['rule_text'] ?? ''));
-    $isEmphasis = isset($_POST['is_emphasis']) ? 1 : 0;
-
-    if (isset(point_rule_categories()[$category]) && $scoreLabel !== '' && $ruleText !== '') {
-        $stmt = $db->prepare('SELECT COALESCE(MAX(sort_order), 0) + 10 FROM point_rules WHERE category = ?');
-        $stmt->execute([$category]);
-        $sortOrder = (int) $stmt->fetchColumn();
-
-        $stmt = $db->prepare('
-            INSERT INTO point_rules (category, score_label, rule_text, is_emphasis, sort_order)
-            VALUES (?, ?, ?, ?, ?)
-        ');
-        $stmt->execute([$category, $scoreLabel, $ruleText, $isEmphasis, $sortOrder]);
-    }
-
-    redirect('/admin/point-rules?saved=1');
-}
-
-if ($path === '/admin/point-rules/delete' && $method === 'POST') {
-    $auth->requireRole(['admin']);
-    $id = (int) ($_POST['id'] ?? 0);
-    if ($id > 0) {
-        $stmt = $db->prepare('DELETE FROM point_rules WHERE id = ?');
-        $stmt->execute([$id]);
-    }
-
-    redirect('/admin/point-rules?deleted=1');
-}
-
-if ($path === '/admin/hall-activities') {
-    $auth->requireRole(['admin']);
-    $activities = $db->query('SELECT * FROM hall_activities ORDER BY sort_order, id')->fetchAll();
-    echo view('admin-hall-activities', [
-        'title' => '관별 자치활동 관리',
-        'activities' => $activities,
-        'halls' => hall_definitions(),
-        'saved' => ($_GET['saved'] ?? '') === '1',
-        'deleted' => ($_GET['deleted'] ?? '') === '1',
-    ]);
-    exit;
-}
-
-if ($path === '/admin/hall-activities/save' && $method === 'POST') {
-    $auth->requireRole(['admin']);
-    $ids = $_POST['id'] ?? [];
-    $hallKeys = $_POST['hall_key'] ?? [];
-    $titles = $_POST['title'] ?? [];
-    $summaries = $_POST['summary'] ?? [];
-    $methods = $_POST['method'] ?? [];
-    $values = $_POST['value'] ?? [];
-    $halls = hall_definitions();
-
-    if (is_array($ids) && is_array($hallKeys) && is_array($titles) && is_array($summaries) && is_array($methods) && is_array($values)) {
-        $stmt = $db->prepare('
-            UPDATE hall_activities
-            SET hall_key = ?, title = ?, summary = ?, method = ?, value = ?, sort_order = ?, updated_at = CURRENT_TIMESTAMP
-            WHERE id = ?
-        ');
-        $count = min(count($ids), count($hallKeys), count($titles), count($summaries), count($methods), count($values));
-        for ($i = 0; $i < $count; $i++) {
-            $id = (int) $ids[$i];
-            $hallKey = (string) $hallKeys[$i];
-            $title = trim((string) $titles[$i]);
-            $summary = trim((string) $summaries[$i]);
-            $methodText = trim((string) $methods[$i]);
-            $valueText = trim((string) $values[$i]);
-
-            if ($id <= 0 || !isset($halls[$hallKey]) || $title === '' || $summary === '' || $methodText === '' || $valueText === '') {
-                continue;
-            }
-
-            $stmt->execute([$hallKey, $title, $summary, $methodText, $valueText, ($i + 1) * 10, $id]);
-        }
-    }
-
-    redirect('/admin/hall-activities?saved=1');
-}
-
-if ($path === '/admin/hall-activities/add' && $method === 'POST') {
-    $auth->requireRole(['admin']);
-    $hallKey = $_POST['hall_key'] ?? '';
-    $title = trim((string) ($_POST['title'] ?? ''));
-    $summary = trim((string) ($_POST['summary'] ?? ''));
-    $methodText = trim((string) ($_POST['method'] ?? ''));
-    $valueText = trim((string) ($_POST['value'] ?? ''));
-    $halls = hall_definitions();
-
-    if (isset($halls[$hallKey]) && $title !== '' && $summary !== '' && $methodText !== '' && $valueText !== '') {
-        $sortOrder = (int) $db->query('SELECT COALESCE(MAX(sort_order), 0) + 10 FROM hall_activities')->fetchColumn();
-        $stmt = $db->prepare('
-            INSERT INTO hall_activities (hall_key, title, summary, method, value, sort_order)
-            VALUES (?, ?, ?, ?, ?, ?)
-        ');
-        $stmt->execute([$hallKey, $title, $summary, $methodText, $valueText, $sortOrder]);
-    }
-
-    redirect('/admin/hall-activities?saved=1');
-}
-
-if ($path === '/admin/hall-activities/delete' && $method === 'POST') {
-    $auth->requireRole(['admin']);
-    $id = (int) ($_POST['id'] ?? 0);
-    if ($id > 0) {
-        $stmt = $db->prepare('DELETE FROM hall_activities WHERE id = ?');
-        $stmt->execute([$id]);
-    }
-
-    redirect('/admin/hall-activities?deleted=1');
 }
 
 if ($path === '/admin/halls') {
@@ -894,7 +1012,7 @@ function sync_user_hall_member(PDO $db, int $userId): void
     $hallKey = (string) ($user['hall_key'] ?? '');
     $year = (int) ($user['year'] ?? 0);
     $displayName = trim((string) ($user['display_name'] ?? ''));
-    $shouldAppear = in_array($user['role'], ['student', 'council'], true)
+    $shouldAppear = $user['role'] !== 'admin'
         && $displayName !== ''
         && isset($halls[$hallKey])
         && $year >= 1
@@ -1178,6 +1296,43 @@ function delete_upload(?string $path): void
     if (is_file($target)) {
         unlink($target);
     }
+}
+
+function save_editor_image(string $field): ?string
+{
+    if (empty($_FILES[$field]['tmp_name']) || ($_FILES[$field]['error'] ?? UPLOAD_ERR_NO_FILE) !== UPLOAD_ERR_OK) {
+        return null;
+    }
+
+    $extensions = [
+        'image/jpeg' => 'jpg',
+        'image/png' => 'png',
+        'image/webp' => 'webp',
+        'image/gif' => 'gif',
+    ];
+
+    $mime = '';
+    if (function_exists('finfo_open')) {
+        $finfo = finfo_open(FILEINFO_MIME_TYPE);
+        $mime = $finfo ? (string) finfo_file($finfo, $_FILES[$field]['tmp_name']) : '';
+        if ($finfo) {
+            finfo_close($finfo);
+        }
+    }
+
+    $extension = $extensions[$mime] ?? null;
+    if ($extension === null) {
+        return null;
+    }
+
+    $stored = 'post_' . date('YmdHis') . '_' . bin2hex(random_bytes(4)) . '.' . $extension;
+    $target = __DIR__ . '/../storage/uploads/' . $stored;
+
+    if (!move_uploaded_file($_FILES[$field]['tmp_name'], $target)) {
+        return null;
+    }
+
+    return $stored;
 }
 
 if ($path === '/calendar/events/store' && $method === 'POST') {

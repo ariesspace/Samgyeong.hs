@@ -1,0 +1,85 @@
+.point-rules-page {
+    display: grid;
+    gap: 20px;
+}
+
+.point-rules-page .points-summary {
+    margin: 4px 0 2px;
+}
+
+.points-rule-section {
+    display: grid;
+    gap: 12px;
+}
+
+.points-rule-section h2 {
+    margin: 0;
+    color: #1f2937;
+    font-size: 20px;
+}
+
+.point-rules-table th:first-child,
+.point-rules-table td:first-child {
+    width: 92px;
+}
+
+.point-rules-table th:nth-child(2),
+.point-rules-table td:nth-child(2) {
+    width: 90px;
+    white-space: nowrap;
+}
+
+.points-submit-rule {
+    padding: 18px;
+    background: #f8fafc;
+    border: 1px solid var(--line);
+    border-radius: 4px;
+}
+
+.points-submit-rule ol {
+    display: grid;
+    gap: 8px;
+    margin: 0;
+    padding-left: 20px;
+    color: #344054;
+    line-height: 1.7;
+}
+
+@media (max-width: 700px) {
+    .point-rules-table th:first-child,
+    .point-rules-table td:first-child,
+    .point-rules-table th:nth-child(2),
+    .point-rules-table td:nth-child(2) {
+        width: 100%;
+    }
+
+    .point-rules-table.my-points-table tr {
+        padding: 16px;
+    }
+
+    .point-rules-table.my-points-table td {
+        grid-template-columns: 72px minmax(0, 1fr);
+        gap: 12px;
+        align-items: start;
+        padding: 8px 0;
+    }
+
+    .point-rules-table .point-type {
+        min-width: 46px;
+        width: fit-content;
+        justify-content: center;
+        justify-self: start;
+        white-space: nowrap;
+        line-height: 1.2;
+    }
+
+    .point-rules-table .title-cell {
+        line-height: 1.75;
+        word-break: keep-all;
+        overflow-wrap: anywhere;
+    }
+
+    .points-submit-rule {
+        padding: 14px;
+    }
+}

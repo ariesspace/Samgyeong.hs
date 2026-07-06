@@ -5,7 +5,7 @@
     <?php if ($saved === '1'): ?>
         <div class="success">상벌점이 저장되었습니다.</div>
     <?php elseif ($saved === 'canceled'): ?>
-        <div class="success">상벌점 취소 기록이 추가되었습니다.</div>
+        <div class="success">상벌점 취소 기록이 저장되었습니다.</div>
     <?php endif; ?>
 
     <section class="points-assign-panel">
@@ -18,9 +18,7 @@
                     <option value="">학생 선택</option>
                     <?php foreach ($students as $student): ?>
                         <option value="<?= e((string) $student['id']) ?>">
-                            <?= e(($student['display_name'] ?: $student['username'])) ?>
-                            <?= e(hall_label($student['hall_key'] ?? '')) ?>
-                            <?= (int) ($student['year'] ?? 0) > 0 ? e((string) $student['year']) . '학년' : '' ?>
+                            <?= e(student_label($student)) ?>
                         </option>
                     <?php endforeach; ?>
                 </select>
@@ -89,31 +87,31 @@
                     <?php
                         $isCanceled = !empty($record['canceled_at']);
                         $isCancellation = !empty($record['cancellation_of_id']);
-                        $canCancel = !$isCanceled && !$isCancellation;
                     ?>
-                    <tr class="<?= $isCanceled || $isCancellation ? 'point-record-muted' : '' ?>">
+                    <tr>
                         <td><?= e($record['issued_at']) ?></td>
-                        <td><?= e($record['target_name'] ?: $record['target_username']) ?></td>
+                        <td><?= e(student_label([
+                            'display_name' => $record['target_name'] ?? '',
+                            'username' => $record['target_username'] ?? '',
+                            'hall_key' => $record['target_hall_key'] ?? '',
+                            'year' => $record['target_year'] ?? 0,
+                        ])) ?></td>
                         <td><span class="point-type <?= $record['type'] === 'merit' ? 'good' : 'bad' ?>"><?= $record['type'] === 'merit' ? '상점' : '벌점' ?></span></td>
                         <td><?= e(($record['type'] === 'merit' ? '+' : '-') . (string) $record['points']) ?></td>
                         <td class="title-cell">
                             <?= e($record['reason']) ?>
-                            <?php if ($isCanceled): ?>
-                                <span class="point-status">취소됨</span>
-                            <?php elseif ($isCancellation): ?>
-                                <span class="point-status">취소 기록</span>
-                            <?php endif; ?>
+                            <?php if ($isCanceled): ?><span class="muted small-note">취소됨</span><?php endif; ?>
                         </td>
                         <td><?= e($record['issuer_name'] ?: $record['issuer_username']) ?></td>
                         <td>
-                            <?php if ($canCancel): ?>
-                                <form class="board-row-delete" method="post" action="/points/assign/delete" onsubmit="return confirm('이 상벌점 기록을 취소하시겠습니까? 원 기록은 보존되고 반대 점수의 취소 기록이 추가됩니다.');">
+                            <?php if (!$isCanceled && !$isCancellation): ?>
+                                <form class="board-row-delete" method="post" action="/points/assign/delete" onsubmit="return confirm('이 상벌점 기록을 취소 처리할까요? 원본은 남고 반대 점수의 취소 기록이 추가됩니다.');">
                                     <input type="hidden" name="csrf" value="<?= e(csrf_token()) ?>">
                                     <input type="hidden" name="id" value="<?= e((string) $record['id']) ?>">
                                     <button type="submit">취소</button>
                                 </form>
                             <?php else: ?>
-                                <span class="point-status">-</span>
+                                <span class="muted small-note">처리 완료</span>
                             <?php endif; ?>
                         </td>
                     </tr>

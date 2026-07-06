@@ -1,0 +1,14 @@
+.board-badge-notice {
+    color: #b42318;
+    background: #fff1f1;
+    border: 1px solid #fecdca;
+}
+
+.board-title-link.is-notice-title {
+    color: #b42318;
+    font-weight: 800;
+}
+
+.board-title-link.is-notice-title:hover {
+    color: #912018;
+}

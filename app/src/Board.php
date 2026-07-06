@@ -8,15 +8,15 @@ final class Board
         'resources' => [
             'name' => '자료실',
             'badge' => '자료',
-            'tags' => ['자료', '규정', '안내', '일반'],
-            'read_roles' => ['guest', 'student', 'council', 'admin'],
+            'tags' => ['공지', '자료', '규정', '안내', '일반'],
+            'read_roles' => ['student', 'council', 'admin'],
             'write_roles' => ['council', 'admin'],
         ],
         'free' => [
             'name' => '자유게시판',
             'badge' => '일반',
             'tags' => ['일반', '질문', '정보', '의견'],
-            'read_roles' => ['guest', 'student', 'council', 'admin'],
+            'read_roles' => ['student', 'council', 'admin'],
             'write_roles' => ['student', 'council', 'admin'],
         ],
         'council' => [
@@ -26,10 +26,10 @@ final class Board
             'read_roles' => ['council', 'admin'],
             'write_roles' => ['council', 'admin'],
         ],
-        'minutes' => [
-            'name' => '회의록',
-            'badge' => '회의',
-            'tags' => ['공지', '회의', '결정', '보고', '일반'],
+        'council-minutes' => [
+            'name' => '회의록 게시판',
+            'badge' => '회의록',
+            'tags' => ['회의록', '공지', '회의', '일반'],
             'read_roles' => ['student', 'council', 'admin'],
             'write_roles' => ['council', 'admin'],
         ],

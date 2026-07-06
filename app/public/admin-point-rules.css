@@ -1,0 +1,83 @@
+.admin-point-rules-page {
+    display: grid;
+    gap: 18px;
+}
+
+.point-rule-admin-sections {
+    display: grid;
+    gap: 18px;
+}
+
+.point-rule-admin-block,
+.point-rule-inline-add {
+    padding: 18px;
+    background: white;
+    border: 1px solid var(--line);
+    border-radius: 4px;
+}
+
+.point-rule-admin-head h2 {
+    margin: 0;
+    color: #1f2937;
+    font-size: 20px;
+}
+
+.point-rule-admin-head p {
+    margin: 6px 0 0;
+    color: var(--muted);
+    font-size: 14px;
+}
+
+.point-rule-admin-list {
+    display: grid;
+    gap: 10px;
+    margin-top: 14px;
+}
+
+.point-rule-admin-row,
+.point-rule-inline-add-form {
+    display: grid;
+    grid-template-columns: 120px minmax(0, 1fr) 76px 42px;
+    gap: 10px;
+    align-items: end;
+}
+
+.point-rule-admin-row label,
+.point-rule-inline-add-form label {
+    display: grid;
+    gap: 5px;
+    color: #344054;
+    font-size: 13px;
+    font-weight: 800;
+}
+
+.point-rule-admin-row textarea,
+.point-rule-inline-add-form textarea {
+    resize: vertical;
+}
+
+.point-rule-admin-row .checkbox-field,
+.point-rule-inline-add-form .checkbox-field {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    min-height: 38px;
+}
+
+.point-rule-inline-add {
+    margin-top: 14px;
+    background: #f8fafc;
+}
+
+.point-rule-inline-add-title {
+    margin-bottom: 10px;
+    color: #1f2937;
+    font-weight: 900;
+}
+
+@media (max-width: 800px) {
+    .point-rule-admin-row,
+    .point-rule-inline-add-form {
+        grid-template-columns: 1fr;
+    }
+}

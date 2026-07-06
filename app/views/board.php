@@ -41,20 +41,20 @@
                 <?php endif; ?>
 
                 <?php foreach ($posts as $post): ?>
-                    <?php $isNoticePost = ($post['tag'] ?? '') === '공지'; ?>
                     <tr>
                         <td class="col-no">
                             <?= e((string) $post['id']) ?>
                         </td>
                         <td class="board-title-cell">
-                            <a class="board-title-link <?= $isNoticePost ? 'is-notice-title' : '' ?>" href="/board/<?= e($board['slug']) ?>/post/<?= e((string) $post['id']) ?>">
+                            <?php $tag = $post['tag'] ?? $board['badge']; ?>
+                            <a class="board-title-link <?= $tag === '공지' ? 'is-notice-title' : '' ?>" href="/board/<?= e($board['slug']) ?>/post/<?= e((string) $post['id']) ?>">
                                 <?= e($post['title']) ?>
                             </a>
                         </td>
                         <td class="board-file-cell">
-                            <?php if ($post['file_path']): ?>
-                                <a class="file-download-link" href="/uploads/<?= e($post['file_path']) ?>" download title="<?= e($post['file_name'] ?: '첨부파일') ?> 다운로드">
-                                    <span aria-hidden="true">↓</span> 다운로드
+                            <?php if (($post['attachment_count'] ?? 0) > 0): ?>
+                                <a class="file-download-link" href="/board/<?= e($board['slug']) ?>/post/<?= e((string) $post['id']) ?>" title="첨부파일 <?= e((string) $post['attachment_count']) ?>개">
+                                    <span aria-hidden="true">↓</span> <?= e((string) $post['attachment_count']) ?>개
                                 </a>
                             <?php else: ?>
                                 <span class="no-file">-</span>
