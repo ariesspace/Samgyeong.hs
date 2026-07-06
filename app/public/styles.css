@@ -6025,6 +6025,15 @@ select {
     gap: 18px;
 }
 
+.shop-standalone-shell {
+    width: min(1280px, calc(100% - 48px));
+    margin: 28px auto 54px;
+}
+
+.shop-standalone-shell .shop-page {
+    padding: 0;
+}
+
 .shop-topbar {
     display: flex;
     align-items: center;
@@ -6496,6 +6505,11 @@ select {
 }
 
 @media (max-width: 700px) {
+    .shop-standalone-shell {
+        width: min(100% - 24px, 640px);
+        margin: 16px auto 34px;
+    }
+
     .shop-topbar,
     .shop-promo {
         display: grid;

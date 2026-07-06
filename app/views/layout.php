@@ -4,7 +4,7 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title><?= e($title ?? '삼경고') ?></title>
-    <link rel="stylesheet" href="/styles.css?v=2026070618">
+    <link rel="stylesheet" href="/styles.css?v=2026070619">
     <link rel="stylesheet" href="/rules-document.css?v=2026070544">
     <link rel="stylesheet" href="/post-files.css?v=2026070538">
     <link rel="stylesheet" href="/point-rules.css?v=2026070615">
@@ -18,6 +18,7 @@
         $requestPath = parse_url($requestUri, PHP_URL_PATH) ?: '/';
         $groups = nav_groups();
         $isHome = $requestPath === '/';
+        $isStandaloneShop = $requestPath === '/samgyeong-mall';
         $activeGroup = $isHome ? '' : active_group($requestPath);
     ?>
     <div class="utility-bar">
@@ -59,6 +60,10 @@
 
     <?php if ($isHome): ?>
         <?= $content ?>
+    <?php elseif ($isStandaloneShop): ?>
+        <main class="shop-standalone-shell">
+            <?= $content ?>
+        </main>
     <?php else: ?>
         <section class="site-hero sub-hero">
             <div>
