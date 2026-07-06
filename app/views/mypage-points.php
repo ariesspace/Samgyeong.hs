@@ -68,7 +68,7 @@
         </tbody>
     </table>
 
-    <h2 class="subsection-title">삼경몰 상품 목록</h2>
+    <h2 id="mall-orders" class="subsection-title">삼경몰 상품 목록</h2>
     <table class="board-table points-table my-points-table">
         <thead>
             <tr>

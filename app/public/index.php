@@ -109,6 +109,24 @@ function mall_cart_exceeds_stock(PDO $db, array $items): bool
     return false;
 }
 
+function mall_receipt_orders(PDO $db, int $userId, array $orderIds): array
+{
+    $ids = array_values(array_unique(array_filter(array_map('intval', $orderIds))));
+    if ($ids === []) {
+        return [];
+    }
+
+    $placeholders = implode(',', array_fill(0, count($ids), '?'));
+    $stmt = $db->prepare("
+        SELECT *
+        FROM mall_orders
+        WHERE user_id = ? AND id IN ($placeholders)
+        ORDER BY id ASC
+    ");
+    $stmt->execute(array_merge([$userId], $ids));
+    return $stmt->fetchAll();
+}
+
 function mall_cart_details(PDO $db): array
 {
     $cart = mall_cart();
@@ -388,6 +406,23 @@ $routes = [
             'error' => $_GET['error'] ?? '',
         ]);
     },
+    '/samgyeong-mall/receipt' => function () use ($auth, $db) {
+        $user = $auth->user();
+        if (!can_access_mall($db, $user)) {
+            return view('access-denied', [
+                'title' => '결제 완료',
+                'message' => page_access_denied_message(page_read_roles($db, 'samgyeong-mall')),
+            ]);
+        }
+
+        $orders = $user ? mall_receipt_orders($db, (int) $user['id'], $_SESSION['last_mall_order_ids'] ?? []) : [];
+
+        return view('mall-receipt', [
+            'title' => '결제 완료',
+            'orders' => $orders,
+            'user' => $user,
+        ]);
+    },
     '/council' => function () use ($db) {
         if ($denied = require_page_read_access($db, 'council-intro')) {
             return $denied;
@@ -519,6 +554,7 @@ if ($path === '/samgyeong-mall/checkout' && $method === 'POST') {
             INSERT INTO mall_orders (user_id, item_id, item_name, price, quantity, total_price)
             VALUES (?, ?, ?, ?, ?, ?)
         ');
+        $orderIds = [];
         foreach ($cart['items'] as $item) {
             $stmt->execute([
                 (int) $user['id'],
@@ -528,10 +564,12 @@ if ($path === '/samgyeong-mall/checkout' && $method === 'POST') {
                 (int) $item['quantity'],
                 (int) $item['line_total'],
             ]);
+            $orderIds[] = (int) $db->lastInsertId();
         }
         $db->commit();
+        $_SESSION['last_mall_order_ids'] = $orderIds;
         save_mall_cart([]);
-        redirect('/samgyeong-mall?saved=checkout');
+        redirect('/samgyeong-mall/receipt');
     } catch (Throwable $exception) {
         $db->rollBack();
         redirect('/samgyeong-mall?error=checkout');
