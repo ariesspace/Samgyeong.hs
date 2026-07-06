@@ -8,7 +8,7 @@
     <link rel="stylesheet" href="/rules-document.css?v=2026070544">
     <link rel="stylesheet" href="/post-files.css?v=2026070538">
     <link rel="stylesheet" href="/point-rules.css?v=2026070615">
-    <link rel="stylesheet" href="/discipline-awards.css?v=2026070614">
+    <link rel="stylesheet" href="/discipline-awards.css?v=2026070616">
     <link rel="stylesheet" href="/board-tags.css?v=2026070542">
     <link rel="stylesheet" href="/admin-point-rules.css?v=2026070541">
 </head>

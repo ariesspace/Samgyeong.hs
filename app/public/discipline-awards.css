@@ -70,6 +70,12 @@
     color: var(--green);
 }
 
+.discipline-policy-tabs a.is-active {
+    color: white;
+    background: var(--green);
+    border-color: var(--green);
+}
+
 .discipline-policy-tabs span {
     display: grid;
     width: 20px;
@@ -93,6 +99,11 @@
 .discipline-policy-tabs .is-rule span {
     color: #475467;
     background: #eef2f6;
+}
+
+.discipline-policy-tabs a.is-active span {
+    color: var(--green);
+    background: white;
 }
 
 .discipline-policy-viewer {

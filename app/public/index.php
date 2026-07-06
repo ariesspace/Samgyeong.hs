@@ -117,9 +117,14 @@ $routes = [
             return view('access-denied', ['title' => '권한 없음', 'message' => '재학생 이상 로그인 후 접근이 가능한 메뉴입니다.']);
         }
         $rules = $db->query('SELECT * FROM point_rules ORDER BY category, sort_order, id')->fetchAll();
+        $activeTab = $_GET['tab'] ?? 'penalty';
+        if (!in_array($activeTab, ['penalty', 'reward', 'rule'], true)) {
+            $activeTab = 'penalty';
+        }
         return view('discipline-awards', [
             'title' => '징계 및 포상',
             'sections' => build_point_rule_sections($rules),
+            'activeTab' => $activeTab,
         ]);
     },
     '/student-halls' => function () use ($db) {

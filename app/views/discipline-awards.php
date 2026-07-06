@@ -1,3 +1,9 @@
+<?php
+$activeTab = $activeTab ?? 'penalty';
+$showPenalty = $activeTab === 'penalty';
+$showReward = $activeTab === 'reward';
+$showRule = $activeTab === 'rule';
+?>
 <section class="page discipline-awards-page discipline-policy-page">
     <header class="discipline-policy-hero">
         <div class="discipline-policy-mark" aria-hidden="true">律</div>
@@ -10,9 +16,9 @@
     </header>
 
     <nav class="discipline-policy-tabs" aria-label="징계 및 포상 바로가기">
-        <a class="is-penalty" href="#discipline-penalties"><span>!</span> 징계 기준</a>
-        <a class="is-reward" href="#discipline-rewards"><span>★</span> 포상 기준</a>
-        <a class="is-rule" href="#discipline-principles"><span>i</span> 적용 원칙</a>
+        <a class="is-penalty <?= $showPenalty ? 'is-active' : '' ?>" href="/rules/discipline?tab=penalty"><span>!</span> 징계 기준</a>
+        <a class="is-reward <?= $showReward ? 'is-active' : '' ?>" href="/rules/discipline?tab=reward"><span>★</span> 포상 기준</a>
+        <a class="is-rule <?= $showRule ? 'is-active' : '' ?>" href="/rules/discipline?tab=rule"><span>i</span> 적용 원칙</a>
     </nav>
 
     <section class="discipline-policy-viewer" aria-label="징계 및 포상 규정">
@@ -25,6 +31,7 @@
         </div>
 
         <div class="discipline-policy-scroll">
+            <?php if ($showPenalty): ?>
             <section id="discipline-penalties" class="discipline-policy-section discipline-penalty-section">
                 <div class="discipline-policy-section-head">
                     <div>
@@ -59,7 +66,9 @@
                     <?php endforeach; ?>
                 </div>
             </section>
+            <?php endif; ?>
 
+            <?php if ($showReward): ?>
             <section id="discipline-rewards" class="discipline-policy-section discipline-reward-section">
                 <div class="discipline-policy-section-head">
                     <div>
@@ -119,7 +128,9 @@
                     </article>
                 </div>
             </section>
+            <?php endif; ?>
 
+            <?php if ($showRule): ?>
             <section id="discipline-principles" class="discipline-policy-section discipline-principle-section">
                 <div class="discipline-policy-section-head">
                     <div>
@@ -150,6 +161,7 @@
                     </article>
                 </div>
             </section>
+            <?php endif; ?>
         </div>
     </section>
 </section>
