@@ -27,6 +27,24 @@
         <?= render_post_body($post['body']) ?>
     </div>
 
+    <section class="post-like-panel" aria-label="좋아요">
+        <?php if ($canLike): ?>
+            <form method="post" action="/board/<?= e($board['slug']) ?>/post/<?= e((string) $post['id']) ?>/like">
+                <input type="hidden" name="csrf" value="<?= e(csrf_token()) ?>">
+                <button class="post-like-button <?= $likedByUser ? 'active' : '' ?>" type="submit" aria-pressed="<?= $likedByUser ? 'true' : 'false' ?>">
+                    <span aria-hidden="true"><?= $likedByUser ? '♥' : '♡' ?></span>
+                    <?= $likedByUser ? '좋아요 취소' : '좋아요' ?>
+                </button>
+            </form>
+        <?php else: ?>
+            <div class="post-like-readonly">
+                <span aria-hidden="true">♡</span>
+                좋아요
+            </div>
+        <?php endif; ?>
+        <strong><?= e((string) ($likeCount ?? 0)) ?></strong>
+    </section>
+
     <?php if (!empty($files)): ?>
         <div class="post-file">
             <span>첨부파일</span>

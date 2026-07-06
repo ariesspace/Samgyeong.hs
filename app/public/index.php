@@ -1698,6 +1698,12 @@ if (preg_match('#^/board/([a-z-]+)/post/(\d+)$#', $path, $matches)) {
     exit;
 }
 
+if (preg_match('#^/board/([a-z-]+)/post/(\d+)/like$#', $path, $matches) && $method === 'POST') {
+    $board = Board::fromSlug($matches[1], $db);
+    echo (new BoardController($db, $auth))->toggleLike($board, (int) $matches[2]);
+    exit;
+}
+
 if (preg_match('#^/board/([a-z-]+)/new$#', $path, $matches)) {
     $board = Board::fromSlug($matches[1], $db);
     echo (new BoardController($db, $auth))->create($board);

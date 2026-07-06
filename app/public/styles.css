@@ -3138,6 +3138,66 @@ select {
     margin: 0 0 16px 24px;
 }
 
+.post-like-panel {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    padding: 18px 0;
+    border-bottom: 1px solid #d8dee8;
+}
+
+.post-like-panel form {
+    margin: 0;
+}
+
+.post-like-button,
+.post-like-readonly {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 7px;
+    min-height: 36px;
+    padding: 7px 14px;
+    color: var(--green);
+    background: #fff;
+    border: 1px solid #cfd8d3;
+    border-radius: 999px;
+    font-size: 14px;
+    font-weight: 900;
+}
+
+.post-like-button span,
+.post-like-readonly span {
+    color: #b42318;
+    font-size: 17px;
+    line-height: 1;
+}
+
+.post-like-button:hover,
+.post-like-button.active {
+    color: #fff;
+    background: var(--green);
+    border-color: var(--green);
+}
+
+.post-like-button:hover span,
+.post-like-button.active span {
+    color: #fff;
+}
+
+.post-like-readonly {
+    color: #667085;
+    background: #f8fafc;
+}
+
+.post-like-panel > strong {
+    min-width: 28px;
+    color: #1f2937;
+    font-size: 16px;
+    font-weight: 900;
+}
+
 .post-file {
     display: flex;
     align-items: center;

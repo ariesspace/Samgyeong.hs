@@ -57,6 +57,16 @@ final class Database
                 FOREIGN KEY(post_id) REFERENCES posts(id)
             );
 
+            CREATE TABLE IF NOT EXISTS post_likes (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                post_id INTEGER NOT NULL,
+                user_id INTEGER NOT NULL,
+                created_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP,
+                UNIQUE(post_id, user_id),
+                FOREIGN KEY(post_id) REFERENCES posts(id),
+                FOREIGN KEY(user_id) REFERENCES users(id)
+            );
+
             CREATE TABLE IF NOT EXISTS hall_members (
                 id INTEGER PRIMARY KEY AUTOINCREMENT,
                 user_id INTEGER,
@@ -216,6 +226,8 @@ final class Database
         }
 
         $pdo->exec('CREATE INDEX IF NOT EXISTS idx_post_files_post_id ON post_files(post_id)');
+        $pdo->exec('CREATE INDEX IF NOT EXISTS idx_post_likes_post_id ON post_likes(post_id)');
+        $pdo->exec('CREATE INDEX IF NOT EXISTS idx_post_likes_user_id ON post_likes(user_id)');
         $pdo->exec("
             INSERT INTO post_files (post_id, file_name, file_path)
             SELECT posts.id, posts.file_name, posts.file_path

@@ -102,7 +102,37 @@ final class BoardController
             'post' => $post,
             'files' => $this->postFiles((int) $post['id'], $post),
             'canManage' => $this->canManage($post),
+            'likeCount' => $this->likeCount((int) $post['id']),
+            'likedByUser' => $this->likedByCurrentUser((int) $post['id']),
+            'canLike' => $this->canLike(),
         ]);
+    }
+
+    public function toggleLike(array $board, int $id): never
+    {
+        if ($board['read_roles'] !== [] && !$this->auth->hasRole($board['read_roles'])) {
+            redirect('/board/' . $board['slug']);
+        }
+
+        if (!$this->canLike()) {
+            redirect('/board/' . $board['slug'] . '/post/' . $id);
+        }
+
+        $post = $this->post($board, $id);
+        $userId = (int) $this->auth->user()['id'];
+        $stmt = $this->db->prepare('SELECT id FROM post_likes WHERE post_id = ? AND user_id = ?');
+        $stmt->execute([(int) $post['id'], $userId]);
+        $likeId = $stmt->fetchColumn();
+
+        if ($likeId) {
+            $stmt = $this->db->prepare('DELETE FROM post_likes WHERE id = ?');
+            $stmt->execute([(int) $likeId]);
+        } else {
+            $stmt = $this->db->prepare('INSERT OR IGNORE INTO post_likes (post_id, user_id) VALUES (?, ?)');
+            $stmt->execute([(int) $post['id'], $userId]);
+        }
+
+        redirect('/board/' . $board['slug'] . '/post/' . $id);
     }
 
     public function store(array $board): never
@@ -184,6 +214,7 @@ final class BoardController
         }
 
         $this->db->prepare('DELETE FROM post_files WHERE post_id = ?')->execute([$id]);
+        $this->db->prepare('DELETE FROM post_likes WHERE post_id = ?')->execute([$id]);
         $stmt = $this->db->prepare('DELETE FROM posts WHERE board = ? AND id = ?');
         $stmt->execute([$board['slug'], $id]);
 
@@ -413,6 +444,31 @@ final class BoardController
         }
 
         return $user['role'] === 'admin' || (int) $user['id'] === (int) $post['author_id'];
+    }
+
+    private function canLike(): bool
+    {
+        $user = $this->auth->user();
+        return $user !== null && ($user['role'] ?? '') !== 'guest';
+    }
+
+    private function likeCount(int $postId): int
+    {
+        $stmt = $this->db->prepare('SELECT COUNT(*) FROM post_likes WHERE post_id = ?');
+        $stmt->execute([$postId]);
+        return (int) $stmt->fetchColumn();
+    }
+
+    private function likedByCurrentUser(int $postId): bool
+    {
+        $user = $this->auth->user();
+        if (!$user || ($user['role'] ?? '') === 'guest') {
+            return false;
+        }
+
+        $stmt = $this->db->prepare('SELECT COUNT(*) FROM post_likes WHERE post_id = ? AND user_id = ?');
+        $stmt->execute([$postId, (int) $user['id']]);
+        return (int) $stmt->fetchColumn() > 0;
     }
 
     private function requireManage(array $post): void
