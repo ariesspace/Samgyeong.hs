@@ -203,7 +203,7 @@ $routes = [
                 FROM posts
                 WHERE board = ?
                 ORDER BY CASE WHEN tag = '공지' THEN 0 ELSE 1 END, id DESC
-                LIMIT 4
+                LIMIT 3
             ");
             $stmt->execute([$slug]);
             $homeBoards[] = ['slug' => $slug] + $board + ['items' => $stmt->fetchAll()];

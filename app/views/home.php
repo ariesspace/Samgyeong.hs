@@ -23,7 +23,7 @@
             <a class="popup-card dark" href="/meal">
                 <span>오늘의 식단</span>
                 <strong>삼경 식단표</strong>
-                <em>월별 급식 일정과 오늘의 중식을 확인하세요.</em>
+                <em>오늘의 중식과 월별 급식 일정을 확인하세요.</em>
             </a>
         </div>
     </section>
@@ -33,7 +33,7 @@
             <article class="home-board">
                 <div class="home-board-head">
                     <h2><?= e($board['name']) ?></h2>
-                    <a href="/board/<?= e($board['slug']) ?>">모두보기</a>
+                    <a href="/board/<?= e($board['slug']) ?>">더보기</a>
                 </div>
                 <ul>
                     <?php if (!$board['items']): ?>
