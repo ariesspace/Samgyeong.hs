@@ -103,6 +103,68 @@
     }
 }
 
+/* Final compact tweaks for meal table and paired Korean/Hanja titles. */
+.meal-calendar-head {
+    grid-template-columns: 42px minmax(0, 1fr) 42px;
+    min-height: 52px;
+}
+
+.meal-calendar-head a {
+    width: 30px;
+    height: 30px;
+    color: #667085;
+    background: transparent;
+    border: 1px solid #c9d3df;
+    border-radius: 6px;
+    font-size: 24px;
+    font-weight: 800;
+}
+
+.meal-calendar-head a:hover {
+    color: white;
+    background: var(--green);
+    border-color: var(--green);
+}
+
+.meal-block {
+    grid-template-columns: 92px minmax(0, 1fr);
+    gap: 24px;
+    min-height: 170px;
+    padding: 24px 28px;
+}
+
+.meal-block > strong {
+    min-height: 52px;
+    font-size: 22px;
+}
+
+.meal-block li,
+.meal-block p {
+    font-size: 18px;
+    line-height: 1.5;
+}
+
+.history-simple-head h1,
+.location-simple-head h1,
+.history-hero-panel h1,
+.location-intro h1,
+.location-lead-panel h1 {
+    word-break: keep-all;
+}
+
+.history-simple-head h1 span,
+.location-simple-head h1 span,
+.history-hero-panel h1 span,
+.location-intro h1 span,
+.location-lead-panel h1 span {
+    display: inline-block;
+    margin-left: 8px;
+    color: var(--gold);
+    font-size: 18px;
+    white-space: nowrap;
+    vertical-align: baseline;
+}
+
 @media (max-width: 700px) {
     .page-main-head {
         margin-bottom: 18px;
@@ -152,9 +214,9 @@
     }
 
     .meal-calendar-head a {
-        width: 30px;
-        height: 30px;
-        font-size: 28px;
+        width: 28px;
+        height: 28px;
+        font-size: 22px;
     }
 
     .meal-week span {
@@ -177,21 +239,29 @@
     }
 
     .meal-block {
-        grid-template-columns: 74px minmax(0, 1fr);
+        grid-template-columns: 68px minmax(0, 1fr);
         gap: 14px;
         min-height: 0;
-        padding: 18px 16px;
+        padding: 16px 14px;
     }
 
     .meal-block > strong {
-        min-height: 44px;
-        font-size: 18px;
+        min-height: 42px;
+        font-size: 17px;
     }
 
     .meal-block li,
     .meal-block p {
-        font-size: 16px;
+        font-size: 15px;
         line-height: 1.55;
+    }
+
+    .history-simple-head h1 span,
+    .location-simple-head h1 span,
+    .history-hero-panel h1 span,
+    .location-intro h1 span,
+    .location-lead-panel h1 span {
+        font-size: 15px;
     }
 }
 
