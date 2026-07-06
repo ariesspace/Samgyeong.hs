@@ -95,17 +95,10 @@ $showRule = $activeTab === 'rule';
                     </article>
                     <article class="reward-card">
                         <div>
-                            <strong>반차 면제권</strong>
+                            <strong>출석 면제권</strong>
                             <span>10점</span>
                         </div>
-                        <p>정해진 기준에 따라 반차 1회를 신청할 수 있습니다.</p>
-                    </article>
-                    <article class="reward-card">
-                        <div>
-                            <strong>동아리 출석 인정권</strong>
-                            <span>10점</span>
-                        </div>
-                        <p>동아리 출석 1회를 인정받을 수 있습니다.</p>
+                        <p>정해진 기준에 따라 출석 관련 예외 1회를 신청할 수 있습니다.</p>
                     </article>
                     <article class="reward-card">
                         <div>

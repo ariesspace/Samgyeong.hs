@@ -281,6 +281,7 @@ final class Database
         self::ensureMallItemsSplit($pdo);
         self::ensureMallGifticonItems($pdo);
         self::ensureMallGradeChangeItem($pdo);
+        self::ensureMallAttendanceItem($pdo);
         self::ensureHallActivityTimeText($pdo);
 
         $postCount = (int) $pdo->query('SELECT COUNT(*) FROM posts')->fetchColumn();
@@ -681,13 +682,68 @@ final class Database
         $stmt->execute(['mall_items_version', '4']);
     }
 
+    private static function ensureMallAttendanceItem(PDO $pdo): void
+    {
+        $version = (int) ($pdo->query("SELECT value FROM mall_settings WHERE key = 'mall_items_version'")->fetchColumn() ?: 0);
+        if ($version >= 5) {
+            return;
+        }
+
+        $stmt = $pdo->prepare('
+            UPDATE mall_items
+            SET name = ?, description = ?, price = ?, sort_order = ?, updated_at = CURRENT_TIMESTAMP
+            WHERE name = ?
+        ');
+        $stmt->execute(['출석 면제권', '정해진 기준에 따라 출석 관련 예외 1회를 신청할 수 있는 권한', 10, 30, '반차 면제권']);
+
+        $stmt = $pdo->prepare('
+            UPDATE mall_orders
+            SET item_name = ?
+            WHERE item_name = ?
+        ');
+        $stmt->execute(['출석 면제권', '반차 면제권']);
+
+        $stmt = $pdo->prepare('
+            UPDATE mall_items
+            SET active = 0, updated_at = CURRENT_TIMESTAMP
+            WHERE name = ?
+        ');
+        $stmt->execute(['동아리 출석 인정권']);
+
+        $update = $pdo->prepare('
+            UPDATE mall_items
+            SET description = ?, price = ?, sort_order = ?, updated_at = CURRENT_TIMESTAMP
+            WHERE name = ?
+        ');
+        $exists = $pdo->prepare('SELECT COUNT(*) FROM mall_items WHERE name = ?');
+        $insert = $pdo->prepare('
+            INSERT INTO mall_items (name, description, price, sort_order)
+            VALUES (?, ?, ?, ?)
+        ');
+
+        foreach (self::defaultMallItems() as $item) {
+            $exists->execute([$item[0]]);
+            if ((int) $exists->fetchColumn() === 0) {
+                $insert->execute($item);
+            } else {
+                $update->execute([$item[1], $item[2], $item[3], $item[0]]);
+            }
+        }
+
+        $stmt = $pdo->prepare('
+            INSERT INTO mall_settings (key, value, updated_at)
+            VALUES (?, ?, CURRENT_TIMESTAMP)
+            ON CONFLICT(key) DO UPDATE SET value = excluded.value, updated_at = CURRENT_TIMESTAMP
+        ');
+        $stmt->execute(['mall_items_version', '5']);
+    }
+
     private static function defaultMallItems(): array
     {
         return [
             ['인사 면제권', '인사 예절 수행을 1회 면제받을 수 있는 권한', 10, 10],
             ['관등 면제권', '관등 예절 수행을 1회 면제받을 수 있는 권한', 10, 20],
-            ['반차 면제권', '정해진 기준에 따라 반차 1회를 신청할 수 있는 권한', 10, 30],
-            ['동아리 출석 인정권', '동아리 출석 1회를 인정받을 수 있는 권한', 10, 40],
+            ['출석 면제권', '정해진 기준에 따라 출석 관련 예외 1회를 신청할 수 있는 권한', 10, 30],
             ['치킨 기프티콘 변경권', '치킨 기프티콘으로 교환을 신청할 수 있는 권한', 15, 50],
             ['피자 기프티콘 변경권', '피자 기프티콘으로 교환을 신청할 수 있는 권한', 15, 60],
             ['커피 기프티콘 변경권', '커피 기프티콘으로 교환을 신청할 수 있는 권한', 15, 70],
