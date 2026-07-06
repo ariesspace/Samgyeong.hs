@@ -2,6 +2,13 @@
     <h1>계정 정보 수정</h1>
     <p class="muted">목록에서는 식별 정보만 확인하고, 권한과 세부 정보는 이 화면에서 관리합니다.</p>
 
+    <?php if (($saved ?? '') === 'profile'): ?>
+        <div class="notice success">계정 정보가 저장되었습니다.</div>
+    <?php endif; ?>
+    <?php if (!empty($error)): ?>
+        <div class="notice error"><?= e($error) ?></div>
+    <?php endif; ?>
+
     <section class="admin-create-panel admin-account-detail">
         <div class="account-detail-head">
             <div>

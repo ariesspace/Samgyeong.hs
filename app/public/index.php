@@ -199,7 +199,12 @@ if ($path === '/admin/users/edit' && $method === 'GET') {
     $stmt->execute([$userId]);
     $user['role_label'] = $stmt->fetchColumn() ?: '';
 
-    echo view('admin-user-edit', ['title' => '계정 정보 수정', 'account' => $user]);
+    echo view('admin-user-edit', [
+        'title' => '계정 정보 수정',
+        'account' => $user,
+        'saved' => $_GET['saved'] ?? '',
+        'error' => $_GET['error'] ?? '',
+    ]);
     exit;
 }
 
@@ -260,7 +265,11 @@ if ($path === '/admin/users/profile' && $method === 'POST') {
         }
         if ($account) {
             $photoPath = $account['photo_path'] ?: null;
+            $hasPhotoUpload = isset($_FILES['photo']) && ($_FILES['photo']['error'] ?? UPLOAD_ERR_NO_FILE) !== UPLOAD_ERR_NO_FILE;
             $uploadedPhoto = save_hall_photo('photo');
+            if ($hasPhotoUpload && !$uploadedPhoto) {
+                redirect('/admin/users/edit?id=' . $userId . '&error=' . urlencode('사진 업로드에 실패했습니다. jpg, png, webp, gif 파일인지 확인해 주세요.'));
+            }
             if ($uploadedPhoto) {
                 delete_upload($photoPath);
                 $photoPath = $uploadedPhoto;
@@ -276,7 +285,7 @@ if ($path === '/admin/users/profile' && $method === 'POST') {
         }
     }
 
-    redirect('/admin/users?saved=profile');
+    redirect('/admin/users/edit?id=' . $userId . '&saved=profile');
 }
 
 if ($path === '/admin/users/reset-password' && $method === 'POST') {
@@ -1102,8 +1111,13 @@ function save_hall_photo(string $field): ?string
         return null;
     }
 
-    $stored = 'hall_' . date('YmdHis') . '_' . bin2hex(random_bytes(4)) . '.' . $extension;
-    $target = __DIR__ . '/../storage/uploads/' . $stored;
+    $uploadDir = __DIR__ . '/../storage/uploads';
+    if (!is_dir($uploadDir)) {
+        mkdir($uploadDir, 0775, true);
+    }
+
+    $stored = 'profile_' . date('YmdHis') . '_' . bin2hex(random_bytes(4)) . '.' . $extension;
+    $target = $uploadDir . '/' . $stored;
 
     if (!move_uploaded_file($_FILES[$field]['tmp_name'], $target)) {
         return null;
