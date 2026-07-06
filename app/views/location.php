@@ -1,6 +1,6 @@
 <section class="page location-page location-page-simple">
     <section class="location-simple-head">
-        <h1>오시는 길 <span>Location</span></h1>
+        <h1>오시는 길 <span>學校所在地</span></h1>
         <p>
             방문 전 학교 주소와 신규 인원 가입 신청 안내를 확인해 주세요. 삼경인문고등학교는
             <strong>경천, 경인, 경물</strong>의 정신을 바탕으로 배움과 생활이 함께 자라는

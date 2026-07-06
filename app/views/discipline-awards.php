@@ -109,10 +109,24 @@ $showRule = $activeTab === 'rule';
                     </article>
                     <article class="reward-card">
                         <div>
-                            <strong>외식권</strong>
+                            <strong>치킨 기프티콘 변경권</strong>
                             <span>15점</span>
                         </div>
-                        <p>정해진 기준에 따라 외식 1회를 신청할 수 있습니다.</p>
+                        <p>치킨 기프티콘으로 교환을 신청할 수 있습니다.</p>
+                    </article>
+                    <article class="reward-card">
+                        <div>
+                            <strong>피자 기프티콘 변경권</strong>
+                            <span>15점</span>
+                        </div>
+                        <p>피자 기프티콘으로 교환을 신청할 수 있습니다.</p>
+                    </article>
+                    <article class="reward-card">
+                        <div>
+                            <strong>커피 기프티콘 변경권</strong>
+                            <span>15점</span>
+                        </div>
+                        <p>커피 기프티콘으로 교환을 신청할 수 있습니다.</p>
                     </article>
                     <article class="reward-card">
                         <div>
