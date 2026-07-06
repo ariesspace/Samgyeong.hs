@@ -402,7 +402,36 @@ function samgyeong_api_insert_point(PDO $db, array $issuer, array $item): array
 
 function samgyeong_api_point_summary(PDO $db): array
 {
-    $stmt = $db->query("\n        SELECT\n            users.id,\n            users.username,\n            users.display_name,\n            users.hall_key,\n            users.year,\n            COALESCE(SUM(CASE\n                WHEN point_records.type = 'merit'\n                 AND point_records.canceled_at IS NULL\n                 AND point_records.cancellation_of_id IS NULL\n                THEN point_records.points ELSE 0 END), 0) AS merit_total,\n            COALESCE(SUM(CASE\n                WHEN point_records.type = 'demerit'\n                 AND point_records.canceled_at IS NULL\n                 AND point_records.cancellation_of_id IS NULL\n                THEN point_records.points ELSE 0 END), 0) AS demerit_total\n        FROM users\n        LEFT JOIN point_records ON point_records.user_id = users.id\n        WHERE users.role IN ('student', 'council')\n        GROUP BY users.id\n        ORDER BY users.hall_key, users.year DESC, users.display_name, users.username\n    ");
+    $resetAt = function_exists('current_point_reset_at') ? current_point_reset_at($db) : null;
+    $resetJoinCondition = $resetAt ? ' AND point_records.created_at > :reset_at' : '';
+    $stmt = $db->prepare("
+        SELECT
+            users.id,
+            users.username,
+            users.display_name,
+            users.hall_key,
+            users.year,
+            COALESCE(SUM(CASE
+                WHEN point_records.type = 'merit'
+                 AND point_records.canceled_at IS NULL
+                 AND point_records.cancellation_of_id IS NULL
+                THEN point_records.points ELSE 0 END), 0) AS merit_total,
+            COALESCE(SUM(CASE
+                WHEN point_records.type = 'demerit'
+                 AND point_records.canceled_at IS NULL
+                 AND point_records.cancellation_of_id IS NULL
+                THEN point_records.points ELSE 0 END), 0) AS demerit_total
+        FROM users
+        LEFT JOIN point_records ON point_records.user_id = users.id
+            {$resetJoinCondition}
+        WHERE users.role IN ('student', 'council')
+        GROUP BY users.id
+        ORDER BY users.hall_key, users.year DESC, users.display_name, users.username
+    ");
+    if ($resetAt) {
+        $stmt->bindValue(':reset_at', $resetAt);
+    }
+    $stmt->execute();
 
     $rows = $stmt->fetchAll();
     foreach ($rows as &$row) {

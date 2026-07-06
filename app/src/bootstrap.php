@@ -223,6 +223,7 @@ function nav_groups(): array
                 ],
             ],
             ['label' => '관별 자치활동', 'href' => '/hall-activities'],
+            ['label' => '삼경몰', 'href' => '/samgyeong-mall'],
             ['label' => '자료실', 'href' => '/board/resources'],
             ['label' => '자유게시판', 'href' => '/board/free'],
         ],
@@ -255,6 +256,8 @@ function nav_groups(): array
             ['label' => '게시판 권한 설정', 'href' => '/admin/boards/permissions'],
             ['label' => '상벌점 기준 관리', 'href' => '/admin/point-rules'],
             ['label' => '관별 자치활동 관리', 'href' => '/admin/hall-activities'],
+            ['label' => '상벌점 초기화', 'href' => '/admin/points/reset'],
+            ['label' => '삼경몰 관리', 'href' => '/admin/mall'],
         ];
         if (is_superadmin_account()) {
             $groups['시스템 관리'][] = ['label' => '상벌점 리스트 관리', 'href' => '/admin/point-list-rules'];
@@ -387,4 +390,94 @@ function build_point_list_sections(array $rules): array
     }
 
     return array_values($sections);
+}
+
+function current_point_reset_at(PDO $db): ?string
+{
+    $value = $db->query('SELECT created_at FROM point_resets ORDER BY id DESC LIMIT 1')->fetchColumn();
+    return $value !== false ? (string) $value : null;
+}
+
+function point_reset_condition(?string $resetAt, string $tableAlias = 'point_records'): string
+{
+    return $resetAt ? " AND {$tableAlias}.created_at > :reset_at" : '';
+}
+
+function user_point_totals(PDO $db, int $userId): array
+{
+    $resetAt = current_point_reset_at($db);
+    $sql = "
+        SELECT
+            COALESCE(SUM(CASE WHEN type = 'merit' THEN points ELSE 0 END), 0) AS merit_total,
+            COALESCE(SUM(CASE WHEN type = 'demerit' THEN points ELSE 0 END), 0) AS demerit_total
+        FROM point_records
+        WHERE user_id = :user_id
+          AND canceled_at IS NULL
+          AND cancellation_of_id IS NULL
+    " . point_reset_condition($resetAt);
+
+    $stmt = $db->prepare($sql);
+    $stmt->bindValue(':user_id', $userId, PDO::PARAM_INT);
+    if ($resetAt) {
+        $stmt->bindValue(':reset_at', $resetAt);
+    }
+    $stmt->execute();
+    $row = $stmt->fetch() ?: [];
+
+    return [
+        'merit_total' => (int) ($row['merit_total'] ?? 0),
+        'demerit_total' => (int) ($row['demerit_total'] ?? 0),
+        'reset_at' => $resetAt,
+    ];
+}
+
+function user_mall_spent(PDO $db, int $userId): int
+{
+    $resetAt = current_point_reset_at($db);
+    $sql = 'SELECT COALESCE(SUM(total_price), 0) FROM mall_orders WHERE user_id = :user_id';
+    if ($resetAt) {
+        $sql .= ' AND created_at > :reset_at';
+    }
+
+    $stmt = $db->prepare($sql);
+    $stmt->bindValue(':user_id', $userId, PDO::PARAM_INT);
+    if ($resetAt) {
+        $stmt->bindValue(':reset_at', $resetAt);
+    }
+    $stmt->execute();
+
+    return (int) $stmt->fetchColumn();
+}
+
+function user_mall_available_points(PDO $db, int $userId): array
+{
+    $totals = user_point_totals($db, $userId);
+    $spent = user_mall_spent($db, $userId);
+    $available = max(0, $totals['merit_total'] - $spent);
+
+    return $totals + [
+        'spent_total' => $spent,
+        'available_total' => $available,
+    ];
+}
+
+function mall_student_open(PDO $db): bool
+{
+    $stmt = $db->prepare('SELECT value FROM mall_settings WHERE key = ?');
+    $stmt->execute(['student_open']);
+    return (string) ($stmt->fetchColumn() ?: '0') === '1';
+}
+
+function can_access_mall(PDO $db, ?array $user = null): bool
+{
+    $user ??= current_user();
+    if (!$user || ($user['role'] ?? '') === 'guest') {
+        return false;
+    }
+
+    if (($user['role'] ?? '') === 'admin') {
+        return true;
+    }
+
+    return mall_student_open($db) && in_array($user['role'] ?? '', ['student', 'council'], true);
 }

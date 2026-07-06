@@ -28,6 +28,48 @@ function require_mypage_access(Auth $auth): array
     return $user;
 }
 
+function mall_cart(): array
+{
+    $cart = $_SESSION['mall_cart'] ?? [];
+    return is_array($cart) ? $cart : [];
+}
+
+function save_mall_cart(array $cart): void
+{
+    $_SESSION['mall_cart'] = array_filter(
+        array_map('intval', $cart),
+        fn (int $quantity): bool => $quantity > 0
+    );
+}
+
+function mall_cart_details(PDO $db): array
+{
+    $cart = mall_cart();
+    if ($cart === []) {
+        return ['items' => [], 'total' => 0];
+    }
+
+    $ids = array_values(array_filter(array_map('intval', array_keys($cart))));
+    if ($ids === []) {
+        return ['items' => [], 'total' => 0];
+    }
+
+    $placeholders = implode(',', array_fill(0, count($ids), '?'));
+    $stmt = $db->prepare("SELECT * FROM mall_items WHERE active = 1 AND id IN ($placeholders) ORDER BY sort_order, id");
+    $stmt->execute($ids);
+    $items = [];
+    $total = 0;
+
+    foreach ($stmt->fetchAll() as $item) {
+        $quantity = max(1, (int) ($cart[(string) $item['id']] ?? 0));
+        $lineTotal = (int) $item['price'] * $quantity;
+        $items[] = $item + ['quantity' => $quantity, 'line_total' => $lineTotal];
+        $total += $lineTotal;
+    }
+
+    return ['items' => $items, 'total' => $total];
+}
+
 if (str_starts_with($path, '/api/')) {
     require_once __DIR__ . '/../src/Api.php';
     samgyeong_api_handle_request($db, $path, $method);
@@ -144,6 +186,34 @@ $routes = [
             'activities' => $activities,
         ]);
     },
+    '/samgyeong-mall' => function () use ($auth, $db) {
+        $user = $auth->user();
+        if (!can_access_mall($db, $user)) {
+            return view('access-denied', [
+                'title' => '삼경몰',
+                'message' => '삼경몰은 운영 기간에만 이용할 수 있습니다. 평상시에는 슈퍼관리자만 접근할 수 있습니다.',
+            ]);
+        }
+
+        $items = $db->query('SELECT * FROM mall_items WHERE active = 1 ORDER BY sort_order, id')->fetchAll();
+        $orders = [];
+        if ($user) {
+            $stmt = $db->prepare('SELECT * FROM mall_orders WHERE user_id = ? ORDER BY id DESC LIMIT 12');
+            $stmt->execute([(int) $user['id']]);
+            $orders = $stmt->fetchAll();
+        }
+
+        return view('mall', [
+            'title' => '삼경몰',
+            'items' => $items,
+            'cart' => mall_cart_details($db),
+            'points' => $user ? user_mall_available_points($db, (int) $user['id']) : [],
+            'orders' => $orders,
+            'studentOpen' => mall_student_open($db),
+            'saved' => $_GET['saved'] ?? '',
+            'error' => $_GET['error'] ?? '',
+        ]);
+    },
     '/council' => fn () => view('council', ['title' => '삼경원 소개']),
     '/calendar' => function () use ($auth, $db) {
         if (!$auth->hasRole(['council', 'admin'])) {
@@ -172,6 +242,172 @@ $routes = [
 if (isset($routes[$path])) {
     echo $routes[$path]();
     exit;
+}
+
+if ($path === '/samgyeong-mall/cart/add' && $method === 'POST') {
+    $user = $auth->user();
+    if (!can_access_mall($db, $user)) {
+        redirect('/samgyeong-mall');
+    }
+
+    $itemId = (int) ($_POST['item_id'] ?? 0);
+    $stmt = $db->prepare('SELECT id FROM mall_items WHERE id = ? AND active = 1');
+    $stmt->execute([$itemId]);
+    if ($stmt->fetchColumn()) {
+        $cart = mall_cart();
+        $cart[(string) $itemId] = min(9, (int) ($cart[(string) $itemId] ?? 0) + 1);
+        save_mall_cart($cart);
+    }
+
+    redirect('/samgyeong-mall?saved=cart');
+}
+
+if ($path === '/samgyeong-mall/cart/remove' && $method === 'POST') {
+    $itemId = (int) ($_POST['item_id'] ?? 0);
+    $cart = mall_cart();
+    unset($cart[(string) $itemId]);
+    save_mall_cart($cart);
+
+    redirect('/samgyeong-mall?saved=cart');
+}
+
+if ($path === '/samgyeong-mall/checkout' && $method === 'POST') {
+    $user = $auth->user();
+    if (!can_access_mall($db, $user)) {
+        redirect('/samgyeong-mall');
+    }
+
+    $cart = mall_cart_details($db);
+    if (!$user || $cart['items'] === []) {
+        redirect('/samgyeong-mall?error=empty');
+    }
+
+    $points = user_mall_available_points($db, (int) $user['id']);
+    if ((int) $cart['total'] > (int) $points['available_total']) {
+        redirect('/samgyeong-mall?error=points');
+    }
+
+    $db->beginTransaction();
+    try {
+        $stmt = $db->prepare('
+            INSERT INTO mall_orders (user_id, item_id, item_name, price, quantity, total_price)
+            VALUES (?, ?, ?, ?, ?, ?)
+        ');
+        foreach ($cart['items'] as $item) {
+            $stmt->execute([
+                (int) $user['id'],
+                (int) $item['id'],
+                (string) $item['name'],
+                (int) $item['price'],
+                (int) $item['quantity'],
+                (int) $item['line_total'],
+            ]);
+        }
+        $db->commit();
+        save_mall_cart([]);
+        redirect('/samgyeong-mall?saved=checkout');
+    } catch (Throwable $exception) {
+        $db->rollBack();
+        redirect('/samgyeong-mall?error=checkout');
+    }
+}
+
+if ($path === '/admin/points/reset') {
+    $auth->requireRole(['admin']);
+    $resetAt = current_point_reset_at($db);
+    $activeUsers = $db->query("SELECT COUNT(*) FROM users WHERE role IN ('student', 'council')")->fetchColumn();
+    $recordCount = $db->query('SELECT COUNT(*) FROM point_records')->fetchColumn();
+    echo view('admin-points-reset', [
+        'title' => '상벌점 초기화',
+        'resetAt' => $resetAt,
+        'activeUsers' => (int) $activeUsers,
+        'recordCount' => (int) $recordCount,
+        'saved' => ($_GET['saved'] ?? '') === '1',
+    ]);
+    exit;
+}
+
+if ($path === '/admin/points/reset/store' && $method === 'POST') {
+    $auth->requireRole(['admin']);
+    $note = trim((string) ($_POST['note'] ?? ''));
+    $stmt = $db->prepare('INSERT INTO point_resets (reset_by, note) VALUES (?, ?)');
+    $stmt->execute([(int) $auth->user()['id'], $note]);
+
+    redirect('/admin/points/reset?saved=1');
+}
+
+if ($path === '/admin/mall') {
+    $auth->requireRole(['admin']);
+    echo view('admin-mall', [
+        'title' => '삼경몰 관리',
+        'items' => $db->query('SELECT * FROM mall_items ORDER BY sort_order, id')->fetchAll(),
+        'studentOpen' => mall_student_open($db),
+        'orders' => $db->query('
+            SELECT mall_orders.*, users.display_name, users.username
+            FROM mall_orders
+            JOIN users ON users.id = mall_orders.user_id
+            ORDER BY mall_orders.id DESC
+            LIMIT 30
+        ')->fetchAll(),
+        'saved' => ($_GET['saved'] ?? ''),
+    ]);
+    exit;
+}
+
+if ($path === '/admin/mall/settings' && $method === 'POST') {
+    $auth->requireRole(['admin']);
+    $value = isset($_POST['student_open']) ? '1' : '0';
+    $stmt = $db->prepare('
+        INSERT INTO mall_settings (key, value, updated_at)
+        VALUES (?, ?, CURRENT_TIMESTAMP)
+        ON CONFLICT(key) DO UPDATE SET value = excluded.value, updated_at = CURRENT_TIMESTAMP
+    ');
+    $stmt->execute(['student_open', $value]);
+
+    redirect('/admin/mall?saved=settings');
+}
+
+if ($path === '/admin/mall/items' && $method === 'POST') {
+    $auth->requireRole(['admin']);
+    $ids = $_POST['id'] ?? [];
+    $names = $_POST['name'] ?? [];
+    $descriptions = $_POST['description'] ?? [];
+    $prices = $_POST['price'] ?? [];
+    $activeIds = array_map('intval', $_POST['active'] ?? []);
+
+    if (is_array($ids) && is_array($names) && is_array($descriptions) && is_array($prices)) {
+        $stmt = $db->prepare('
+            UPDATE mall_items
+            SET name = ?, description = ?, price = ?, active = ?, sort_order = ?, updated_at = CURRENT_TIMESTAMP
+            WHERE id = ?
+        ');
+        $count = min(count($ids), count($names), count($descriptions), count($prices));
+        for ($i = 0; $i < $count; $i++) {
+            $id = (int) $ids[$i];
+            $name = trim((string) $names[$i]);
+            $description = trim((string) $descriptions[$i]);
+            $price = max(1, (int) $prices[$i]);
+            if ($id > 0 && $name !== '' && $description !== '') {
+                $stmt->execute([$name, $description, $price, in_array($id, $activeIds, true) ? 1 : 0, ($i + 1) * 10, $id]);
+            }
+        }
+    }
+
+    redirect('/admin/mall?saved=items');
+}
+
+if ($path === '/admin/mall/items/add' && $method === 'POST') {
+    $auth->requireRole(['admin']);
+    $name = trim((string) ($_POST['name'] ?? ''));
+    $description = trim((string) ($_POST['description'] ?? ''));
+    $price = max(1, (int) ($_POST['price'] ?? 0));
+    if ($name !== '' && $description !== '') {
+        $sortOrder = (int) $db->query('SELECT COALESCE(MAX(sort_order), 0) + 10 FROM mall_items')->fetchColumn();
+        $stmt = $db->prepare('INSERT INTO mall_items (name, description, price, sort_order) VALUES (?, ?, ?, ?)');
+        $stmt->execute([$name, $description, $price, $sortOrder]);
+    }
+
+    redirect('/admin/mall?saved=items');
 }
 
 if ($path === '/admin/users') {
@@ -732,7 +968,11 @@ if ($path === '/mypage/points') {
     ');
     $stmt->execute([$userId]);
     $records = $stmt->fetchAll();
-    echo view('mypage-points', ['title' => '상벌점 현황', 'records' => $records]);
+    echo view('mypage-points', [
+        'title' => '상벌점 현황',
+        'records' => $records,
+        'points' => user_mall_available_points($db, $userId),
+    ]);
     exit;
 }
 

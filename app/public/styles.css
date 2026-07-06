@@ -5643,6 +5643,377 @@ select {
     margin-bottom: 14px;
 }
 
+.point-reset-admin-page,
+.mall-admin-page,
+.mall-page {
+    display: grid;
+    gap: 18px;
+}
+
+.reset-panel,
+.mall-admin-panel,
+.mall-cart,
+.mall-orders {
+    padding: 20px;
+    background: white;
+    border: 1px solid var(--line);
+    border-radius: 4px;
+}
+
+.reset-summary,
+.mall-status-grid {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 12px;
+}
+
+.reset-summary article,
+.mall-status-grid article {
+    padding: 18px;
+    background: #f8fafc;
+    border: 1px solid var(--line);
+    border-radius: 4px;
+}
+
+.reset-summary span,
+.mall-status-grid span {
+    display: block;
+    color: var(--muted);
+    font-size: 13px;
+    font-weight: 800;
+}
+
+.reset-summary strong,
+.mall-status-grid strong {
+    display: block;
+    margin-top: 6px;
+    color: var(--green);
+    font-size: 22px;
+    word-break: break-all;
+}
+
+.reset-warning {
+    margin-top: 18px;
+    padding: 18px;
+    background: #f8fafc;
+    border-left: 3px solid var(--green);
+}
+
+.reset-warning h2,
+.mall-admin-panel h2,
+.mall-cart h2,
+.mall-orders h2 {
+    margin: 0 0 10px;
+    color: var(--ink);
+    font-size: 20px;
+}
+
+.reset-warning p {
+    margin: 6px 0 0;
+    color: #475467;
+    line-height: 1.65;
+}
+
+.reset-form,
+.mall-open-form,
+.mall-add-form {
+    display: grid;
+    gap: 12px;
+    margin-top: 18px;
+}
+
+.reset-form label,
+.mall-add-form label {
+    display: grid;
+    gap: 6px;
+    color: #344054;
+    font-weight: 800;
+}
+
+.toggle-line {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    color: #344054;
+    font-weight: 800;
+}
+
+.toggle-line input {
+    width: 18px;
+    height: 18px;
+}
+
+.section-title-row {
+    display: flex;
+    justify-content: space-between;
+    gap: 12px;
+    margin-bottom: 14px;
+}
+
+.mall-admin-items {
+    display: grid;
+    gap: 12px;
+}
+
+.mall-admin-item {
+    display: grid;
+    grid-template-columns: minmax(150px, .8fr) minmax(260px, 1.6fr) 110px 90px;
+    gap: 12px;
+    align-items: end;
+    padding: 14px;
+    background: #f8fafc;
+    border: 1px solid var(--line);
+    border-radius: 4px;
+}
+
+.mall-admin-item label,
+.mall-add-form {
+    color: #344054;
+    font-size: 14px;
+    font-weight: 800;
+}
+
+.mall-admin-item label {
+    display: grid;
+    gap: 6px;
+}
+
+.mall-admin-item textarea,
+.mall-add-form textarea {
+    resize: vertical;
+    line-height: 1.55;
+}
+
+.mall-add-form {
+    grid-template-columns: minmax(160px, .9fr) 120px minmax(240px, 1.7fr) auto;
+    align-items: end;
+    padding-top: 16px;
+    border-top: 1px solid var(--line);
+}
+
+.mall-add-form h3 {
+    grid-column: 1 / -1;
+    margin: 0;
+    color: var(--ink);
+    font-size: 17px;
+}
+
+.mall-hero {
+    display: grid;
+    gap: 10px;
+    padding: 0 0 14px;
+    border-bottom: 1px solid var(--line);
+}
+
+.mall-hero .eyebrow {
+    margin: 0;
+    color: #9aa3b2;
+    font-size: 12px;
+    font-weight: 900;
+    letter-spacing: .14em;
+    text-transform: uppercase;
+}
+
+.mall-hero h1 {
+    margin: 0;
+    color: var(--green);
+    font-size: clamp(34px, 5vw, 44px);
+    line-height: 1.25;
+}
+
+.mall-hero p {
+    max-width: 760px;
+    margin: 0;
+    color: #667085;
+    font-size: 15px;
+    line-height: 1.75;
+    word-break: keep-all;
+}
+
+.mall-admin-note {
+    margin: 0;
+    padding: 12px 14px;
+    color: #8a5a00;
+    background: #fff8e7;
+    border: 1px solid #f2d99b;
+    border-radius: 4px;
+    font-weight: 800;
+}
+
+.mall-layout {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) 300px;
+    gap: 16px;
+    align-items: start;
+}
+
+.mall-items {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 14px;
+}
+
+.mall-card {
+    display: grid;
+    gap: 14px;
+    padding: 18px;
+    background: #fff;
+    border: 1px solid var(--line);
+    border-top: 3px solid var(--green);
+    border-radius: 4px;
+}
+
+.mall-card-head {
+    display: grid;
+    gap: 8px;
+}
+
+.mall-card-head span {
+    width: fit-content;
+    padding: 4px 9px;
+    color: var(--green);
+    background: #edfdf4;
+    border-radius: 999px;
+    font-size: 12px;
+    font-weight: 900;
+}
+
+.mall-card-head strong {
+    color: var(--ink);
+    font-size: 20px;
+}
+
+.mall-card p {
+    margin: 0;
+    min-height: 74px;
+    color: #475467;
+    line-height: 1.65;
+    word-break: keep-all;
+}
+
+.mall-card button,
+.mall-cart button,
+.mall-open-form button,
+.mall-add-form button {
+    min-height: 38px;
+}
+
+.mall-cart {
+    position: sticky;
+    top: 18px;
+    display: grid;
+    gap: 12px;
+}
+
+.mall-cart-row {
+    display: flex;
+    align-items: start;
+    justify-content: space-between;
+    gap: 10px;
+    padding: 10px 0;
+    border-bottom: 1px solid #eef2f6;
+}
+
+.mall-cart-row strong,
+.mall-cart-row span {
+    display: block;
+}
+
+.mall-cart-row strong {
+    color: var(--ink);
+}
+
+.mall-cart-row span {
+    margin-top: 3px;
+    color: var(--muted);
+    font-size: 13px;
+}
+
+.mall-cart-row button {
+    width: 32px;
+    min-height: 32px;
+    padding: 0;
+    color: #b42318;
+    background: #fff;
+    border: 1px solid #f2c9c4;
+}
+
+.mall-cart-total {
+    display: flex;
+    justify-content: space-between;
+    gap: 12px;
+    padding-top: 8px;
+    color: var(--ink);
+    font-weight: 900;
+}
+
+.mall-cart-total strong {
+    color: var(--green);
+}
+
+.mall-cart button:disabled {
+    cursor: not-allowed;
+    opacity: .55;
+}
+
+.mypage-page .points-summary {
+    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+}
+
+@media (max-width: 900px) {
+    .mall-layout {
+        grid-template-columns: 1fr;
+    }
+
+    .mall-cart {
+        position: static;
+    }
+
+    .mall-admin-item,
+    .mall-add-form {
+        grid-template-columns: 1fr;
+    }
+}
+
+@media (max-width: 700px) {
+    .reset-panel,
+    .mall-admin-panel,
+    .mall-cart,
+    .mall-orders {
+        padding: 16px;
+    }
+
+    .reset-summary,
+    .mall-status-grid,
+    .mall-items {
+        grid-template-columns: 1fr;
+    }
+
+    .mall-hero .eyebrow {
+        font-size: 10px;
+        letter-spacing: .12em;
+    }
+
+    .mall-hero h1 {
+        font-size: 34px;
+    }
+
+    .mall-hero p,
+    .mall-card p {
+        font-size: 14px;
+        line-height: 1.65;
+    }
+
+    .mall-card p {
+        min-height: 0;
+    }
+
+    .reset-summary strong,
+    .mall-status-grid strong {
+        font-size: 20px;
+    }
+}
+
 .admin-create-actions {
     display: flex;
     justify-content: flex-end;

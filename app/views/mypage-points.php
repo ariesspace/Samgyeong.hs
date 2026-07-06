@@ -1,16 +1,8 @@
 <?php
-    $meritTotal = 0;
-    $demeritTotal = 0;
-    foreach ($records as $record) {
-        if (!empty($record['canceled_at']) || !empty($record['cancellation_of_id'])) {
-            continue;
-        }
-        if ($record['type'] === 'merit') {
-            $meritTotal += (int) $record['points'];
-        } else {
-            $demeritTotal += (int) $record['points'];
-        }
-    }
+    $meritTotal = (int) ($points['merit_total'] ?? 0);
+    $demeritTotal = (int) ($points['demerit_total'] ?? 0);
+    $spentTotal = (int) ($points['spent_total'] ?? 0);
+    $availableTotal = (int) ($points['available_total'] ?? $meritTotal);
     $wishCoupons = intdiv($meritTotal, 10);
 ?>
 
@@ -31,7 +23,18 @@
             <span>소원권</span>
             <strong><?= e((string) $wishCoupons) ?>개</strong>
         </article>
+        <article>
+            <span>삼경몰 사용 가능</span>
+            <strong><?= e((string) $availableTotal) ?>점</strong>
+        </article>
     </div>
+
+    <?php if (!empty($points['reset_at'])): ?>
+        <p class="muted small-note">현재 합계는 <?= e((string) $points['reset_at']) ?> 이후 기록 기준입니다. 기존 히스토리는 삭제되지 않습니다.</p>
+    <?php endif; ?>
+    <?php if ($spentTotal > 0): ?>
+        <p class="muted small-note">삼경몰에서 사용한 상점 <?= e((string) $spentTotal) ?>점이 사용 가능 포인트에서 차감되었습니다.</p>
+    <?php endif; ?>
 
     <table class="board-table points-table my-points-table">
         <thead>

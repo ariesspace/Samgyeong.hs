@@ -136,6 +136,44 @@ final class Database
                 created_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP,
                 updated_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP
             );
+
+            CREATE TABLE IF NOT EXISTS point_resets (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                reset_by INTEGER NOT NULL,
+                note TEXT NOT NULL DEFAULT '',
+                created_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP,
+                FOREIGN KEY(reset_by) REFERENCES users(id)
+            );
+
+            CREATE TABLE IF NOT EXISTS mall_settings (
+                key TEXT PRIMARY KEY,
+                value TEXT NOT NULL,
+                updated_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP
+            );
+
+            CREATE TABLE IF NOT EXISTS mall_items (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                name TEXT NOT NULL,
+                description TEXT NOT NULL,
+                price INTEGER NOT NULL CHECK(price > 0),
+                active INTEGER NOT NULL DEFAULT 1,
+                sort_order INTEGER NOT NULL DEFAULT 0,
+                created_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP,
+                updated_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP
+            );
+
+            CREATE TABLE IF NOT EXISTS mall_orders (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                user_id INTEGER NOT NULL,
+                item_id INTEGER NOT NULL,
+                item_name TEXT NOT NULL,
+                price INTEGER NOT NULL CHECK(price > 0),
+                quantity INTEGER NOT NULL CHECK(quantity > 0),
+                total_price INTEGER NOT NULL CHECK(total_price > 0),
+                created_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP,
+                FOREIGN KEY(user_id) REFERENCES users(id),
+                FOREIGN KEY(item_id) REFERENCES mall_items(id)
+            );
         ");
 
         $count = (int) $pdo->query('SELECT COUNT(*) FROM users')->fetchColumn();
@@ -209,6 +247,7 @@ final class Database
 
         self::ensureGuestBoardReadPermissions($pdo);
         self::ensureCouncilMinutesReadPermissions($pdo);
+        self::ensureMallDefaults($pdo);
 
         $postCount = (int) $pdo->query('SELECT COUNT(*) FROM posts')->fetchColumn();
         if ($postCount === 0) {
@@ -426,5 +465,33 @@ final class Database
         $roles = array_values(array_diff(array_unique($roles), ['guest']));
         $stmt = $pdo->prepare('UPDATE board_permissions SET read_roles = ?, updated_at = CURRENT_TIMESTAMP WHERE board_slug = ?');
         $stmt->execute([json_encode($roles, JSON_UNESCAPED_UNICODE), 'council-minutes']);
+    }
+
+    private static function ensureMallDefaults(PDO $pdo): void
+    {
+        $stmt = $pdo->prepare('INSERT OR IGNORE INTO mall_settings (key, value) VALUES (?, ?)');
+        $stmt->execute(['student_open', '0']);
+
+        $count = (int) $pdo->query('SELECT COUNT(*) FROM mall_items')->fetchColumn();
+        if ($count > 0) {
+            return;
+        }
+
+        $items = [
+            ['기본 면제권', '인사 생략 1회, 관등 생략 1회, 반차 또는 동아리 출석 1회 인정', 10, 10],
+            ['외식 및 소속 변경권', '야자 또는 동아리 출석 1회 면제, 타 인원 소속 관 변경권 24시간', 15, 20],
+            ['직속 교류권', '타 직속 1일 체험권 24시간', 20, 30],
+            ['동년 교류권', '타 인원 동년 변경권 24시간, 본인 동년 체험권 24시간', 30, 40],
+            ['징계 사면권', '개인 징계 1회를 삼경원 심사를 거쳐 무효 처리', 40, 50],
+        ];
+
+        $stmt = $pdo->prepare('
+            INSERT INTO mall_items (name, description, price, sort_order)
+            VALUES (?, ?, ?, ?)
+        ');
+
+        foreach ($items as $item) {
+            $stmt->execute($item);
+        }
     }
 }
