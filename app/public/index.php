@@ -210,25 +210,17 @@ $routes = [
         if (!can_access_mall($db, $user)) {
             return view('access-denied', [
                 'title' => '삼경몰',
-                'message' => '삼경몰은 운영 기간에만 이용할 수 있습니다. 평상시에는 슈퍼관리자만 접근할 수 있습니다.',
+                'message' => page_access_denied_message(page_read_roles($db, 'samgyeong-mall')),
             ]);
         }
 
         $items = $db->query('SELECT * FROM mall_items WHERE active = 1 ORDER BY sort_order, id')->fetchAll();
-        $orders = [];
-        if ($user) {
-            $stmt = $db->prepare('SELECT * FROM mall_orders WHERE user_id = ? ORDER BY id DESC LIMIT 12');
-            $stmt->execute([(int) $user['id']]);
-            $orders = $stmt->fetchAll();
-        }
 
         return view('mall', [
             'title' => '삼경몰',
             'items' => $items,
             'cart' => mall_cart_details($db),
             'points' => $user ? user_mall_available_points($db, (int) $user['id']) : [],
-            'orders' => $orders,
-            'studentOpen' => mall_student_open($db),
             'saved' => $_GET['saved'] ?? '',
             'error' => $_GET['error'] ?? '',
         ]);
@@ -290,6 +282,27 @@ if ($path === '/samgyeong-mall/cart/remove' && $method === 'POST') {
     $itemId = (int) ($_POST['item_id'] ?? 0);
     $cart = mall_cart();
     unset($cart[(string) $itemId]);
+    save_mall_cart($cart);
+
+    redirect('/samgyeong-mall?saved=cart');
+}
+
+if ($path === '/samgyeong-mall/cart/update' && $method === 'POST') {
+    $user = $auth->user();
+    if (!can_access_mall($db, $user)) {
+        redirect('/samgyeong-mall');
+    }
+
+    $itemId = (int) ($_POST['item_id'] ?? 0);
+    $delta = (int) ($_POST['delta'] ?? 0);
+    $cart = mall_cart();
+    $current = (int) ($cart[(string) $itemId] ?? 0);
+    $next = max(0, min(9, $current + $delta));
+    if ($next === 0) {
+        unset($cart[(string) $itemId]);
+    } else {
+        $cart[(string) $itemId] = $next;
+    }
     save_mall_cart($cart);
 
     redirect('/samgyeong-mall?saved=cart');
@@ -365,30 +378,9 @@ if ($path === '/admin/mall') {
     echo view('admin-mall', [
         'title' => '삼경몰 관리',
         'items' => $db->query('SELECT * FROM mall_items ORDER BY sort_order, id')->fetchAll(),
-        'studentOpen' => mall_student_open($db),
-        'orders' => $db->query('
-            SELECT mall_orders.*, users.display_name, users.username
-            FROM mall_orders
-            JOIN users ON users.id = mall_orders.user_id
-            ORDER BY mall_orders.id DESC
-            LIMIT 30
-        ')->fetchAll(),
         'saved' => ($_GET['saved'] ?? ''),
     ]);
     exit;
-}
-
-if ($path === '/admin/mall/settings' && $method === 'POST') {
-    $auth->requireRole(['admin']);
-    $value = isset($_POST['student_open']) ? '1' : '0';
-    $stmt = $db->prepare('
-        INSERT INTO mall_settings (key, value, updated_at)
-        VALUES (?, ?, CURRENT_TIMESTAMP)
-        ON CONFLICT(key) DO UPDATE SET value = excluded.value, updated_at = CURRENT_TIMESTAMP
-    ');
-    $stmt->execute(['student_open', $value]);
-
-    redirect('/admin/mall?saved=settings');
 }
 
 if ($path === '/admin/mall/items' && $method === 'POST') {

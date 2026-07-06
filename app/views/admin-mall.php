@@ -1,25 +1,10 @@
 <section class="page admin-users-page mall-admin-page">
     <h1>삼경몰 관리</h1>
-    <p class="muted">삼경몰 운영 여부와 포상 상품을 관리합니다. 학생은 운영 기간에만 삼경몰을 이용할 수 있습니다.</p>
+    <p class="muted">삼경몰에 노출되는 포상 상품을 관리합니다. 이용 가능 권한은 페이지 권한 설정에서 조정합니다.</p>
 
     <?php if ($saved): ?>
         <div class="notice success">삼경몰 설정이 저장되었습니다.</div>
     <?php endif; ?>
-
-    <section class="mall-admin-panel">
-        <div>
-            <h2>운영 설정</h2>
-            <p class="muted">닫힘 상태에서는 슈퍼관리자만 삼경몰에 접근할 수 있습니다.</p>
-        </div>
-        <form method="post" action="/admin/mall/settings" class="mall-open-form">
-            <input type="hidden" name="csrf" value="<?= e(csrf_token()) ?>">
-            <label class="toggle-line">
-                <input type="checkbox" name="student_open" value="1" <?= $studentOpen ? 'checked' : '' ?>>
-                학생 구매 기간 열기
-            </label>
-            <button type="submit">운영 설정 저장</button>
-        </form>
-    </section>
 
     <section class="mall-admin-panel">
         <div class="section-title-row">
@@ -69,32 +54,4 @@
         </form>
     </section>
 
-    <section class="mall-admin-panel">
-        <h2>최근 구매 내역</h2>
-        <table class="board-table points-table">
-            <thead>
-                <tr>
-                    <th>일시</th>
-                    <th>학생</th>
-                    <th>상품</th>
-                    <th>수량</th>
-                    <th>사용 상점</th>
-                </tr>
-            </thead>
-            <tbody>
-                <?php if (!$orders): ?>
-                    <tr><td colspan="5" class="empty-board">구매 내역이 없습니다.</td></tr>
-                <?php endif; ?>
-                <?php foreach ($orders as $order): ?>
-                    <tr>
-                        <td><?= e($order['created_at']) ?></td>
-                        <td><?= e(($order['display_name'] ?? '') ?: ($order['username'] ?? '')) ?></td>
-                        <td class="title-cell"><?= e($order['item_name']) ?></td>
-                        <td><?= e((string) $order['quantity']) ?></td>
-                        <td><?= e((string) $order['total_price']) ?>점</td>
-                    </tr>
-                <?php endforeach; ?>
-            </tbody>
-        </table>
-    </section>
 </section>

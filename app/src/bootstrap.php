@@ -326,6 +326,11 @@ function page_permission_definitions(): array
             'path' => '/hall-activities',
             'default_read_roles' => [],
         ],
+        'samgyeong-mall' => [
+            'label' => '삼경몰',
+            'path' => '/samgyeong-mall',
+            'default_read_roles' => ['admin'],
+        ],
         'council-intro' => [
             'label' => '삼경원 소개',
             'path' => '/council',
@@ -605,14 +610,5 @@ function mall_student_open(PDO $db): bool
 
 function can_access_mall(PDO $db, ?array $user = null): bool
 {
-    $user ??= current_user();
-    if (!$user || ($user['role'] ?? '') === 'guest') {
-        return false;
-    }
-
-    if (($user['role'] ?? '') === 'admin') {
-        return true;
-    }
-
-    return mall_student_open($db) && in_array($user['role'] ?? '', ['student', 'council'], true);
+    return can_read_page($db, 'samgyeong-mall', $user);
 }
