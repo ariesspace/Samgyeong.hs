@@ -1,6 +1,9 @@
 <section class="page mypage-page point-rules-page">
-    <h1>상벌점 리스트</h1>
-    <p class="muted">학교생활규정 중 상점, 벌점, 제출 절차만 따로 정리한 안내표입니다.</p>
+    <header class="point-rules-hero">
+        <p class="eyebrow">Samgyeong Discipline & Rewards</p>
+        <h1>상벌점 리스트</h1>
+        <p>학교생활규정 중 상점, 벌점, 제출 절차를 표 형태로 정리했습니다. 기준은 기록과 확인이 쉽도록 간결하게 관리합니다.</p>
+    </header>
 
     <div class="points-summary">
         <article>

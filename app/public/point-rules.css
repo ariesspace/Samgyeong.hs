@@ -1,6 +1,38 @@
 .point-rules-page {
     display: grid;
-    gap: 20px;
+    gap: 22px;
+}
+
+.point-rules-hero {
+    display: grid;
+    gap: 10px;
+    padding: 0 0 14px;
+    border-bottom: 1px solid var(--line);
+}
+
+.point-rules-hero .eyebrow {
+    margin: 0;
+    color: #9aa3b2;
+    font-size: 12px;
+    font-weight: 900;
+    letter-spacing: .14em;
+    text-transform: uppercase;
+}
+
+.point-rules-hero h1 {
+    margin: 0;
+    color: var(--green);
+    font-size: clamp(34px, 5vw, 44px);
+    line-height: 1.25;
+}
+
+.point-rules-hero p {
+    max-width: 760px;
+    margin: 0;
+    color: #667085;
+    font-size: 15px;
+    line-height: 1.75;
+    word-break: keep-all;
 }
 
 .point-rules-page .points-summary {
@@ -46,6 +78,28 @@
 }
 
 @media (max-width: 700px) {
+    .point-rules-page {
+        gap: 16px;
+    }
+
+    .point-rules-hero {
+        padding-bottom: 12px;
+    }
+
+    .point-rules-hero .eyebrow {
+        font-size: 10px;
+        letter-spacing: .12em;
+    }
+
+    .point-rules-hero h1 {
+        font-size: 34px;
+    }
+
+    .point-rules-hero p {
+        font-size: 14px;
+        line-height: 1.65;
+    }
+
     .point-rules-table th:first-child,
     .point-rules-table td:first-child,
     .point-rules-table th:nth-child(2),
