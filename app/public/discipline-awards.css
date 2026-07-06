@@ -1,44 +1,34 @@
 .discipline-policy-page {
     display: grid;
-    gap: 22px;
+    gap: 24px;
 }
 
 .discipline-policy-hero {
     display: grid;
-    justify-items: center;
-    gap: 8px;
-    padding: 8px 0 2px;
-    text-align: center;
+    justify-items: start;
+    gap: 10px;
+    padding: 0 0 14px;
+    border-bottom: 1px solid var(--line);
+    text-align: left;
 }
 
 .discipline-policy-mark {
-    display: grid;
-    width: 54px;
-    height: 54px;
-    place-items: center;
-    color: var(--green);
-    background: #fff;
-    border: 1px solid var(--line);
-    border-radius: 50%;
-    box-shadow: 0 10px 22px rgba(16, 24, 40, .08);
-    font-family: var(--serif);
-    font-size: 24px;
-    font-weight: 800;
+    display: none;
 }
 
 .discipline-policy-hero .eyebrow {
-    margin: 6px 0 0;
-    color: #8a93a3;
+    margin: 0;
+    color: #9aa3b2;
     font-size: 12px;
     font-weight: 900;
-    letter-spacing: .18em;
+    letter-spacing: .14em;
     text-transform: uppercase;
 }
 
 .discipline-policy-hero h1 {
     margin: 0;
-    color: #1f2937;
-    font-size: clamp(34px, 5vw, 48px);
+    color: var(--green);
+    font-size: clamp(34px, 5vw, 44px);
     line-height: 1.25;
 }
 
@@ -52,12 +42,9 @@
 }
 
 .discipline-policy-tabs {
-    display: grid;
-    grid-template-columns: repeat(3, minmax(0, 1fr));
-    overflow: hidden;
-    background: #f8fafc;
-    border: 1px solid var(--line);
-    border-radius: 6px;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
 }
 
 .discipline-policy-tabs a {
@@ -65,32 +52,31 @@
     align-items: center;
     justify-content: center;
     gap: 8px;
-    min-height: 56px;
-    padding: 12px 10px;
-    color: #667085;
-    border-right: 1px solid var(--line);
-    font-size: 15px;
+    min-height: 38px;
+    padding: 8px 14px;
+    color: #475467;
+    background: #fff;
+    border: 1px solid var(--line);
+    border-radius: 999px;
+    font-size: 14px;
     font-weight: 900;
     text-decoration: none;
-    transition: background .18s ease, color .18s ease;
-}
-
-.discipline-policy-tabs a:last-child {
-    border-right: 0;
+    transition: border-color .18s ease, background .18s ease, color .18s ease;
 }
 
 .discipline-policy-tabs a:hover {
-    background: #fff;
-    color: #1f2937;
+    background: #f8fafc;
+    border-color: #cfd6df;
+    color: var(--green);
 }
 
 .discipline-policy-tabs span {
     display: grid;
-    width: 24px;
-    height: 24px;
+    width: 20px;
+    height: 20px;
     place-items: center;
     border-radius: 50%;
-    font-size: 13px;
+    font-size: 12px;
     line-height: 1;
 }
 
@@ -112,9 +98,11 @@
 .discipline-policy-viewer {
     overflow: hidden;
     background: white;
-    border: 1px solid var(--line);
-    border-radius: 8px;
-    box-shadow: 0 18px 38px rgba(16, 24, 40, .08);
+    border-top: 3px solid var(--green);
+    border-right: 1px solid var(--line);
+    border-bottom: 1px solid var(--line);
+    border-left: 1px solid var(--line);
+    border-radius: 4px;
 }
 
 .discipline-policy-viewer-head {
@@ -122,13 +110,13 @@
     align-items: center;
     justify-content: space-between;
     gap: 12px;
-    padding: 13px 18px;
+    padding: 12px 18px;
     color: var(--green);
-    background: #fdfcf9;
+    background: #f8fafc;
     border-bottom: 1px solid var(--line);
-    font-size: 12px;
+    font-size: 11px;
     font-weight: 900;
-    letter-spacing: .12em;
+    letter-spacing: .08em;
     text-transform: uppercase;
 }
 
@@ -139,9 +127,9 @@
 }
 
 .discipline-policy-viewer-head strong {
-    color: #b58b2b;
+    color: #9a7a35;
     font-family: var(--serif);
-    font-size: 15px;
+    font-size: 14px;
     letter-spacing: .18em;
 }
 
@@ -154,25 +142,8 @@
 
 .discipline-policy-scroll {
     display: grid;
-    gap: 42px;
-    max-height: 720px;
-    overflow-y: auto;
-    padding: 34px 40px 42px;
-    scroll-behavior: smooth;
-}
-
-.discipline-policy-scroll::-webkit-scrollbar {
-    width: 8px;
-}
-
-.discipline-policy-scroll::-webkit-scrollbar-track {
-    background: #f3f4f6;
-    border-left: 1px solid #e5e7eb;
-}
-
-.discipline-policy-scroll::-webkit-scrollbar-thumb {
-    background: #cfd6df;
-    border-radius: 999px;
+    gap: 38px;
+    padding: 30px 38px 38px;
 }
 
 .discipline-policy-section {
@@ -187,7 +158,7 @@
     justify-content: space-between;
     gap: 12px;
     padding-bottom: 14px;
-    border-bottom: 2px solid #1f2937;
+    border-bottom: 1px solid #cfd6df;
 }
 
 .discipline-policy-section-head div {
@@ -199,7 +170,7 @@
 .discipline-policy-section-head h2 {
     margin: 0;
     color: #1f2937;
-    font-size: 24px;
+    font-size: 22px;
     font-weight: 800;
 }
 
@@ -219,16 +190,7 @@
 }
 
 .section-symbol {
-    display: grid;
-    width: 32px;
-    height: 32px;
-    place-items: center;
-    color: white;
-    background: #475467;
-    border-radius: 50%;
-    font-size: 17px;
-    font-weight: 900;
-    line-height: 1;
+    display: none;
 }
 
 .discipline-penalty-section .section-symbol {
@@ -241,18 +203,18 @@
 
 .discipline-rule-grid {
     display: grid;
-    gap: 14px;
+    gap: 12px;
 }
 
 .discipline-rule-block {
     overflow: hidden;
     background: #fff;
     border: 1px solid var(--line);
-    border-radius: 6px;
+    border-radius: 4px;
 }
 
 .discipline-rule-head {
-    padding: 15px 18px 12px;
+    padding: 14px 18px 11px;
     background: #f8fafc;
     border-bottom: 1px solid var(--line);
 }
@@ -279,7 +241,7 @@
     grid-template-columns: 76px minmax(0, 1fr);
     gap: 14px;
     align-items: start;
-    padding: 13px 18px;
+    padding: 12px 18px;
     border-bottom: 1px solid #eef2f6;
 }
 
@@ -298,13 +260,13 @@
     margin: 0;
     color: #344054;
     font-size: 14px;
-    line-height: 1.75;
+    line-height: 1.68;
     word-break: keep-all;
     overflow-wrap: anywhere;
 }
 
 .discipline-rule-item.is-emphasis {
-    background: #fff7f7;
+    background: #fffafa;
 }
 
 .discipline-rule-item.is-emphasis .discipline-score {
@@ -326,11 +288,11 @@
     display: flex;
     flex-direction: column;
     gap: 14px;
-    min-height: 150px;
-    padding: 18px;
+    min-height: 138px;
+    padding: 17px;
     background: #fff;
     border: 1px solid var(--line);
-    border-radius: 6px;
+    border-radius: 4px;
 }
 
 .reward-card > div {
@@ -371,17 +333,18 @@
 .reward-card-featured {
     grid-column: 1 / -1;
     min-height: 0;
-    color: white;
-    background: #173f31;
-    border-color: #173f31;
+    color: #1f2937;
+    background: #f8faf9;
+    border-top: 3px solid var(--green);
+    border-color: var(--line);
 }
 
 .reward-card-featured strong {
-    color: white;
+    color: var(--green);
 }
 
 .reward-card-featured p {
-    color: rgba(255, 255, 255, .82);
+    color: #475467;
 }
 
 .discipline-note-grid {
@@ -394,7 +357,7 @@
     padding: 18px;
     background: #f8fafc;
     border: 1px solid var(--line);
-    border-radius: 6px;
+    border-radius: 4px;
 }
 
 .discipline-note-grid h3 {
@@ -427,14 +390,12 @@
 
     .discipline-policy-hero {
         justify-items: start;
-        padding: 0;
+        padding: 0 0 12px;
         text-align: left;
     }
 
     .discipline-policy-mark {
-        width: 42px;
-        height: 42px;
-        font-size: 19px;
+        display: none;
     }
 
     .discipline-policy-hero .eyebrow {
@@ -452,21 +413,17 @@
     }
 
     .discipline-policy-tabs {
-        grid-template-columns: 1fr;
-        border-radius: 4px;
+        gap: 6px;
     }
 
     .discipline-policy-tabs a {
-        justify-content: flex-start;
-        min-height: 48px;
-        padding-inline: 14px;
-        border-right: 0;
-        border-bottom: 1px solid var(--line);
+        min-height: 36px;
+        padding: 7px 11px;
         font-size: 14px;
     }
 
     .discipline-policy-tabs a:last-child {
-        border-bottom: 0;
+        border-bottom: 1px solid var(--line);
     }
 
     .discipline-policy-viewer {
