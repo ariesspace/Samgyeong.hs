@@ -6871,6 +6871,26 @@ select {
     background: var(--green);
 }
 
+.shop-product-card.is-sold-out {
+    opacity: .72;
+}
+
+.shop-product-card.is-sold-out .shop-product-visual {
+    background: #5b6573;
+}
+
+.shop-product-card button:disabled {
+    color: #98a2b3;
+    background: #eef2f6;
+    border-color: #d9e1ea;
+    cursor: not-allowed;
+}
+
+.shop-product-card button:disabled:hover {
+    color: #98a2b3;
+    background: #eef2f6;
+}
+
 .shop-cart {
     position: sticky;
     top: 18px;

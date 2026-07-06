@@ -15,6 +15,8 @@
         <div class="error">장바구니가 비어 있습니다.</div>
     <?php elseif ($error === 'checkout'): ?>
         <div class="error">결제 처리 중 오류가 발생했습니다.</div>
+    <?php elseif ($error === 'soldout'): ?>
+        <div class="error">품절된 상품이 포함되어 있습니다. 장바구니를 다시 확인해 주세요.</div>
     <?php endif; ?>
 
     <header class="shop-topbar">
@@ -41,9 +43,15 @@
 
             <div class="shop-product-grid">
                 <?php foreach ($items as $index => $item): ?>
-                    <article class="shop-product-card tone-<?= e((string) (($index % 5) + 1)) ?>">
+                    <?php $soldOut = !empty($item['sold_out']); ?>
+                    <article class="shop-product-card tone-<?= e((string) (($index % 5) + 1)) ?> <?= $soldOut ? 'is-sold-out' : '' ?>">
                         <div class="shop-product-visual">
                             <span><?= e(mb_substr($item['name'], 0, 1)) ?></span>
+                            <?php if ($soldOut): ?>
+                                <strong>품절</strong>
+                            <?php elseif (($item['remaining_stock'] ?? null) !== null): ?>
+                                <strong>잔여 <?= e((string) $item['remaining_stock']) ?>개</strong>
+                            <?php endif; ?>
                         </div>
                         <div class="shop-product-body">
                             <div class="shop-product-title-row">
@@ -55,7 +63,7 @@
                         <form method="post" action="/samgyeong-mall/cart/add">
                             <input type="hidden" name="csrf" value="<?= e(csrf_token()) ?>">
                             <input type="hidden" name="item_id" value="<?= e((string) $item['id']) ?>">
-                            <button type="submit">담기</button>
+                            <button type="submit" <?= $soldOut ? 'disabled' : '' ?>><?= $soldOut ? '품절' : '담기' ?></button>
                         </form>
                     </article>
                 <?php endforeach; ?>

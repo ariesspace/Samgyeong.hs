@@ -55,6 +55,60 @@ function save_mall_cart(array $cart): void
     );
 }
 
+function mall_limited_stock_items(): array
+{
+    return [
+        '치킨 기프티콘 변경권' => 1,
+        '피자 기프티콘 변경권' => 1,
+    ];
+}
+
+function mall_item_stock_limit(array $item): ?int
+{
+    $limits = mall_limited_stock_items();
+    $name = (string) ($item['name'] ?? $item['item_name'] ?? '');
+    return $limits[$name] ?? null;
+}
+
+function mall_item_sold_quantity(PDO $db, int $itemId): int
+{
+    $stmt = $db->prepare('SELECT COALESCE(SUM(quantity), 0) FROM mall_orders WHERE item_id = ?');
+    $stmt->execute([$itemId]);
+    return (int) $stmt->fetchColumn();
+}
+
+function mall_item_remaining_stock(PDO $db, array $item): ?int
+{
+    $limit = mall_item_stock_limit($item);
+    if ($limit === null) {
+        return null;
+    }
+
+    return max(0, $limit - mall_item_sold_quantity($db, (int) $item['id']));
+}
+
+function enrich_mall_item_stock(PDO $db, array $item): array
+{
+    $remaining = mall_item_remaining_stock($db, $item);
+    return $item + [
+        'stock_limit' => mall_item_stock_limit($item),
+        'remaining_stock' => $remaining,
+        'sold_out' => $remaining !== null && $remaining <= 0,
+    ];
+}
+
+function mall_cart_exceeds_stock(PDO $db, array $items): bool
+{
+    foreach ($items as $item) {
+        $remaining = mall_item_remaining_stock($db, $item);
+        if ($remaining !== null && (int) $item['quantity'] > $remaining) {
+            return true;
+        }
+    }
+
+    return false;
+}
+
 function mall_cart_details(PDO $db): array
 {
     $cart = mall_cart();
@@ -75,8 +129,17 @@ function mall_cart_details(PDO $db): array
 
     foreach ($stmt->fetchAll() as $item) {
         $quantity = max(1, (int) ($cart[(string) $item['id']] ?? 0));
+        $remaining = mall_item_remaining_stock($db, $item);
+        if ($remaining !== null && $remaining <= 0) {
+            $quantity = 0;
+        } elseif ($remaining !== null) {
+            $quantity = min($quantity, $remaining);
+        }
+        if ($quantity <= 0) {
+            continue;
+        }
         $lineTotal = (int) $item['price'] * $quantity;
-        $items[] = $item + ['quantity' => $quantity, 'line_total' => $lineTotal];
+        $items[] = enrich_mall_item_stock($db, $item) + ['quantity' => $quantity, 'line_total' => $lineTotal];
         $total += $lineTotal;
     }
 
@@ -311,7 +374,10 @@ $routes = [
             ]);
         }
 
-        $items = $db->query('SELECT * FROM mall_items WHERE active = 1 ORDER BY sort_order, id')->fetchAll();
+        $items = array_map(
+            fn (array $item): array => enrich_mall_item_stock($db, $item),
+            $db->query('SELECT * FROM mall_items WHERE active = 1 ORDER BY sort_order, id')->fetchAll()
+        );
 
         return view('mall', [
             'title' => '삼경몰',
@@ -364,12 +430,19 @@ if ($path === '/samgyeong-mall/cart/add' && $method === 'POST') {
     }
 
     $itemId = (int) ($_POST['item_id'] ?? 0);
-    $stmt = $db->prepare('SELECT id FROM mall_items WHERE id = ? AND active = 1');
+    $stmt = $db->prepare('SELECT * FROM mall_items WHERE id = ? AND active = 1');
     $stmt->execute([$itemId]);
-    if ($stmt->fetchColumn()) {
+    $item = $stmt->fetch();
+    if ($item) {
+        $remaining = mall_item_remaining_stock($db, $item);
         $cart = mall_cart();
-        $cart[(string) $itemId] = min(9, (int) ($cart[(string) $itemId] ?? 0) + 1);
-        save_mall_cart($cart);
+        $next = min(9, (int) ($cart[(string) $itemId] ?? 0) + 1);
+        if ($remaining === null || $next <= $remaining) {
+            $cart[(string) $itemId] = $next;
+            save_mall_cart($cart);
+        } else {
+            redirect('/samgyeong-mall?error=soldout');
+        }
     }
 
     redirect('/samgyeong-mall?saved=cart');
@@ -395,6 +468,17 @@ if ($path === '/samgyeong-mall/cart/update' && $method === 'POST') {
     $cart = mall_cart();
     $current = (int) ($cart[(string) $itemId] ?? 0);
     $next = max(0, min(9, $current + $delta));
+    if ($next > 0) {
+        $stmt = $db->prepare('SELECT * FROM mall_items WHERE id = ? AND active = 1');
+        $stmt->execute([$itemId]);
+        $item = $stmt->fetch();
+        if ($item) {
+            $remaining = mall_item_remaining_stock($db, $item);
+            if ($remaining !== null) {
+                $next = min($next, $remaining);
+            }
+        }
+    }
     if ($next === 0) {
         unset($cart[(string) $itemId]);
     } else {
@@ -420,9 +504,17 @@ if ($path === '/samgyeong-mall/checkout' && $method === 'POST') {
     if ((int) $cart['total'] > (int) $points['available_total']) {
         redirect('/samgyeong-mall?error=points');
     }
+    if (mall_cart_exceeds_stock($db, $cart['items'])) {
+        redirect('/samgyeong-mall?error=soldout');
+    }
 
     $db->beginTransaction();
     try {
+        if (mall_cart_exceeds_stock($db, $cart['items'])) {
+            $db->rollBack();
+            redirect('/samgyeong-mall?error=soldout');
+        }
+
         $stmt = $db->prepare('
             INSERT INTO mall_orders (user_id, item_id, item_name, price, quantity, total_price)
             VALUES (?, ?, ?, ?, ?, ?)
