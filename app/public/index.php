@@ -28,6 +28,19 @@ function require_mypage_access(Auth $auth): array
     return $user;
 }
 
+function require_page_read_access(PDO $db, string $pageKey): ?string
+{
+    $roles = page_read_roles($db, $pageKey);
+    if (can_read_page($db, $pageKey)) {
+        return null;
+    }
+
+    return view('access-denied', [
+        'title' => '권한 없음',
+        'message' => page_access_denied_message($roles),
+    ]);
+}
+
 function mall_cart(): array
 {
     $cart = $_SESSION['mall_cart'] ?? [];
@@ -132,21 +145,21 @@ $routes = [
     '/history' => fn () => view('history', ['title' => '학교 연혁']),
     '/location' => fn () => view('location', ['title' => '오시는 길']),
     '/admissions' => fn () => view('admissions', ['title' => '모집요강']),
-    '/rules' => function () use ($auth) {
-        if (!$auth->user()) {
-            return view('access-denied', ['title' => '권한 없음', 'message' => '재학생 이상 로그인 후 접근이 가능한 메뉴입니다.']);
+    '/rules' => function () use ($db) {
+        if ($denied = require_page_read_access($db, 'school-rules')) {
+            return $denied;
         }
         return view('school-rules', ['title' => '학교규칙']);
     },
-    '/rules/life' => function () use ($auth) {
-        if (!$auth->user()) {
-            return view('access-denied', ['title' => '권한 없음', 'message' => '재학생 이상 로그인 후 접근이 가능한 메뉴입니다.']);
+    '/rules/life' => function () use ($db) {
+        if ($denied = require_page_read_access($db, 'student-life-rules')) {
+            return $denied;
         }
         return view('student-life-rules', ['title' => '학교생활규정']);
     },
-    '/rules/points' => function () use ($auth, $db) {
-        if (!$auth->user()) {
-            return view('access-denied', ['title' => '권한 없음', 'message' => '재학생 이상 로그인 후 접근이 가능한 메뉴입니다.']);
+    '/rules/points' => function () use ($db) {
+        if ($denied = require_page_read_access($db, 'point-rules')) {
+            return $denied;
         }
         $rules = $db->query('SELECT * FROM point_list_rules ORDER BY category, sort_order, id')->fetchAll();
         return view('point-rules', [
@@ -154,9 +167,9 @@ $routes = [
             'sections' => build_point_list_sections($rules),
         ]);
     },
-    '/rules/discipline' => function () use ($auth, $db) {
-        if (!$auth->user()) {
-            return view('access-denied', ['title' => '권한 없음', 'message' => '재학생 이상 로그인 후 접근이 가능한 메뉴입니다.']);
+    '/rules/discipline' => function () use ($db) {
+        if ($denied = require_page_read_access($db, 'discipline-awards')) {
+            return $denied;
         }
         $rules = $db->query('SELECT * FROM point_rules ORDER BY category, sort_order, id')->fetchAll();
         $activeTab = $_GET['tab'] ?? 'penalty';
@@ -170,6 +183,9 @@ $routes = [
         ]);
     },
     '/student-halls' => function () use ($db) {
+        if ($denied = require_page_read_access($db, 'student-halls')) {
+            return $denied;
+        }
         $rows = $db->query('SELECT * FROM hall_members ORDER BY hall_key, sort_order, id')->fetchAll();
         $halls = hall_definitions();
         $selectedHall = $_GET['hall'] ?? '';
@@ -180,6 +196,9 @@ $routes = [
         ]);
     },
     '/hall-activities' => function () use ($db) {
+        if ($denied = require_page_read_access($db, 'hall-activities')) {
+            return $denied;
+        }
         $activities = $db->query('SELECT * FROM hall_activities ORDER BY sort_order, id')->fetchAll();
         return view('hall-activities', [
             'title' => '관별 자치활동',
@@ -214,10 +233,15 @@ $routes = [
             'error' => $_GET['error'] ?? '',
         ]);
     },
-    '/council' => fn () => view('council', ['title' => '삼경원 소개']),
-    '/calendar' => function () use ($auth, $db) {
-        if (!$auth->hasRole(['council', 'admin'])) {
-            return view('access-denied', ['title' => '권한 없음', 'message' => '삼경원(학생회) 인원 및 관리자만 접근이 가능한 메뉴입니다.']);
+    '/council' => function () use ($db) {
+        if ($denied = require_page_read_access($db, 'council-intro')) {
+            return $denied;
+        }
+        return view('council', ['title' => '삼경원 소개']);
+    },
+    '/calendar' => function () use ($db) {
+        if ($denied = require_page_read_access($db, 'calendar')) {
+            return $denied;
         }
         $month = preg_match('/^\d{4}-\d{2}$/', $_GET['month'] ?? '') ? $_GET['month'] : date('Y-m');
         $stmt = $db->prepare('
@@ -582,6 +606,43 @@ if ($path === '/admin/users/delete' && $method === 'POST') {
     }
 
     redirect('/admin/users?saved=deleted');
+}
+
+if ($path === '/admin/pages/permissions') {
+    $auth->requireRole(['admin']);
+    echo view('admin-page-permissions', [
+        'title' => '페이지 권한 설정',
+        'pages' => page_permission_definitions(),
+        'db' => $db,
+        'saved' => ($_GET['saved'] ?? '') === '1',
+    ]);
+    exit;
+}
+
+if ($path === '/admin/pages/permissions/save' && $method === 'POST') {
+    $auth->requireRole(['admin']);
+    $presets = page_permission_presets();
+    $pages = page_permission_definitions();
+    $readPresets = $_POST['read_preset'] ?? [];
+
+    $stmt = $db->prepare('
+        INSERT INTO page_permissions (page_key, read_roles, updated_at)
+        VALUES (?, ?, CURRENT_TIMESTAMP)
+        ON CONFLICT(page_key) DO UPDATE SET
+            read_roles = excluded.read_roles,
+            updated_at = CURRENT_TIMESTAMP
+    ');
+
+    foreach ($pages as $key => $page) {
+        $preset = is_array($readPresets) ? (string) ($readPresets[$key] ?? 'student') : 'student';
+        $roles = $presets[$preset]['roles'] ?? $page['default_read_roles'];
+        $stmt->execute([
+            $key,
+            json_encode($roles, JSON_UNESCAPED_UNICODE),
+        ]);
+    }
+
+    redirect('/admin/pages/permissions?saved=1');
 }
 
 if ($path === '/admin/boards/permissions') {
@@ -977,7 +1038,10 @@ if ($path === '/mypage/points') {
 }
 
 if ($path === '/points/assign') {
-    $auth->requireRole(['council', 'admin']);
+    if ($denied = require_page_read_access($db, 'points-assign')) {
+        echo $denied;
+        exit;
+    }
     $students = $db->query("
         SELECT id, username, display_name, hall_key, year, role
         FROM users

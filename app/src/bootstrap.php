@@ -253,7 +253,14 @@ function nav_groups(): array
                     ['label' => '계정 생성', 'href' => '/admin/users/create'],
                 ],
             ],
-            ['label' => '게시판 권한 설정', 'href' => '/admin/boards/permissions'],
+            [
+                'label' => '권한 설정',
+                'href' => '/admin/pages/permissions',
+                'children' => [
+                    ['label' => '페이지 권한 설정', 'href' => '/admin/pages/permissions'],
+                    ['label' => '게시판 권한 설정', 'href' => '/admin/boards/permissions'],
+                ],
+            ],
             ['label' => '상벌점 기준 관리', 'href' => '/admin/point-rules'],
             ['label' => '관별 자치활동 관리', 'href' => '/admin/hall-activities'],
             ['label' => '상벌점 초기화', 'href' => '/admin/points/reset'],
@@ -274,10 +281,138 @@ function active_group(string $path): string
             if ($path === $item['href'] || str_starts_with($path, $item['href'] . '/')) {
                 return $group;
             }
+            foreach ($item['children'] ?? [] as $child) {
+                $childPath = parse_url($child['href'], PHP_URL_PATH) ?: $child['href'];
+                if ($path === $childPath || str_starts_with($path, $childPath . '/')) {
+                    return $group;
+                }
+            }
         }
     }
 
     return '학교소개';
+}
+
+function page_permission_definitions(): array
+{
+    return [
+        'school-rules' => [
+            'label' => '학교규칙',
+            'path' => '/rules',
+            'default_read_roles' => ['student', 'council', 'admin'],
+        ],
+        'student-life-rules' => [
+            'label' => '학교생활규정',
+            'path' => '/rules/life',
+            'default_read_roles' => ['student', 'council', 'admin'],
+        ],
+        'point-rules' => [
+            'label' => '상벌점 리스트',
+            'path' => '/rules/points',
+            'default_read_roles' => ['student', 'council', 'admin'],
+        ],
+        'discipline-awards' => [
+            'label' => '징계 및 포상',
+            'path' => '/rules/discipline',
+            'default_read_roles' => ['student', 'council', 'admin'],
+        ],
+        'student-halls' => [
+            'label' => '관별 현황',
+            'path' => '/student-halls',
+            'default_read_roles' => [],
+        ],
+        'hall-activities' => [
+            'label' => '관별 자치활동',
+            'path' => '/hall-activities',
+            'default_read_roles' => [],
+        ],
+        'council-intro' => [
+            'label' => '삼경원 소개',
+            'path' => '/council',
+            'default_read_roles' => [],
+        ],
+        'calendar' => [
+            'label' => '삼경원 일정',
+            'path' => '/calendar',
+            'default_read_roles' => ['council', 'admin'],
+        ],
+        'points-assign' => [
+            'label' => '상벌점 부여',
+            'path' => '/points/assign',
+            'default_read_roles' => ['council', 'admin'],
+        ],
+    ];
+}
+
+function page_permission_presets(): array
+{
+    return [
+        'public' => ['label' => '전체 공개', 'roles' => []],
+        'login' => ['label' => '로그인 사용자', 'roles' => ['guest', 'student', 'council', 'admin']],
+        'student' => ['label' => '재학생 이상', 'roles' => ['student', 'council', 'admin']],
+        'council' => ['label' => '삼경원 이상', 'roles' => ['council', 'admin']],
+        'admin' => ['label' => '관리자만', 'roles' => ['admin']],
+    ];
+}
+
+function page_permission_preset_from_roles(array $roles): string
+{
+    $allowed = ['guest', 'student', 'council', 'admin'];
+    $roles = array_values(array_intersect($allowed, $roles));
+    sort($roles);
+    $key = implode(',', $roles);
+
+    return match ($key) {
+        '' => 'public',
+        'admin' => 'admin',
+        'admin,council' => 'council',
+        'admin,council,student' => 'student',
+        'admin,council,guest,student' => 'login',
+        default => 'student',
+    };
+}
+
+function page_read_roles(PDO $db, string $pageKey): array
+{
+    $definitions = page_permission_definitions();
+    if (!isset($definitions[$pageKey])) {
+        return ['admin'];
+    }
+
+    $roles = $definitions[$pageKey]['default_read_roles'];
+    $stmt = $db->prepare('SELECT read_roles FROM page_permissions WHERE page_key = ?');
+    $stmt->execute([$pageKey]);
+    $rawRoles = $stmt->fetchColumn();
+    if ($rawRoles !== false) {
+        $decoded = json_decode((string) $rawRoles, true);
+        if (is_array($decoded)) {
+            $roles = array_values(array_intersect($decoded, ['guest', 'student', 'council', 'admin']));
+        }
+    }
+
+    return $roles;
+}
+
+function can_read_page(PDO $db, string $pageKey, ?array $user = null): bool
+{
+    $roles = page_read_roles($db, $pageKey);
+    if ($roles === []) {
+        return true;
+    }
+
+    $user ??= current_user();
+    return $user !== null && in_array($user['role'] ?? '', $roles, true);
+}
+
+function page_access_denied_message(array $roles): string
+{
+    return match (page_permission_preset_from_roles($roles)) {
+        'login' => '로그인 후 접근이 가능한 메뉴입니다.',
+        'student' => '재학생 이상 로그인 후 접근이 가능한 메뉴입니다.',
+        'council' => '삼경원 및 관리자만 접근이 가능한 메뉴입니다.',
+        'admin' => '관리자만 접근이 가능한 메뉴입니다.',
+        default => '접근 권한이 없습니다.',
+    };
 }
 
 function hall_definitions(): array
