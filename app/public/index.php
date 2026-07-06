@@ -83,6 +83,78 @@ function mall_cart_details(PDO $db): array
     return ['items' => $items, 'total' => $total];
 }
 
+function meal_samples(): array
+{
+    return [
+        '2026-07-01' => [
+            'lunch' => ['흑미밥', '한우미역국', '닭갈비', '콩나물무침', '배추김치', '수박'],
+            'dinner' => ['짜장덮밥', '달걀국', '군만두', '단무지무침', '요구르트'],
+        ],
+        '2026-07-02' => [
+            'lunch' => ['현미밥', '감자수제비국', '돼지불고기', '상추겉절이', '깍두기'],
+            'dinner' => ['김치볶음밥', '우동장국', '치킨너겟', '오이피클'],
+        ],
+        '2026-07-03' => [
+            'lunch' => ['차조밥', '육개장', '삼치구이', '메추리알조림', '열무김치'],
+            'dinner' => ['카레라이스', '새우튀김', '그린샐러드', '포기김치'],
+        ],
+        '2026-07-06' => [
+            'lunch' => ['카레라이스', '치즈돈까스·소스', '그린샐러드', '포기김치', '미니마들렌', '후레쉬업'],
+            'dinner' => ['기장밥', '두부된장국', '제육볶음', '감자채볶음', '배추김치'],
+        ],
+        '2026-07-07' => [
+            'lunch' => ['보리밥', '순두부찌개', '간장찜닭', '청포묵김가루무침', '깍두기'],
+            'dinner' => ['스파게티', '크림스프', '마늘빵', '오이피클', '자몽주스'],
+        ],
+        '2026-07-08' => [
+            'lunch' => ['쌀밥', '맑은콩나물국', '고추장불고기', '양배추쌈', '배추김치'],
+            'dinner' => ['참치마요덮밥', '미소장국', '떡볶이', '김말이튀김'],
+        ],
+        '2026-07-09' => [
+            'lunch' => ['귀리밥', '설렁탕', '오징어초무침', '김치전', '석박지'],
+            'dinner' => ['치킨마요덮밥', '유부장국', '콘샐러드', '깍두기'],
+        ],
+        '2026-07-10' => [
+            'lunch' => ['수수밥', '부대찌개', '생선까스·타르타르', '숙주나물', '열무김치'],
+            'dinner' => ['잔치국수', '김가루주먹밥', '왕교자만두', '배추김치'],
+        ],
+        '2026-07-13' => [
+            'lunch' => ['혼합잡곡밥', '닭곰탕', '비엔나채소볶음', '도토리묵무침', '깍두기'],
+            'dinner' => ['불고기버거', '감자튀김', '코울슬로', '오렌지주스'],
+        ],
+        '2026-07-14' => [
+            'lunch' => ['현미밥', '얼큰어묵국', '돈육장조림', '시금치나물', '배추김치'],
+            'dinner' => ['중화덮밥', '달걀파국', '탕수육', '단무지'],
+        ],
+        '2026-07-15' => [
+            'lunch' => ['열무비빔밥', '강된장', '계란후라이', '핫도그', '수박화채'],
+            'dinner' => ['쌀밥', '김치찌개', '함박스테이크', '감자샐러드', '깍두기'],
+        ],
+    ];
+}
+
+function meal_calendar_data(string $month): array
+{
+    $first = strtotime($month . '-01');
+    $daysInMonth = (int) date('t', $first);
+    $startWeekday = (int) date('w', $first);
+    $cells = [];
+
+    for ($i = 0; $i < $startWeekday; $i++) {
+        $cells[] = null;
+    }
+
+    for ($day = 1; $day <= $daysInMonth; $day++) {
+        $cells[] = sprintf('%s-%02d', $month, $day);
+    }
+
+    while (count($cells) % 7 !== 0) {
+        $cells[] = null;
+    }
+
+    return $cells;
+}
+
 if (str_starts_with($path, '/api/')) {
     require_once __DIR__ . '/../src/Api.php';
     samgyeong_api_handle_request($db, $path, $method);
@@ -203,6 +275,31 @@ $routes = [
         return view('hall-activities', [
             'title' => '관별 자치활동',
             'activities' => $activities,
+        ]);
+    },
+    '/meal' => function () {
+        $today = date('Y-m-d');
+        $dateParam = $_GET['date'] ?? '';
+        $monthParam = $_GET['month'] ?? '';
+        $selectedDate = preg_match('/^\d{4}-\d{2}-\d{2}$/', $dateParam) ? $dateParam : $today;
+        $month = preg_match('/^\d{4}-\d{2}$/', $monthParam) ? $monthParam : substr($selectedDate, 0, 7);
+
+        if (substr($selectedDate, 0, 7) !== $month) {
+            $selectedDate = $month === substr($today, 0, 7) ? $today : $month . '-01';
+        }
+
+        $meals = meal_samples();
+
+        return view('meal', [
+            'title' => '식단표',
+            'month' => $month,
+            'selectedDate' => $selectedDate,
+            'today' => $today,
+            'calendarCells' => meal_calendar_data($month),
+            'meals' => $meals,
+            'selectedMeal' => $meals[$selectedDate] ?? ['lunch' => [], 'dinner' => []],
+            'prevMonth' => date('Y-m', strtotime($month . '-01 -1 month')),
+            'nextMonth' => date('Y-m', strtotime($month . '-01 +1 month')),
         ]);
     },
     '/samgyeong-mall' => function () use ($auth, $db) {

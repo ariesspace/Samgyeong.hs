@@ -223,6 +223,7 @@ function nav_groups(): array
                 ],
             ],
             ['label' => '관별 자치활동', 'href' => '/hall-activities'],
+            ['label' => '식단표', 'href' => '/meal'],
             ['label' => '삼경몰', 'href' => '/samgyeong-mall'],
             ['label' => '자료실', 'href' => '/board/resources'],
             ['label' => '자유게시판', 'href' => '/board/free'],

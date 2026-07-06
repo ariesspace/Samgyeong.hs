@@ -103,6 +103,98 @@
     }
 }
 
+@media (max-width: 700px) {
+    .page-main-head {
+        margin-bottom: 18px;
+        padding-bottom: 18px;
+    }
+
+    .page-main-head h1 {
+        font-size: 32px;
+    }
+
+    .page-main-head h1 span {
+        display: inline-block;
+        font-size: 15px;
+    }
+
+    .page-main-head > p:last-child {
+        font-size: 14px;
+        line-height: 1.7;
+    }
+
+    .meal-page {
+        gap: 16px;
+    }
+
+    .meal-tabs {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    .meal-tabs span,
+    .meal-tabs strong {
+        min-height: 42px;
+        font-size: 13px;
+    }
+
+    .meal-tabs span:nth-child(2n),
+    .meal-tabs strong:nth-child(2n) {
+        border-right: 0;
+    }
+
+    .meal-layout {
+        grid-template-columns: 1fr;
+        gap: 14px;
+    }
+
+    .meal-calendar-head {
+        min-height: 48px;
+    }
+
+    .meal-calendar-head a {
+        width: 30px;
+        height: 30px;
+        font-size: 28px;
+    }
+
+    .meal-week span {
+        min-height: 30px;
+        font-size: 12px;
+    }
+
+    .meal-day {
+        min-height: 46px;
+        padding: 7px 6px;
+        font-size: 13px;
+    }
+
+    .meal-detail header {
+        min-height: 54px;
+    }
+
+    .meal-detail h2 {
+        font-size: 18px;
+    }
+
+    .meal-block {
+        grid-template-columns: 74px minmax(0, 1fr);
+        gap: 14px;
+        min-height: 0;
+        padding: 18px 16px;
+    }
+
+    .meal-block > strong {
+        min-height: 44px;
+        font-size: 18px;
+    }
+
+    .meal-block li,
+    .meal-block p {
+        font-size: 16px;
+        line-height: 1.55;
+    }
+}
+
 .admissions-closing-actions {
     display: flex;
     flex-wrap: wrap;
@@ -4450,6 +4542,291 @@ select {
     color: #166534;
     background: #dcfce7;
     border-left-color: #22c55e;
+}
+
+.page-main-head {
+    margin-bottom: 26px;
+    padding-bottom: 24px;
+    border-bottom: 1px solid #d8dee8;
+}
+
+.page-main-head > p:first-child {
+    margin: 0 0 12px;
+    color: #98a2b3;
+    font-size: 13px;
+    font-weight: 900;
+    letter-spacing: .18em;
+}
+
+.page-main-head h1 {
+    margin: 0 0 12px;
+    color: #23362f;
+    font-family: Georgia, "Times New Roman", serif;
+    font-size: clamp(34px, 5vw, 48px);
+    font-weight: 700;
+    line-height: 1.18;
+}
+
+.page-main-head h1 span {
+    margin-left: 8px;
+    color: var(--gold);
+    font-size: 18px;
+    font-weight: 700;
+}
+
+.page-main-head > p:last-child {
+    max-width: 760px;
+    margin: 0;
+    color: #667085;
+    font-size: 17px;
+    line-height: 1.75;
+    word-break: keep-all;
+}
+
+.meal-page {
+    display: grid;
+    gap: 22px;
+}
+
+.meal-tabs {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    border: 1px solid #d8dee8;
+    background: #f8fafc;
+}
+
+.meal-tabs span,
+.meal-tabs strong {
+    display: grid;
+    place-items: center;
+    min-height: 54px;
+    padding: 10px;
+    color: #344054;
+    border-right: 1px solid #d8dee8;
+    font-size: 16px;
+    font-weight: 800;
+    text-align: center;
+}
+
+.meal-tabs span:last-child {
+    border-right: 0;
+}
+
+.meal-tabs strong {
+    color: white;
+    background: var(--green);
+}
+
+.meal-layout {
+    display: grid;
+    grid-template-columns: 350px minmax(0, 1fr);
+    gap: 26px;
+    align-items: start;
+}
+
+.meal-calendar {
+    overflow: hidden;
+    border: 1px solid #d8dee8;
+    background: white;
+}
+
+.meal-calendar-head {
+    display: grid;
+    grid-template-columns: 48px minmax(0, 1fr) 48px;
+    align-items: center;
+    min-height: 58px;
+    background: #dbe4ef;
+}
+
+.meal-calendar-head a {
+    display: grid;
+    place-items: center;
+    width: 36px;
+    height: 36px;
+    margin: 0 auto;
+    color: white;
+    background: #9aa7b8;
+    border-radius: 999px;
+    font-size: 34px;
+    line-height: 1;
+    text-decoration: none;
+}
+
+.meal-calendar-head a:hover {
+    background: var(--green);
+}
+
+.meal-calendar-head strong {
+    color: #111827;
+    font-size: 16px;
+    font-weight: 900;
+    text-align: center;
+}
+
+.meal-week,
+.meal-days {
+    display: grid;
+    grid-template-columns: repeat(7, minmax(0, 1fr));
+}
+
+.meal-week span {
+    display: grid;
+    place-items: center;
+    min-height: 36px;
+    color: #111827;
+    background: #f7f8fa;
+    border-top: 1px solid #d8dee8;
+    border-right: 1px solid #d8dee8;
+    font-size: 13px;
+    font-weight: 900;
+}
+
+.meal-week span:last-child {
+    border-right: 0;
+}
+
+.meal-day {
+    position: relative;
+    display: grid;
+    place-items: start;
+    min-height: 58px;
+    padding: 9px 8px;
+    color: #111827;
+    border-top: 1px solid #d8dee8;
+    border-right: 1px solid #d8dee8;
+    font-size: 14px;
+    text-decoration: none;
+}
+
+.meal-day:nth-child(7n) {
+    border-right: 0;
+}
+
+.meal-day.empty {
+    background: #fbfcfd;
+}
+
+.meal-day.sun {
+    color: #dc2626;
+}
+
+.meal-day.sat {
+    color: #2563eb;
+}
+
+.meal-day:hover,
+.meal-day.selected {
+    color: white;
+    background: var(--green);
+}
+
+.meal-day.today::after {
+    position: absolute;
+    top: 7px;
+    right: 7px;
+    width: 6px;
+    height: 6px;
+    content: "";
+    background: var(--gold);
+    border-radius: 999px;
+}
+
+.meal-day i {
+    position: absolute;
+    right: 8px;
+    bottom: 8px;
+    width: 5px;
+    height: 5px;
+    background: var(--green);
+    border-radius: 999px;
+}
+
+.meal-day.selected i,
+.meal-day:hover i {
+    background: white;
+}
+
+.meal-detail {
+    overflow: hidden;
+    border: 1px solid #d8dee8;
+    background: white;
+}
+
+.meal-detail header {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    min-height: 68px;
+    padding: 14px;
+    background: #d9e6fb;
+    text-align: center;
+}
+
+.meal-detail h2 {
+    margin: 0;
+    color: #111827;
+    font-size: 22px;
+    font-weight: 900;
+}
+
+.meal-detail header span {
+    padding: 4px 10px;
+    color: white;
+    background: #f4b400;
+    border-radius: 999px;
+    font-size: 12px;
+    font-weight: 900;
+}
+
+.meal-block {
+    display: grid;
+    grid-template-columns: 110px minmax(0, 1fr);
+    gap: 28px;
+    align-items: start;
+    min-height: 210px;
+    padding: 28px 32px;
+    border-bottom: 1px solid #d8dee8;
+}
+
+.meal-block:last-child {
+    border-bottom: 0;
+}
+
+.meal-block > strong {
+    display: grid;
+    place-items: center;
+    min-height: 58px;
+    color: white;
+    background: #ad9d8f;
+    border-radius: 6px;
+    font-size: 26px;
+    font-weight: 900;
+}
+
+.meal-block.dinner > strong {
+    background: #8aa3ad;
+}
+
+.meal-block ul {
+    display: grid;
+    gap: 8px;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+}
+
+.meal-block li,
+.meal-block p {
+    margin: 0;
+    color: #1f2937;
+    font-size: 22px;
+    line-height: 1.45;
+    word-break: keep-all;
+}
+
+.meal-block p {
+    color: #98a2b3;
 }
 
 .pledge-wrap {

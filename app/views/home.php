@@ -20,10 +20,10 @@
                 <strong>2027학년도 신입생 모집요강</strong>
                 <em>전형 일정과 제출 서류를 확인하세요.</em>
             </a>
-            <a class="popup-card dark" href="/calendar">
-                <span>삼경원 일정</span>
-                <strong>7월 자치활동 캘린더</strong>
-                <em>회의, 간담회, 시설 점검 일정을 안내합니다.</em>
+            <a class="popup-card dark" href="/meal">
+                <span>오늘의 식단</span>
+                <strong>삼경 식단표</strong>
+                <em>월별 급식 일정과 오늘의 중식을 확인하세요.</em>
             </a>
         </div>
     </section>
