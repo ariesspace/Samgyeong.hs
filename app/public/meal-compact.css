@@ -1,0 +1,133 @@
+.meal-page .meal-layout {
+    grid-template-columns: minmax(250px, 320px) minmax(0, 1fr);
+    gap: 16px;
+}
+
+.meal-page .meal-calendar {
+    padding: 12px;
+}
+
+.meal-page .meal-calendar-head {
+    grid-template-columns: 34px minmax(0, 1fr) 34px;
+    min-height: 36px;
+    margin-bottom: 10px;
+    background: transparent;
+}
+
+.meal-page .meal-calendar-head a {
+    width: 26px;
+    height: 26px;
+    color: #667085;
+    background: #fff;
+    border: 1px solid #d8dee8;
+    border-radius: 999px;
+    box-shadow: none;
+    font-size: 18px;
+    font-weight: 800;
+}
+
+.meal-page .meal-calendar-head strong {
+    color: var(--green);
+    font-size: 15px;
+}
+
+.meal-page .meal-week {
+    gap: 4px;
+    margin-bottom: 5px;
+}
+
+.meal-page .meal-week span {
+    min-height: 22px;
+    background: transparent;
+    border: 0;
+    font-size: 11px;
+}
+
+.meal-page .meal-days {
+    gap: 4px;
+}
+
+.meal-page .meal-day {
+    min-height: 34px;
+    padding: 4px;
+    place-items: center;
+    border: 1px solid #edf0f4;
+    border-radius: 4px;
+    font-size: 12px;
+    font-weight: 800;
+}
+
+.meal-page .meal-day:nth-child(7n) {
+    border-right: 1px solid #edf0f4;
+}
+
+.meal-page .meal-day.empty {
+    background: transparent;
+    border-color: transparent;
+}
+
+.meal-page .meal-day i {
+    right: auto;
+    bottom: 4px;
+    width: 4px;
+    height: 4px;
+}
+
+.meal-page .meal-detail header {
+    justify-content: flex-start;
+    min-height: 42px;
+    padding: 8px 14px;
+}
+
+.meal-page .meal-detail h2 {
+    font-size: 17px;
+}
+
+.meal-page .meal-detail header span {
+    padding: 2px 7px;
+    font-size: 10px;
+}
+
+.meal-page .meal-block {
+    display: flex;
+    gap: 10px;
+    align-items: flex-start;
+    min-height: 0;
+    padding: 12px 14px;
+}
+
+.meal-page .meal-block > strong {
+    flex: 0 0 48px;
+    min-height: 30px;
+    padding: 6px 0;
+    font-size: 13px;
+    line-height: 1.2;
+}
+
+.meal-page .meal-block ul {
+    gap: 3px;
+    padding-top: 0;
+}
+
+.meal-page .meal-block li,
+.meal-page .meal-block p {
+    gap: 6px;
+    font-size: 13px;
+    line-height: 1.42;
+}
+
+.meal-page .meal-block li::before {
+    flex: 0 0 4px;
+    width: 4px;
+    height: 4px;
+}
+
+@media (max-width: 700px) {
+    .meal-page .meal-layout {
+        grid-template-columns: 1fr;
+    }
+
+    .meal-page .meal-block {
+        padding: 11px 12px;
+    }
+}
