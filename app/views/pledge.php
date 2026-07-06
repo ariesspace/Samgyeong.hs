@@ -1,5 +1,5 @@
 <section class="page">
-    <h1>삼경인 선서문</h1>
+    <h1 class="page-main-title">삼경인 선서문 <span>三敬人 宣誓文</span></h1>
     <p class="muted">삼경인의 마음가짐을 한문과 우리말로 함께 새깁니다.</p>
 
     <div class="pledge-wrap">

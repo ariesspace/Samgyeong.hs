@@ -16,7 +16,7 @@
     </section>
 
     <section class="symbol-section">
-        <h1>교목 / 교화</h1>
+        <h1>교목 / 교화 <span>校木 · 校花</span></h1>
 
         <div class="symbol-card-grid">
             <article class="symbol-card">

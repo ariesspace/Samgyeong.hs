@@ -268,6 +268,7 @@ final class Database
         self::ensureMallDefaults($pdo);
         self::ensureMallItemsSplit($pdo);
         self::ensureMallGifticonItems($pdo);
+        self::ensureMallGradeChangeItem($pdo);
         self::ensureHallActivityTimeText($pdo);
 
         $postCount = (int) $pdo->query('SELECT COUNT(*) FROM posts')->fetchColumn();
@@ -626,6 +627,48 @@ final class Database
         $stmt->execute(['mall_items_version', '3']);
     }
 
+    private static function ensureMallGradeChangeItem(PDO $pdo): void
+    {
+        $version = (int) ($pdo->query("SELECT value FROM mall_settings WHERE key = 'mall_items_version'")->fetchColumn() ?: 0);
+        if ($version >= 4) {
+            return;
+        }
+
+        $stmt = $pdo->prepare('
+            UPDATE mall_items
+            SET name = ?, description = ?, price = ?, sort_order = ?, updated_at = CURRENT_TIMESTAMP
+            WHERE name = ?
+        ');
+        $stmt->execute(['학년 변경권', '타 인원의 학년 변경 또는 본인 학년 체험을 24시간 신청할 수 있는 권한', 30, 100, '동년 교류권']);
+
+        $update = $pdo->prepare('
+            UPDATE mall_items
+            SET description = ?, price = ?, sort_order = ?, updated_at = CURRENT_TIMESTAMP
+            WHERE name = ?
+        ');
+        $exists = $pdo->prepare('SELECT COUNT(*) FROM mall_items WHERE name = ?');
+        $insert = $pdo->prepare('
+            INSERT INTO mall_items (name, description, price, sort_order)
+            VALUES (?, ?, ?, ?)
+        ');
+
+        foreach (self::defaultMallItems() as $item) {
+            $exists->execute([$item[0]]);
+            if ((int) $exists->fetchColumn() === 0) {
+                $insert->execute($item);
+            } else {
+                $update->execute([$item[1], $item[2], $item[3], $item[0]]);
+            }
+        }
+
+        $stmt = $pdo->prepare('
+            INSERT INTO mall_settings (key, value, updated_at)
+            VALUES (?, ?, CURRENT_TIMESTAMP)
+            ON CONFLICT(key) DO UPDATE SET value = excluded.value, updated_at = CURRENT_TIMESTAMP
+        ');
+        $stmt->execute(['mall_items_version', '4']);
+    }
+
     private static function defaultMallItems(): array
     {
         return [
@@ -638,7 +681,7 @@ final class Database
             ['커피 기프티콘 변경권', '커피 기프티콘으로 교환을 신청할 수 있는 권한', 15, 70],
             ['소속 변경권', '타 인원의 소속 관 변경을 24시간 신청할 수 있는 권한', 15, 80],
             ['직속 교류권', '타 직속 1일 체험을 24시간 신청할 수 있는 권한', 20, 90],
-            ['동년 교류권', '타 인원 동년 변경 또는 본인 동년 체험을 24시간 신청할 수 있는 권한', 30, 100],
+            ['학년 변경권', '타 인원의 학년 변경 또는 본인 학년 체험을 24시간 신청할 수 있는 권한', 30, 100],
             ['징계 사면권', '개인 징계 1회를 삼경원 심사를 거쳐 무효 처리하는 권한', 40, 110],
         ];
     }

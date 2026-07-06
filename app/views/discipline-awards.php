@@ -146,12 +146,12 @@ $showRule = $activeTab === 'rule';
                     </article>
                     <article class="reward-card">
                         <div>
-                            <strong>동년 교류권</strong>
+                            <strong>학년 변경권</strong>
                             <span>30점</span>
                         </div>
                         <ul>
-                            <li>타 인원 동년 변경 24시간</li>
-                            <li>본인 동년 체험 24시간</li>
+                            <li>타 인원 학년 변경 24시간</li>
+                            <li>본인 학년 체험 24시간</li>
                         </ul>
                     </article>
                     <article class="reward-card reward-card-featured">

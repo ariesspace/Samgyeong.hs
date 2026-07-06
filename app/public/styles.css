@@ -4458,6 +4458,22 @@ select {
     padding: 10px 0 18px;
 }
 
+.page-main-title {
+    margin: 0 0 10px;
+    color: #23362f;
+    font-family: Georgia, "Times New Roman", serif;
+    font-size: clamp(25px, 4vw, 32px);
+    font-weight: 700;
+    line-height: 1.25;
+}
+
+.page-main-title span {
+    margin-left: 6px;
+    color: var(--gold);
+    font-size: 18px;
+    font-weight: 700;
+}
+
 .pledge-card {
     position: relative;
     width: min(100%, 720px);
@@ -4514,7 +4530,7 @@ select {
 
 .pledge-lines strong {
     display: block;
-    color: #23362f;
+    color: var(--gold);
     font-family: Georgia, "Times New Roman", serif;
     font-size: clamp(20px, 3vw, 26px);
     line-height: 1.35;
@@ -4607,8 +4623,9 @@ select {
 
 .about-section h1 span {
     margin-left: 6px;
-    color: #1f2937;
-    font-size: .72em;
+    color: var(--gold);
+    font-size: 18px;
+    font-weight: 700;
 }
 
 .about-intro-panel {
@@ -4693,8 +4710,9 @@ select {
 
 .symbol-section h1 span {
     margin-left: 6px;
-    color: #1f2937;
-    font-size: .72em;
+    color: var(--gold);
+    font-size: 18px;
+    font-weight: 700;
 }
 
 .symbol-emblem-panel {
@@ -4780,8 +4798,10 @@ select {
 }
 
 .symbol-card h2 span {
-    color: inherit;
-    font-size: .82em;
+    margin-left: 4px;
+    color: var(--gold);
+    font-size: 18px;
+    font-weight: 700;
 }
 
 .symbol-card figure {
@@ -7459,6 +7479,14 @@ select {
 
     .symbol-card h2 {
         font-size: 19px;
+    }
+
+    .about-section h1 span,
+    .symbol-section h1 span,
+    .page-main-title span,
+    .symbol-card h2 span {
+        display: inline-block;
+        font-size: 15px;
     }
 
     .hall-admin-row,
