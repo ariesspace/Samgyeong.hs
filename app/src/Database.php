@@ -254,6 +254,7 @@ final class Database
         self::ensureGuestBoardReadPermissions($pdo);
         self::ensureCouncilMinutesReadPermissions($pdo);
         self::ensureMallDefaults($pdo);
+        self::ensureMallItemsSplit($pdo);
 
         $postCount = (int) $pdo->query('SELECT COUNT(*) FROM posts')->fetchColumn();
         if ($postCount === 0) {
@@ -483,13 +484,7 @@ final class Database
             return;
         }
 
-        $items = [
-            ['기본 면제권', '인사 생략 1회, 관등 생략 1회, 반차 또는 동아리 출석 1회 인정', 10, 10],
-            ['외식 및 소속 변경권', '야자 또는 동아리 출석 1회 면제, 타 인원 소속 관 변경권 24시간', 15, 20],
-            ['직속 교류권', '타 직속 1일 체험권 24시간', 20, 30],
-            ['동년 교류권', '타 인원 동년 변경권 24시간, 본인 동년 체험권 24시간', 30, 40],
-            ['징계 사면권', '개인 징계 1회를 삼경원 심사를 거쳐 무효 처리', 40, 50],
-        ];
+        $items = self::defaultMallItems();
 
         $stmt = $pdo->prepare('
             INSERT INTO mall_items (name, description, price, sort_order)
@@ -499,5 +494,69 @@ final class Database
         foreach ($items as $item) {
             $stmt->execute($item);
         }
+    }
+
+    private static function ensureMallItemsSplit(PDO $pdo): void
+    {
+        $version = (int) ($pdo->query("SELECT value FROM mall_settings WHERE key = 'mall_items_version'")->fetchColumn() ?: 0);
+        if ($version >= 2) {
+            return;
+        }
+
+        $legacyUpdates = [
+            '기본 면제권' => ['인사 면제권', '인사 예절 수행을 1회 면제받을 수 있는 권한', 10, 10],
+            '외식 및 소속 변경권' => ['외식권', '정해진 기준에 따라 외식 1회를 신청할 수 있는 권한', 15, 50],
+        ];
+
+        foreach ($legacyUpdates as $legacyName => $item) {
+            $stmt = $pdo->prepare('
+                UPDATE mall_items
+                SET name = ?, description = ?, price = ?, sort_order = ?, updated_at = CURRENT_TIMESTAMP
+                WHERE name = ?
+            ');
+            $stmt->execute([$item[0], $item[1], $item[2], $item[3], $legacyName]);
+        }
+
+        $update = $pdo->prepare('
+            UPDATE mall_items
+            SET description = ?, price = ?, sort_order = ?, updated_at = CURRENT_TIMESTAMP
+            WHERE name = ?
+        ');
+        $stmt = $pdo->prepare('SELECT COUNT(*) FROM mall_items WHERE name = ?');
+        $insert = $pdo->prepare('
+            INSERT INTO mall_items (name, description, price, sort_order)
+            VALUES (?, ?, ?, ?)
+        ');
+
+        foreach (self::defaultMallItems() as $item) {
+            $stmt->execute([$item[0]]);
+            if ((int) $stmt->fetchColumn() === 0) {
+                $insert->execute($item);
+            } else {
+                $update->execute([$item[1], $item[2], $item[3], $item[0]]);
+            }
+        }
+
+        $stmt = $pdo->prepare('
+            INSERT INTO mall_settings (key, value, updated_at)
+            VALUES (?, ?, CURRENT_TIMESTAMP)
+            ON CONFLICT(key) DO UPDATE SET value = excluded.value, updated_at = CURRENT_TIMESTAMP
+        ');
+        $stmt->execute(['mall_items_version', '2']);
+    }
+
+    private static function defaultMallItems(): array
+    {
+        return [
+            ['인사 면제권', '인사 예절 수행을 1회 면제받을 수 있는 권한', 10, 10],
+            ['관등 면제권', '관등 예절 수행을 1회 면제받을 수 있는 권한', 10, 20],
+            ['반차 면제권', '정해진 기준에 따라 반차 1회를 신청할 수 있는 권한', 10, 30],
+            ['동아리 출석 인정권', '동아리 출석 1회를 인정받을 수 있는 권한', 10, 40],
+            ['외식권', '정해진 기준에 따라 외식 1회를 신청할 수 있는 권한', 15, 50],
+            ['소속 변경권', '타 인원의 소속 관 변경을 24시간 신청할 수 있는 권한', 15, 60],
+            ['직속 교류권', '타 직속 1일 체험을 24시간 신청할 수 있는 권한', 20, 70],
+            ['동년 교류권', '타 인원 동년 변경 또는 본인 동년 체험을 24시간 신청할 수 있는 권한', 30, 80],
+            ['징계 사면권', '개인 징계 1회를 삼경원 심사를 거쳐 무효 처리하는 권한', 40, 90],
+        ];
     }
 }

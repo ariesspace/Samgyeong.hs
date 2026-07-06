@@ -81,24 +81,45 @@ $showRule = $activeTab === 'rule';
                 <div class="reward-card-grid">
                     <article class="reward-card">
                         <div>
-                            <strong>기본 면제권</strong>
+                            <strong>인사 면제권</strong>
                             <span>10점</span>
                         </div>
-                        <ul>
-                            <li>인사 생략 1일</li>
-                            <li>관등 생략 1일</li>
-                            <li>반차, 단대 출석 1회 인정</li>
-                        </ul>
+                        <p>인사 예절 수행을 1회 면제받을 수 있습니다.</p>
                     </article>
                     <article class="reward-card">
                         <div>
-                            <strong>휴식 및 소속 변경</strong>
+                            <strong>관등 면제권</strong>
+                            <span>10점</span>
+                        </div>
+                        <p>관등 예절 수행을 1회 면제받을 수 있습니다.</p>
+                    </article>
+                    <article class="reward-card">
+                        <div>
+                            <strong>반차 면제권</strong>
+                            <span>10점</span>
+                        </div>
+                        <p>정해진 기준에 따라 반차 1회를 신청할 수 있습니다.</p>
+                    </article>
+                    <article class="reward-card">
+                        <div>
+                            <strong>동아리 출석 인정권</strong>
+                            <span>10점</span>
+                        </div>
+                        <p>동아리 출석 1회를 인정받을 수 있습니다.</p>
+                    </article>
+                    <article class="reward-card">
+                        <div>
+                            <strong>외식권</strong>
                             <span>15점</span>
                         </div>
-                        <ul>
-                            <li>연차, 단대 출석 1회 면제</li>
-                            <li>타 인원 소속 관 변경권 24시간</li>
-                        </ul>
+                        <p>정해진 기준에 따라 외식 1회를 신청할 수 있습니다.</p>
+                    </article>
+                    <article class="reward-card">
+                        <div>
+                            <strong>소속 변경권</strong>
+                            <span>15점</span>
+                        </div>
+                        <p>타 인원의 소속 관 변경을 24시간 신청할 수 있습니다.</p>
                     </article>
                     <article class="reward-card">
                         <div>
@@ -111,12 +132,12 @@ $showRule = $activeTab === 'rule';
                     </article>
                     <article class="reward-card">
                         <div>
-                            <strong>학년 교류권</strong>
+                            <strong>동년 교류권</strong>
                             <span>30점</span>
                         </div>
                         <ul>
-                            <li>타 인원 학년 변경권 24시간</li>
-                            <li>본인 학년 체험권 24시간</li>
+                            <li>타 인원 동년 변경 24시간</li>
+                            <li>본인 동년 체험 24시간</li>
                         </ul>
                     </article>
                     <article class="reward-card reward-card-featured">
