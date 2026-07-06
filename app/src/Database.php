@@ -186,9 +186,12 @@ final class Database
                 price INTEGER NOT NULL CHECK(price > 0),
                 quantity INTEGER NOT NULL CHECK(quantity > 0),
                 total_price INTEGER NOT NULL CHECK(total_price > 0),
+                used_at TEXT,
+                used_by INTEGER,
                 created_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP,
                 FOREIGN KEY(user_id) REFERENCES users(id),
-                FOREIGN KEY(item_id) REFERENCES mall_items(id)
+                FOREIGN KEY(item_id) REFERENCES mall_items(id),
+                FOREIGN KEY(used_by) REFERENCES users(id)
             );
         ");
 
@@ -252,6 +255,15 @@ final class Database
         }
         if (!in_array('cancellation_of_id', $pointColumns, true)) {
             $pdo->exec('ALTER TABLE point_records ADD COLUMN cancellation_of_id INTEGER');
+        }
+
+        $columns = $pdo->query("PRAGMA table_info(mall_orders)")->fetchAll();
+        $mallOrderColumns = array_column($columns, 'name');
+        if (!in_array('used_at', $mallOrderColumns, true)) {
+            $pdo->exec('ALTER TABLE mall_orders ADD COLUMN used_at TEXT');
+        }
+        if (!in_array('used_by', $mallOrderColumns, true)) {
+            $pdo->exec('ALTER TABLE mall_orders ADD COLUMN used_by INTEGER');
         }
 
         $columns = $pdo->query("PRAGMA table_info(hall_members)")->fetchAll();

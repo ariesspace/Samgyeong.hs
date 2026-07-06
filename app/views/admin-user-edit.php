@@ -5,6 +5,9 @@
     <?php if (($saved ?? '') === 'profile'): ?>
         <div class="notice success">계정 정보가 저장되었습니다.</div>
     <?php endif; ?>
+    <?php if (($saved ?? '') === 'mall-used'): ?>
+        <div class="notice success">삼경몰 상품을 사용 완료 처리했습니다.</div>
+    <?php endif; ?>
     <?php if (!empty($error)): ?>
         <div class="notice error"><?= e($error) ?></div>
     <?php endif; ?>
@@ -70,6 +73,59 @@
                 <button type="submit">저장</button>
             </div>
         </form>
+    </section>
+
+    <section class="admin-create-panel account-mall-panel">
+        <h2>삼경몰 상품 목록</h2>
+        <p class="muted">구매한 포상 상품을 확인하고, 실제 사용이 끝난 항목을 완료 처리합니다.</p>
+
+        <table class="board-table points-table admin-mall-order-table">
+            <thead>
+                <tr>
+                    <th>구매일</th>
+                    <th>상품</th>
+                    <th>수량</th>
+                    <th>사용 포인트</th>
+                    <th>상태</th>
+                    <th>관리</th>
+                </tr>
+            </thead>
+            <tbody>
+                <?php if (empty($mallOrders)): ?>
+                    <tr>
+                        <td colspan="6" class="empty-board">구매한 삼경몰 상품이 없습니다.</td>
+                    </tr>
+                <?php endif; ?>
+                <?php foreach (($mallOrders ?? []) as $order): ?>
+                    <tr>
+                        <td data-label="구매일"><?= e(substr($order['created_at'], 0, 10)) ?></td>
+                        <td data-label="상품" class="title-cell"><?= e($order['item_name']) ?></td>
+                        <td data-label="수량"><?= e((string) $order['quantity']) ?>개</td>
+                        <td data-label="사용 포인트"><?= e((string) $order['total_price']) ?>점</td>
+                        <td data-label="상태">
+                            <?php if (!empty($order['used_at'])): ?>
+                                <span class="mall-order-status used">사용 완료</span>
+                                <small><?= e(substr($order['used_at'], 0, 10)) ?> · <?= e($order['used_by_name'] ?: $order['used_by_username'] ?: '관리자') ?></small>
+                            <?php else: ?>
+                                <span class="mall-order-status pending">사용 대기</span>
+                            <?php endif; ?>
+                        </td>
+                        <td data-label="관리">
+                            <?php if (empty($order['used_at'])): ?>
+                                <form method="post" action="/admin/users/mall-orders/use" onsubmit="return confirm('이 상품을 사용 완료 처리할까요?');">
+                                    <input type="hidden" name="csrf" value="<?= e(csrf_token()) ?>">
+                                    <input type="hidden" name="order_id" value="<?= e((string) $order['id']) ?>">
+                                    <input type="hidden" name="user_id" value="<?= e((string) $account['id']) ?>">
+                                    <button type="submit" class="compact-submit-button">완료</button>
+                                </form>
+                            <?php else: ?>
+                                <span class="muted">완료됨</span>
+                            <?php endif; ?>
+                        </td>
+                    </tr>
+                <?php endforeach; ?>
+            </tbody>
+        </table>
     </section>
 
     <section class="admin-create-panel account-danger-panel">

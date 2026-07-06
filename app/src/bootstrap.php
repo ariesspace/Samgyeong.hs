@@ -602,6 +602,24 @@ function user_mall_available_points(PDO $db, int $userId): array
     ];
 }
 
+function user_mall_orders(PDO $db, int $userId): array
+{
+    $stmt = $db->prepare('
+        SELECT mall_orders.*, manager.display_name AS used_by_name, manager.username AS used_by_username
+        FROM mall_orders
+        LEFT JOIN users AS manager ON manager.id = mall_orders.used_by
+        WHERE mall_orders.user_id = ?
+        ORDER BY mall_orders.created_at DESC, mall_orders.id DESC
+    ');
+    $stmt->execute([$userId]);
+    return $stmt->fetchAll();
+}
+
+function user_mall_order_quantity(array $orders): int
+{
+    return array_reduce($orders, fn (int $total, array $order): int => $total + (int) ($order['quantity'] ?? 0), 0);
+}
+
 function mall_student_open(PDO $db): bool
 {
     $stmt = $db->prepare('SELECT value FROM mall_settings WHERE key = ?');

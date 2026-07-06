@@ -552,10 +552,12 @@ if ($path === '/admin/users/edit' && $method === 'GET') {
     $stmt = $db->prepare('SELECT role_label FROM hall_members WHERE user_id = ? LIMIT 1');
     $stmt->execute([$userId]);
     $user['role_label'] = $stmt->fetchColumn() ?: '';
+    $mallOrders = user_mall_orders($db, $userId);
 
     echo view('admin-user-edit', [
         'title' => '계정 정보 수정',
         'account' => $user,
+        'mallOrders' => $mallOrders,
         'saved' => $_GET['saved'] ?? '',
         'error' => $_GET['error'] ?? '',
     ]);
@@ -640,6 +642,23 @@ if ($path === '/admin/users/profile' && $method === 'POST') {
     }
 
     redirect('/admin/users/edit?id=' . $userId . '&saved=profile');
+}
+
+if ($path === '/admin/users/mall-orders/use' && $method === 'POST') {
+    $auth->requireRole(['admin']);
+    $orderId = (int) ($_POST['order_id'] ?? 0);
+    $userId = (int) ($_POST['user_id'] ?? 0);
+
+    if ($orderId > 0 && $userId > 1) {
+        $stmt = $db->prepare('
+            UPDATE mall_orders
+            SET used_at = CURRENT_TIMESTAMP, used_by = ?
+            WHERE id = ? AND user_id = ? AND used_at IS NULL
+        ');
+        $stmt->execute([(int) $auth->user()['id'], $orderId, $userId]);
+    }
+
+    redirect('/admin/users/edit?id=' . $userId . '&saved=mall-used');
 }
 
 if ($path === '/admin/users/reset-password' && $method === 'POST') {
@@ -1118,9 +1137,11 @@ if ($path === '/mypage/points') {
     ');
     $stmt->execute([$userId]);
     $records = $stmt->fetchAll();
+    $mallOrders = user_mall_orders($db, $userId);
     echo view('mypage-points', [
         'title' => '상벌점 현황',
         'records' => $records,
+        'mallOrders' => $mallOrders,
         'points' => user_mall_available_points($db, $userId),
     ]);
     exit;

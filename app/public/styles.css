@@ -6050,6 +6050,13 @@ select {
     font-size: 26px;
 }
 
+.subsection-title {
+    margin: 30px 0 12px;
+    color: var(--ink);
+    font-size: 20px;
+    font-weight: 900;
+}
+
 .point-type {
     display: inline-flex;
     padding: 3px 8px;
@@ -6088,6 +6095,36 @@ select {
     font-size: 12px;
     font-weight: 800;
     white-space: nowrap;
+}
+
+.mall-order-status {
+    display: inline-flex;
+    align-items: center;
+    width: fit-content;
+    padding: 3px 8px;
+    border-radius: 999px;
+    font-size: 12px;
+    font-weight: 900;
+    white-space: nowrap;
+}
+
+.mall-order-status.used {
+    color: #12633d;
+    background: #edfdf4;
+    border: 1px solid #b9ebcf;
+}
+
+.mall-order-status.pending {
+    color: #8a5a00;
+    background: #fff7df;
+    border: 1px solid #ead28a;
+}
+
+.points-table td small {
+    display: block;
+    margin-top: 4px;
+    color: var(--muted);
+    font-size: 12px;
 }
 
 .points-assign-page {
@@ -7500,6 +7537,39 @@ select {
     white-space: nowrap;
 }
 
+.account-mall-panel {
+    background: white;
+    border-top-color: var(--gold);
+}
+
+.account-mall-panel .muted {
+    margin: -6px 0 16px;
+}
+
+.admin-mall-order-table {
+    margin-top: 14px;
+}
+
+.admin-mall-order-table form {
+    margin: 0;
+}
+
+.compact-submit-button {
+    min-height: 30px;
+    padding: 5px 10px;
+    color: white;
+    background: var(--green);
+    border: 1px solid var(--green);
+    border-radius: 4px;
+    font-size: 12px;
+    font-weight: 900;
+    cursor: pointer;
+}
+
+.compact-submit-button:hover {
+    background: #123829;
+}
+
 .admin-board-permission-table {
     margin-top: 22px;
     table-layout: fixed;
@@ -8021,6 +8091,58 @@ select {
     }
 
     .my-points-table .empty-board::before {
+        content: "";
+    }
+
+    .admin-mall-order-table {
+        display: grid;
+        gap: 8px;
+        border-top: 0;
+        font-size: 13px;
+        white-space: normal;
+    }
+
+    .admin-mall-order-table thead {
+        display: none;
+    }
+
+    .admin-mall-order-table tbody,
+    .admin-mall-order-table tr,
+    .admin-mall-order-table td {
+        display: block;
+        width: 100%;
+    }
+
+    .admin-mall-order-table tr {
+        padding: 12px;
+        background: #fff;
+        border: 1px solid var(--line);
+        border-radius: 4px;
+    }
+
+    .admin-mall-order-table td {
+        display: grid;
+        grid-template-columns: 76px minmax(0, 1fr);
+        gap: 8px;
+        padding: 5px 0;
+        border-bottom: 0;
+        text-align: left;
+    }
+
+    .admin-mall-order-table td::before {
+        color: #667085;
+        font-size: 12px;
+        font-weight: 800;
+        content: attr(data-label);
+    }
+
+    .admin-mall-order-table .empty-board {
+        display: block;
+        padding: 18px 10px;
+        text-align: center;
+    }
+
+    .admin-mall-order-table .empty-board::before {
         content: "";
     }
 
