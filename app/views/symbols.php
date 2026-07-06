@@ -7,9 +7,9 @@
                 <img src="/assets/samgyeong-emblem.png" alt="삼경인문고등학교 교표">
             </div>
             <div class="symbol-copy">
-                <p>두 개의 황금빛 원은 만물을 포용하는 <strong>우주와 만물(경물 敬物)</strong>을,</p>
+                <p>우뚝 솟은 두 개의 기둥은 변치 않는 전통과 <strong>하늘의 도리(경천 敬天)</strong>를,</p>
                 <p>중앙의 푸른 기와지붕은 예절과 품격을 다스리는 고결한 <strong>인간(경인 敬人)</strong>을,</p>
-                <p>우뚝 솟은 두 개의 기둥은 변치 않는 전통과 <strong>하늘의 도리(경천 敬天)</strong>를 상징합니다.</p>
+                <p>두 개의 황금빛 원은 만물을 포용하는 <strong>우주와 만물(경물 敬物)</strong>을 상징합니다.</p>
                 <p class="symbol-note">삼경(三敬)의 정신으로 세상을 바르게 이끌어갈 엘리트 양성의 의지가 담겨 있습니다.</p>
             </div>
         </div>

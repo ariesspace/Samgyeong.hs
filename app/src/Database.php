@@ -255,6 +255,7 @@ final class Database
         self::ensureCouncilMinutesReadPermissions($pdo);
         self::ensureMallDefaults($pdo);
         self::ensureMallItemsSplit($pdo);
+        self::ensureHallActivityTimeText($pdo);
 
         $postCount = (int) $pdo->query('SELECT COUNT(*) FROM posts')->fetchColumn();
         if ($postCount === 0) {
@@ -284,10 +285,10 @@ final class Database
                 ['gyeongin', '인사 실천 챌린지', '하루 동안 먼저 인사하고 상대를 배려한 사례를 기록합니다.', '실천 사례와 느낀 점을 간단한 카드 형식으로 제출합니다.', '말과 태도로 사람을 공경하는 습관을 만듭니다.', 40],
                 ['gyeongmul', '사물 감사 그림일기', '하루 동안 도움을 준 사물을 그리고 감사한 이유를 적습니다.', '그림 또는 사진과 감사 문장을 함께 제출합니다.', '주변의 사물과 환경을 아끼는 경물 정신을 표현합니다.', 50],
                 ['gyeongmul', '공간 돌봄 캠페인', '자습실, 복도, 공용 공간을 정리하고 개선점을 제안합니다.', '정리 전후 사진 또는 개선 제안서를 제출합니다.', '함께 쓰는 공간을 존중하고 책임 있게 관리하는 태도를 기릅니다.', 60],
-                ['gyeongcheon', '당일 시사 요약', '당일 주요 시사 이슈와 지식을 공유하며 정세 파악 능력을 기릅니다.', '학업에 도움이 되거나 보도 가치가 있는 뉴스의 핵심 내용을 골라 2줄 이상 요약해 단대에 보고합니다.', '매일 12:00(KST)부터 선착순 3인만 인정하며, 비방·미확인 루머·정치적 편향이 있으면 제외합니다.', 70],
+                ['gyeongcheon', '당일 시사 요약', '당일 주요 시사 이슈와 지식을 공유하며 정세 파악 능력을 기릅니다.', '학업에 도움이 되거나 보도 가치가 있는 뉴스의 핵심 내용을 골라 2줄 이상 요약해 단대에 보고합니다.', '매일 00:00부터 선착순 3인만 인정하며, 비방·미확인 루머·정치적 편향이 있으면 제외합니다.', 70],
                 ['gyeongin', '언어 트렌드 분석', '최신 문화 트렌드와 유행어를 분석해 선후배 간 소통 역량을 높입니다.', '최근 커뮤니티나 SNS 유행어 또는 의미 있는 사자성어 1개와 유래, 경어체 예문 3개를 단대에 공유합니다.', '상시 제출 가능하지만 일일 선착순 3인만 상점을 부여하며, 중복 단어는 인정하지 않습니다.', 80],
                 ['gyeongin', '난제 발제', '재학생 간 논리적 토론을 유도하고 단대의 상호 작용을 활성화합니다.', '선후배와 동기가 한마디씩 거들 수밖에 없는 난제를 제시해 대화를 이끕니다.', '본인 제외 재학생 3명 이상의 유효 답변이 필요하며, 상시 제출 가능하되 일일 1회만 인정합니다.', 90],
-                ['gyeongmul', '심야 학업 간식 추천', '야간 자율학습 중 메뉴 선정 문제를 데이터와 논리로 해결해 학우를 돕습니다.', '편의점 메뉴 레시피 또는 기온·습도·학업량을 바탕으로 최적의 야식 메뉴 2개를 추천합니다.', '메뉴명만 쓰지 않고 선택 근거를 함께 제시해야 하며, 19:00 이후 심야 학업 시간대 1회만 인정합니다.', 100],
+                ['gyeongmul', '심야 학업 간식 추천', '야간 자율학습 중 메뉴 선정 문제를 데이터와 논리로 해결해 학우를 돕습니다.', '편의점 메뉴 레시피 또는 기온·습도·학업량을 바탕으로 최적의 야식 메뉴 2개를 추천합니다.', '메뉴명만 쓰지 않고 선택 근거를 함께 제시해야 하며, 19:00 이후 심야 학업 시간대에 1회만 인정합니다.', 100],
                 ['gyeongcheon', '지식 나눔 카드뉴스 제작', '학교 구성원에게 도움이 되는 정보와 지식을 카드뉴스 또는 요약 노트로 공유합니다.', '학업 팁, 교칙 해설, 학교생활 안내 등을 제목이 있는 표지 1장 이상과 본문 1장 이상으로 구성해 제출합니다.', '핵심 내용과 활용 포인트가 분명해야 하며, 유사 주제 반복이나 정보성이 부족한 경우 삼경원 심사로 기각될 수 있습니다.', 110],
             ];
 
@@ -543,6 +544,31 @@ final class Database
             ON CONFLICT(key) DO UPDATE SET value = excluded.value, updated_at = CURRENT_TIMESTAMP
         ');
         $stmt->execute(['mall_items_version', '2']);
+    }
+
+    private static function ensureHallActivityTimeText(PDO $pdo): void
+    {
+        $version = (int) ($pdo->query("SELECT value FROM mall_settings WHERE key = 'hall_activity_time_text_version'")->fetchColumn() ?: 0);
+        if ($version >= 1) {
+            return;
+        }
+
+        $updates = [
+            '당일 시사 요약' => '매일 00:00부터 선착순 3인만 인정하며, 비방·미확인 루머·정치적 편향이 있으면 제외합니다.',
+            '심야 학업 간식 추천' => '메뉴명만 쓰지 않고 선택 근거를 함께 제시해야 하며, 19:00 이후 심야 학업 시간대에 1회만 인정합니다.',
+        ];
+
+        $stmt = $pdo->prepare('UPDATE hall_activities SET value = ? WHERE title = ?');
+        foreach ($updates as $title => $value) {
+            $stmt->execute([$value, $title]);
+        }
+
+        $stmt = $pdo->prepare('
+            INSERT INTO mall_settings (key, value, updated_at)
+            VALUES (?, ?, CURRENT_TIMESTAMP)
+            ON CONFLICT(key) DO UPDATE SET value = excluded.value, updated_at = CURRENT_TIMESTAMP
+        ');
+        $stmt->execute(['hall_activity_time_text_version', '1']);
     }
 
     private static function defaultMallItems(): array
