@@ -49,7 +49,7 @@ final class TallyWebhookController
             $firstFile = $files[0] ?? ['name' => null, 'path' => null];
             $stmt->execute([
                 self::BOARD_SLUG,
-                '제출',
+                $this->ko('\uc81c\ucd9c'),
                 $title,
                 $body,
                 $firstFile['name'],
