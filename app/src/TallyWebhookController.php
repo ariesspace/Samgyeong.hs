@@ -165,9 +165,11 @@ final class TallyWebhookController
                 continue;
             }
 
+            $fieldKey = (string) ($field['key'] ?? '');
             $label = $this->fieldLabel($field, (int) $index);
             $value = $field['value'] ?? $field['answer'] ?? $field['text'] ?? $field['values'] ?? null;
             $answers[] = [
+                'key' => $fieldKey,
                 'label' => $label,
                 'value' => $value,
                 'display' => $this->displayFieldValue($field, $value),
@@ -185,13 +187,13 @@ final class TallyWebhookController
             'question_rV8XZo' => $this->ko('\uc9c0\uc6d0\ud559\ub144'),
             'question_4LlZbr' => $this->ko('\uc9c1\uc18d\ud338 \uacbd\ud5d8 \uc5ec\ubd80'),
             'question_jL8KVQ' => $this->ko('\ud65c\ub3d9 \uac00\ub2a5\ud55c \uc2dc\uac04\ub300'),
-            'question_2L926e' => $this->ko('\uacbd\ucc9c \ubb38\ud56d'),
-            'question_x28GWd' => $this->ko('\uacbd\uc778 \ubb38\ud56d'),
-            'question_RRqO94' => $this->ko('\ucc45\uc784 \ubb38\ud56d'),
-            'question_oo8JjO' => $this->ko('\uacf5\ub3d9\uccb4 \ubb38\ud56d'),
-            'question_GLOMPL' => $this->ko('\uc608\uc808 \ubb38\ud56d'),
-            'question_OLxRNY' => $this->ko('\uc870\uc9c1 \ubb38\ud56d'),
-            'question_VVWr6M' => $this->ko('\uc704\uae30\uc0c1\ud669 \ubb38\ud56d'),
+            'question_2L926e' => $this->ko('\ubb38\ud56d 1. [\uacbd\ucc9c: \ubc14\ub978 \ud488\ud589]'),
+            'question_x28GWd' => $this->ko('\ubb38\ud56d 2. [\uacbd\uc778: \uc0ac\ub78c\uc5d0 \ub300\ud55c \uc874\uc911]'),
+            'question_RRqO94' => $this->ko('\ubb38\ud56d 3. [\ucc45\uc784\uacfc \uc758\ubb34]'),
+            'question_oo8JjO' => $this->ko('\ubb38\ud56d 1. [\uac1c\uc778\uc758 \uc131\ud5a5\uacfc \ud611\uc5c5 \ubc29\uc2dd]'),
+            'question_GLOMPL' => $this->ko('\ubb38\ud56d 2. [\uc704\uae30 \uc0c1\ud669 \ub300\ucc98]'),
+            'question_OLxRNY' => $this->ko('\ubb38\ud56d 1. [\uc870\uc9c1 \uad00\ub9ac \ubc0f \uc0c1\uae09\uc790\uc758 \uc790\uc138]'),
+            'question_VVWr6M' => $this->ko('\ubb38\ud56d 2. [\uc704\uae30 \uc0c1\ud669 \ub300\ucc98 \ubc0f \uc2dc\uc815]'),
         ];
 
         if (isset($aliases[$key])) {
@@ -401,13 +403,54 @@ final class TallyWebhookController
 
     private function postBody(array $payload, array $answers): string
     {
+        $answerMap = $this->answerMap($answers);
         $lines = [];
         $lines[] = '<p><strong>' . e($this->ko('Tally \uc81c\ucd9c\uc774 \uc790\ub3d9\uc73c\ub85c \ub4f1\ub85d\ub418\uc5c8\uc2b5\ub2c8\ub2e4.')) . '</strong></p>';
-        $lines[] = '<ul>';
-        foreach ($answers as $answer) {
-            $lines[] = '<li><strong>' . e($answer['label']) . '</strong>: ' . e($answer['display']) . '</li>';
+
+        $this->appendSection($lines, $this->ko('\uc9c0\uc6d0\uc790 \uc815\ubcf4'), $answerMap, [
+            'question_ELopOl',
+            'question_rV8XZo',
+            'question_4LlZbr',
+            'question_jL8KVQ',
+        ]);
+
+        $this->appendSection($lines, $this->ko('\uc81c1\ubd80. \uacf5\ud1b5 \uae30\ucd08 \uc18c\uc591 \ud3c9\uac00'), $answerMap, [
+            'question_2L926e',
+            'question_x28GWd',
+            'question_RRqO94',
+        ]);
+
+        if ($this->hasAnyAnswer($answerMap, ['question_oo8JjO', 'question_GLOMPL'])) {
+            $this->appendSection($lines, $this->ko('\uc81c2\ubd80. 1\u00b72\ud559\ub144 \uc2ec\uce35 \uc870\uc9c1 \uc801\ud569\uc131 \ubc0f \uc778\ud654(\u4eba\u548c) \ud3c9\uac00'), $answerMap, [
+                'question_oo8JjO',
+                'question_GLOMPL',
+            ]);
         }
-        $lines[] = '</ul>';
+
+        if ($this->hasAnyAnswer($answerMap, ['question_OLxRNY', 'question_VVWr6M'])) {
+            $this->appendSection($lines, $this->ko('\uc81c2\ubd80. 3\ud559\ub144 \uc2ec\uce35 \uc870\uc9c1 \uc801\ud569\uc131 \ubc0f \uc778\ud654(\u4eba\u548c) \ud3c9\uac00'), $answerMap, [
+                'question_OLxRNY',
+                'question_VVWr6M',
+            ]);
+        }
+
+        $remainingKeys = array_diff(array_keys($answerMap), [
+            'question_ELopOl',
+            'question_rV8XZo',
+            'question_4LlZbr',
+            'question_jL8KVQ',
+            'question_2L926e',
+            'question_x28GWd',
+            'question_RRqO94',
+            'question_oo8JjO',
+            'question_GLOMPL',
+            'question_OLxRNY',
+            'question_VVWr6M',
+        ]);
+
+        if ($remainingKeys !== []) {
+            $this->appendSection($lines, $this->ko('\uae30\ud0c0 \ub2f5\ubcc0'), $answerMap, $remainingKeys);
+        }
 
         $submittedAt = $payload['createdAt'] ?? $payload['data']['createdAt'] ?? null;
         if (is_string($submittedAt) && $submittedAt !== '') {
@@ -415,6 +458,77 @@ final class TallyWebhookController
         }
 
         return sanitize_post_body(implode("\n", $lines));
+    }
+
+    private function answerMap(array $answers): array
+    {
+        $map = [];
+        foreach ($answers as $answer) {
+            $key = (string) ($answer['key'] ?? '');
+            if ($key === '') {
+                $key = $this->answerKey((string) $answer['label']);
+            }
+            if ($key === '') {
+                continue;
+            }
+
+            $map[$key] = $answer;
+        }
+
+        return $map;
+    }
+
+    private function answerKey(string $label): string
+    {
+        $known = [
+            $this->ko('\uc9c0\uc6d0\uc790 \uc774\ub984') => 'question_ELopOl',
+            $this->ko('\uc9c0\uc6d0\ud559\ub144') => 'question_rV8XZo',
+            $this->ko('\uc9c1\uc18d\ud338 \uacbd\ud5d8 \uc5ec\ubd80') => 'question_4LlZbr',
+            $this->ko('\ud65c\ub3d9 \uac00\ub2a5\ud55c \uc2dc\uac04\ub300') => 'question_jL8KVQ',
+            $this->ko('\ubb38\ud56d 1. [\uacbd\ucc9c: \ubc14\ub978 \ud488\ud589]') => 'question_2L926e',
+            $this->ko('\ubb38\ud56d 2. [\uacbd\uc778: \uc0ac\ub78c\uc5d0 \ub300\ud55c \uc874\uc911]') => 'question_x28GWd',
+            $this->ko('\ubb38\ud56d 3. [\ucc45\uc784\uacfc \uc758\ubb34]') => 'question_RRqO94',
+            $this->ko('\ubb38\ud56d 1. [\uac1c\uc778\uc758 \uc131\ud5a5\uacfc \ud611\uc5c5 \ubc29\uc2dd]') => 'question_oo8JjO',
+            $this->ko('\ubb38\ud56d 2. [\uc704\uae30 \uc0c1\ud669 \ub300\ucc98]') => 'question_GLOMPL',
+            $this->ko('\ubb38\ud56d 1. [\uc870\uc9c1 \uad00\ub9ac \ubc0f \uc0c1\uae09\uc790\uc758 \uc790\uc138]') => 'question_OLxRNY',
+            $this->ko('\ubb38\ud56d 2. [\uc704\uae30 \uc0c1\ud669 \ub300\ucc98 \ubc0f \uc2dc\uc815]') => 'question_VVWr6M',
+        ];
+
+        return $known[$label] ?? (str_starts_with($label, 'question_') ? $label : '');
+    }
+
+    private function hasAnyAnswer(array $answerMap, array $keys): bool
+    {
+        foreach ($keys as $key) {
+            if (isset($answerMap[$key])) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    private function appendSection(array &$lines, string $title, array $answerMap, array $keys): void
+    {
+        $items = [];
+        foreach ($keys as $key) {
+            if (!isset($answerMap[$key])) {
+                continue;
+            }
+
+            $items[] = $answerMap[$key];
+        }
+
+        if ($items === []) {
+            return;
+        }
+
+        $lines[] = '<p><strong>' . e($title) . '</strong></p>';
+        $lines[] = '<ul>';
+        foreach ($items as $answer) {
+            $lines[] = '<li><strong>' . e($answer['label']) . '</strong><br>' . nl2br(e($answer['display'])) . '</li>';
+        }
+        $lines[] = '</ul>';
     }
 
     private function ko(string $escaped): string
