@@ -342,8 +342,8 @@ final class TallyWebhookController
         $date = substr((string) ($payload['createdAt'] ?? $payload['data']['createdAt'] ?? date('Y-m-d')), 0, 10);
 
         if ($name !== '') {
-            $suffix = $grade !== '' ? ' ' . $grade : '';
-            return $name . $suffix . ' 입학생 기초 소양 제출';
+            $prefix = $grade !== '' ? $grade . ' ' : '';
+            return $prefix . $name . ' 입학생 기초 소양 제출';
         }
 
         return '입학생 기초 소양 제출 - ' . $date;
