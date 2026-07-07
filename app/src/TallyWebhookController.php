@@ -181,10 +181,10 @@ final class TallyWebhookController
     {
         $key = (string) ($field['key'] ?? '');
         $aliases = [
-            'question_ELopOl' => '지원자 이름',
-            'question_rV8XZo' => '지원학년',
-            'question_4LlZbr' => '직속팸 경험 여부',
-            'question_jL8KVQ' => '활동 가능한 시간대',
+            'question_ELopOl' => $this->ko('\uc9c0\uc6d0\uc790 \uc774\ub984'),
+            'question_rV8XZo' => $this->ko('\uc9c0\uc6d0\ud559\ub144'),
+            'question_4LlZbr' => $this->ko('\uc9c1\uc18d\ud328 \uacbd\ud5d8 \uc5ec\ubd80'),
+            'question_jL8KVQ' => $this->ko('\ud65c\ub3d9 \uac00\ub2a5\ud55c \uc2dc\uac04\ub300'),
         ];
 
         if (isset($aliases[$key])) {
@@ -197,7 +197,7 @@ final class TallyWebhookController
             }
         }
 
-        return '답변 ' . ($index + 1);
+        return $this->ko('\ub2f5\ubcc0') . ' ' . ($index + 1);
     }
 
     private function isDerivedCheckboxField(array $field): bool
@@ -237,11 +237,11 @@ final class TallyWebhookController
     {
         $text = trim($text);
         return match ($text) {
-            '1俳鰍' => '1학년',
-            '2俳鰍' => '2학년',
-            '3俳鰍' => '3학년',
-            '森' => '있음',
-            '焼艦神' => '없음',
+            '1俳鰍' => $this->ko('1\ud559\ub144'),
+            '2俳鰍' => $this->ko('2\ud559\ub144'),
+            '3俳鰍' => $this->ko('3\ud559\ub144'),
+            '森' => $this->ko('\uc788\uc74c'),
+            '焼艦神' => $this->ko('\uc5c6\uc74c'),
             default => $text,
         };
     }
@@ -253,7 +253,7 @@ final class TallyWebhookController
         }
 
         if (is_bool($value)) {
-            return $value ? '예' : '아니오';
+            return $value ? $this->ko('\uc608') : $this->ko('\uc544\ub2c8\uc624');
         }
 
         if (is_scalar($value)) {
@@ -355,10 +355,10 @@ final class TallyWebhookController
 
         if ($name !== '') {
             $prefix = $grade !== '' ? $grade . ' ' : '';
-            return $prefix . $name . ' 입학생 기초 소양 제출';
+            return $prefix . $name . ' ' . $this->ko('\uc785\ud559\uc0dd \uae30\ucd08 \uc18c\uc591 \uc81c\ucd9c');
         }
 
-        return '입학생 기초 소양 제출 - ' . $date;
+        return $this->ko('\uc785\ud559\uc0dd \uae30\ucd08 \uc18c\uc591 \uc81c\ucd9c') . ' - ' . $date;
     }
 
     private function fieldByKey(array $fields, string $key): ?array
@@ -395,7 +395,7 @@ final class TallyWebhookController
     private function postBody(array $payload, array $answers): string
     {
         $lines = [];
-        $lines[] = '<p><strong>Tally 제출이 자동으로 등록되었습니다.</strong></p>';
+        $lines[] = '<p><strong>' . e($this->ko('Tally \uc81c\ucd9c\uc774 \uc790\ub3d9\uc73c\ub85c \ub4f1\ub85d\ub418\uc5c8\uc2b5\ub2c8\ub2e4.')) . '</strong></p>';
         $lines[] = '<ul>';
         foreach ($answers as $answer) {
             $lines[] = '<li><strong>' . e($answer['label']) . '</strong>: ' . e($answer['display']) . '</li>';
@@ -404,10 +404,15 @@ final class TallyWebhookController
 
         $submittedAt = $payload['createdAt'] ?? $payload['data']['createdAt'] ?? null;
         if (is_string($submittedAt) && $submittedAt !== '') {
-            $lines[] = '<p>제출 시각: ' . e($submittedAt) . '</p>';
+            $lines[] = '<p>' . e($this->ko('\uc81c\ucd9c \uc2dc\uac01')) . ': ' . e($submittedAt) . '</p>';
         }
 
         return sanitize_post_body(implode("\n", $lines));
+    }
+
+    private function ko(string $escaped): string
+    {
+        return json_decode('"' . $escaped . '"', false, 512, JSON_THROW_ON_ERROR);
     }
 
     private function adminUserId(): int
