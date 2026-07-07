@@ -327,8 +327,18 @@ final class TallyWebhookController
 
     private function postTitle(array $payload, array $answers): string
     {
-        $name = $this->answerByLabel($answers, ['이름', '성명', '학생 이름', '지원자 이름', '제출자']);
-        $grade = $this->answerByLabel($answers, ['학년', '지원 학년']);
+        $fields = is_array($payload['data']['fields'] ?? null) ? $payload['data']['fields'] : [];
+        $name = $this->displayValue($this->fieldValueByKey($fields, 'question_ELopOl'));
+        $gradeField = $this->fieldByKey($fields, 'question_rV8XZo');
+        $grade = $gradeField ? $this->displayFieldValue($gradeField, $gradeField['value'] ?? null) : '';
+
+        if ($name === '') {
+            $name = $this->answerByLabel($answers, ['이름', '성명', '학생 이름', '지원자 이름', '제출자']);
+        }
+        if ($grade === '') {
+            $grade = $this->answerByLabel($answers, ['학년', '지원 학년']);
+        }
+
         $date = substr((string) ($payload['createdAt'] ?? $payload['data']['createdAt'] ?? date('Y-m-d')), 0, 10);
 
         if ($name !== '') {
@@ -337,6 +347,23 @@ final class TallyWebhookController
         }
 
         return '입학생 기초 소양 제출 - ' . $date;
+    }
+
+    private function fieldByKey(array $fields, string $key): ?array
+    {
+        foreach ($fields as $field) {
+            if (is_array($field) && ($field['key'] ?? '') === $key) {
+                return $field;
+            }
+        }
+
+        return null;
+    }
+
+    private function fieldValueByKey(array $fields, string $key): mixed
+    {
+        $field = $this->fieldByKey($fields, $key);
+        return $field['value'] ?? null;
     }
 
     private function answerByLabel(array $answers, array $needles): string
