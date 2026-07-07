@@ -6,6 +6,13 @@
     <div class="board-tools">
         <p>총 <strong><?= count($posts) ?></strong>건</p>
         <div class="board-actions">
+            <?php if (($canToggleHidden ?? false)): ?>
+                <?php if ($showHidden ?? false): ?>
+                    <a class="button secondary-button board-view-toggle" href="/board/<?= e($board['slug']) ?>">숨김 제외</a>
+                <?php else: ?>
+                    <a class="button secondary-button board-view-toggle" href="/board/<?= e($board['slug']) ?>?view=all">전체 보기</a>
+                <?php endif; ?>
+            <?php endif; ?>
             <?php if ($canWrite): ?>
                 <a class="button board-write-button" href="/board/<?= e($board['slug']) ?>/new">글쓰기</a>
             <?php endif; ?>
@@ -41,7 +48,7 @@
                 <?php endif; ?>
 
                 <?php foreach ($posts as $post): ?>
-                    <tr>
+                    <tr class="<?= !empty($post['is_hidden']) ? 'is-hidden-post' : '' ?>">
                         <td class="col-no">
                             <?= e((string) $post['id']) ?>
                         </td>
@@ -50,6 +57,9 @@
                             <a class="board-title-link <?= $tag === '공지' ? 'is-notice-title' : '' ?>" href="/board/<?= e($board['slug']) ?>/post/<?= e((string) $post['id']) ?>">
                                 <?= e($post['title']) ?>
                             </a>
+                            <?php if (!empty($post['is_hidden'])): ?>
+                                <span class="hidden-post-badge">숨김</span>
+                            <?php endif; ?>
                         </td>
                         <td class="board-file-cell">
                             <?php if (($post['attachment_count'] ?? 0) > 0): ?>
@@ -64,6 +74,16 @@
                         <td class="col-views"><?= e((string) ($post['views'] ?? 0)) ?></td>
                         <?php if ($hasManageColumn): ?>
                             <td class="col-manage">
+                                <?php if (($canToggleHidden ?? false)): ?>
+                                    <form class="board-row-hide" method="post" action="/board/<?= e($board['slug']) ?>/post/<?= e((string) $post['id']) ?>/hide">
+                                        <input type="hidden" name="csrf" value="<?= e(csrf_token()) ?>">
+                                        <input type="hidden" name="hidden" value="<?= !empty($post['is_hidden']) ? '0' : '1' ?>">
+                                        <input type="hidden" name="view" value="<?= ($showHidden ?? false) ? 'all' : '' ?>">
+                                        <button type="submit" aria-label="<?= !empty($post['is_hidden']) ? '게시글 다시 보이기' : '게시글 숨기기' ?>">
+                                            <?= !empty($post['is_hidden']) ? '보이기' : '숨김' ?>
+                                        </button>
+                                    </form>
+                                <?php endif; ?>
                                 <?php if ($post['can_manage']): ?>
                                     <form class="board-row-delete" method="post" action="/board/<?= e($board['slug']) ?>/post/<?= e((string) $post['id']) ?>/delete" onsubmit="return confirm('삭제하시겠습니까?');">
                                         <input type="hidden" name="csrf" value="<?= e(csrf_token()) ?>">

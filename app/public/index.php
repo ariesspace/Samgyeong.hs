@@ -2080,6 +2080,12 @@ if (preg_match('#^/board/([a-z-]+)/post/(\d+)/update$#', $path, $matches) && $me
     exit;
 }
 
+if (preg_match('#^/board/([a-z-]+)/post/(\d+)/hide$#', $path, $matches) && $method === 'POST') {
+    $board = Board::fromSlug($matches[1], $db);
+    echo (new BoardController($db, $auth))->toggleHidden($board, (int) $matches[2]);
+    exit;
+}
+
 if (preg_match('#^/board/([a-z-]+)/post/(\d+)/delete$#', $path, $matches) && $method === 'POST') {
     $board = Board::fromSlug($matches[1], $db);
     echo (new BoardController($db, $auth))->delete($board, (int) $matches[2]);

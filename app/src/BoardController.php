@@ -20,13 +20,23 @@ final class BoardController
         }
 
         $keyword = trim($_GET['q'] ?? '');
+        $showHidden = $board['slug'] === 'basic-literacy'
+            && ($_GET['view'] ?? '') === 'all'
+            && $this->auth->hasRole($board['write_roles']);
         $where = 'WHERE board = ?';
         $params = [$board['slug']];
+
+        if ($board['slug'] === 'basic-literacy' && !$showHidden) {
+            $where .= ' AND COALESCE(posts.is_hidden, 0) = 0';
+        }
 
         if ($keyword !== '') {
             $where .= ' AND (posts.title LIKE ? OR posts.body LIKE ? OR users.username LIKE ? OR users.display_name LIKE ?)';
             $like = '%' . $keyword . '%';
-            $params = [$board['slug'], $like, $like, $like, $like];
+            $params[] = $like;
+            $params[] = $like;
+            $params[] = $like;
+            $params[] = $like;
         }
 
         $stmt = $this->db->prepare("
@@ -51,8 +61,11 @@ final class BoardController
             'board' => $board,
             'posts' => $posts,
             'keyword' => $keyword,
+            'showHidden' => $showHidden,
+            'canToggleHidden' => $board['slug'] === 'basic-literacy' && $this->auth->hasRole($board['write_roles']),
             'canWrite' => $this->auth->hasRole($board['write_roles']),
-            'hasManageColumn' => array_reduce($posts, fn (bool $carry, array $post): bool => $carry || (bool) $post['can_manage'], false),
+            'hasManageColumn' => ($board['slug'] === 'basic-literacy' && $this->auth->hasRole($board['write_roles']))
+                || array_reduce($posts, fn (bool $carry, array $post): bool => $carry || (bool) $post['can_manage'], false),
         ]);
     }
 
@@ -219,6 +232,23 @@ final class BoardController
         $stmt->execute([$board['slug'], $id]);
 
         redirect('/board/' . $board['slug']);
+    }
+
+    public function toggleHidden(array $board, int $id): never
+    {
+        if ($board['slug'] !== 'basic-literacy') {
+            redirect('/board/' . $board['slug']);
+        }
+
+        $this->auth->requireRole($board['write_roles']);
+        $post = $this->post($board, $id);
+        $nextHidden = (int) ($_POST['hidden'] ?? 0) === 1 ? 1 : 0;
+
+        $stmt = $this->db->prepare('UPDATE posts SET is_hidden = ? WHERE board = ? AND id = ?');
+        $stmt->execute([$nextHidden, $board['slug'], (int) $post['id']]);
+
+        $suffix = ($_POST['view'] ?? '') === 'all' ? '?view=all' : '';
+        redirect('/board/' . $board['slug'] . $suffix);
     }
 
     private function saveUploads(): array

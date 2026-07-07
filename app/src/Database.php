@@ -44,6 +44,7 @@ final class Database
                 file_path TEXT,
                 author_id INTEGER NOT NULL,
                 views INTEGER NOT NULL DEFAULT 0,
+                is_hidden INTEGER NOT NULL DEFAULT 0,
                 created_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP,
                 FOREIGN KEY(author_id) REFERENCES users(id)
             );
@@ -244,6 +245,9 @@ final class Database
         }
         if (!in_array('tag', $postColumns, true)) {
             $pdo->exec("ALTER TABLE posts ADD COLUMN tag TEXT NOT NULL DEFAULT '공지'");
+        }
+        if (!in_array('is_hidden', $postColumns, true)) {
+            $pdo->exec('ALTER TABLE posts ADD COLUMN is_hidden INTEGER NOT NULL DEFAULT 0');
         }
 
         $pdo->exec('CREATE INDEX IF NOT EXISTS idx_post_files_post_id ON post_files(post_id)');

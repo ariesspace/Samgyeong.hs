@@ -3053,6 +3053,13 @@ select {
     line-height: 1;
 }
 
+.board-view-toggle {
+    min-height: 36px;
+    padding: 6px 12px;
+    border-radius: 5px;
+    white-space: nowrap;
+}
+
 .public-board-table {
     min-width: 620px;
     border-top: 2px solid #1f2937;
@@ -3094,7 +3101,7 @@ select {
 }
 
 .public-board-table .col-manage {
-    width: 76px;
+    width: 118px;
     color: #b42318;
 }
 
@@ -3104,6 +3111,11 @@ select {
 
 .public-board-table tbody tr:hover {
     background: #f8fafc;
+}
+
+.public-board-table tbody tr.is-hidden-post {
+    background: #f8fafc;
+    opacity: .68;
 }
 
 .board-title-cell {
@@ -3122,6 +3134,19 @@ select {
     color: var(--green);
     text-decoration: underline;
     text-underline-offset: 4px;
+}
+
+.hidden-post-badge {
+    display: inline-flex;
+    align-items: center;
+    margin-left: 8px;
+    padding: 2px 6px;
+    color: #667085;
+    background: #eef2f6;
+    border: 1px solid #d8dee8;
+    border-radius: 999px;
+    font-size: 12px;
+    font-weight: 800;
 }
 
 .board-badge {
@@ -3173,12 +3198,14 @@ select {
     color: #c3cad5;
 }
 
+.board-row-hide,
 .board-row-delete {
-    display: flex;
+    display: inline-flex;
     justify-content: center;
     margin: 0;
 }
 
+.board-row-hide button,
 .board-row-delete button {
     min-height: 28px;
     padding: 4px 8px;
@@ -3188,9 +3215,18 @@ select {
     font-size: 13px;
 }
 
+.board-row-hide button:hover {
+    color: white;
+    background: var(--green);
+}
+
 .board-row-delete button:hover {
     color: white;
     background: #b42318;
+}
+
+.col-manage {
+    white-space: nowrap;
 }
 
 .empty-board {
@@ -10086,7 +10122,7 @@ select {
     }
 
     .public-board-table .col-manage {
-        width: 58px;
+        width: 86px;
     }
 
     .public-board-table .board-title-link {
@@ -10102,6 +10138,7 @@ select {
         font-size: 16px;
     }
 
+    .board-row-hide button,
     .board-row-delete button {
         padding: 4px 5px;
         font-size: 12px;
