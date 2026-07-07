@@ -32,3 +32,7 @@ SAMGYEONG_HTTP_PORT=8084
 - `app/storage/data`: SQLite DB 볼륨
 - `app/storage/uploads`: 업로드 파일
 - `docker`: nginx/php-fpm 설정
+
+## 변경 이력
+
+- 2026-07-07: 게시판 첨부 PDF 등 자료 업로드를 위해 nginx/PHP 업로드 제한을 50MB로 상향했습니다.
