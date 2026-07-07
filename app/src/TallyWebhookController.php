@@ -530,7 +530,10 @@ final class TallyWebhookController
             $question = $prompt !== ''
                 ? '<br><span style="font-size: 14px">' . nl2br(e($prompt)) . '</span>'
                 : '';
-            $lines[] = '<li><strong>' . e($answer['label']) . '</strong>' . $question . '<br>' . nl2br(e($answer['display'])) . '</li>';
+            $answerPrefix = $prompt !== ''
+                ? '<br><strong>' . e($this->ko('\ub2f5\ubcc0')) . ':</strong> '
+                : '<br>';
+            $lines[] = '<li><strong>' . e($answer['label']) . '</strong>' . $question . $answerPrefix . nl2br(e($answer['display'])) . '</li>';
         }
         $lines[] = '</ul>';
     }
