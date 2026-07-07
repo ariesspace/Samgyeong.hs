@@ -202,6 +202,15 @@ final class Database
                 updated_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP,
                 FOREIGN KEY(updated_by) REFERENCES users(id)
             );
+
+            CREATE TABLE IF NOT EXISTS tally_webhook_events (
+                event_id TEXT PRIMARY KEY,
+                board TEXT NOT NULL,
+                post_id INTEGER,
+                payload TEXT NOT NULL,
+                created_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP,
+                FOREIGN KEY(post_id) REFERENCES posts(id)
+            );
         ");
 
         $count = (int) $pdo->query('SELECT COUNT(*) FROM users')->fetchColumn();
@@ -286,6 +295,7 @@ final class Database
 
         self::ensureGuestBoardReadPermissions($pdo);
         self::ensureCouncilMinutesReadPermissions($pdo);
+        self::ensureBasicLiteracyBoardPermissions($pdo);
         self::ensureMallDefaults($pdo);
         self::ensureMallItemsSplit($pdo);
         self::ensureMallGifticonItems($pdo);
@@ -509,6 +519,31 @@ final class Database
         $roles = array_values(array_diff(array_unique($roles), ['guest']));
         $stmt = $pdo->prepare('UPDATE board_permissions SET read_roles = ?, updated_at = CURRENT_TIMESTAMP WHERE board_slug = ?');
         $stmt->execute([json_encode($roles, JSON_UNESCAPED_UNICODE), 'council-minutes']);
+    }
+
+    private static function ensureBasicLiteracyBoardPermissions(PDO $pdo): void
+    {
+        $stmt = $pdo->prepare('
+            INSERT INTO board_permissions (board_slug, read_roles, write_roles, updated_at)
+            VALUES (?, ?, ?, CURRENT_TIMESTAMP)
+            ON CONFLICT(board_slug) DO NOTHING
+        ');
+        $stmt->execute([
+            'basic-literacy',
+            json_encode(['student', 'council', 'admin'], JSON_UNESCAPED_UNICODE),
+            json_encode(['council', 'admin'], JSON_UNESCAPED_UNICODE),
+        ]);
+
+        $stmt = $pdo->prepare('SELECT read_roles FROM board_permissions WHERE board_slug = ?');
+        $stmt->execute(['basic-literacy']);
+        $roles = json_decode((string) $stmt->fetchColumn(), true);
+        if (!is_array($roles)) {
+            $roles = [];
+        }
+
+        $roles = array_values(array_diff(array_unique(array_merge($roles, ['student', 'council', 'admin'])), ['guest']));
+        $stmt = $pdo->prepare('UPDATE board_permissions SET read_roles = ?, updated_at = CURRENT_TIMESTAMP WHERE board_slug = ?');
+        $stmt->execute([json_encode($roles, JSON_UNESCAPED_UNICODE), 'basic-literacy']);
     }
 
     private static function ensureMallDefaults(PDO $pdo): void

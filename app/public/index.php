@@ -2034,6 +2034,10 @@ if ($path === '/meal/save' && $method === 'POST') {
     redirect('/meal?month=' . substr($mealDate, 0, 7) . '&date=' . $mealDate);
 }
 
+if ($path === '/webhooks/tally/basic-literacy' && $method === 'POST') {
+    (new TallyWebhookController($db))->handle((string) file_get_contents('php://input'));
+}
+
 if (preg_match('#^/board/([a-z-]+)$#', $path, $matches)) {
     $board = Board::fromSlug($matches[1], $db);
     echo (new BoardController($db, $auth))->index($board);

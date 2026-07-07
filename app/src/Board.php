@@ -33,6 +33,13 @@ final class Board
             'read_roles' => ['student', 'council', 'admin'],
             'write_roles' => ['council', 'admin'],
         ],
+        'basic-literacy' => [
+            'name' => '입학생 기초 소양 게시판',
+            'badge' => '제출',
+            'tags' => ['제출', '공지', '안내', '검토완료'],
+            'read_roles' => ['student', 'council', 'admin'],
+            'write_roles' => ['council', 'admin'],
+        ],
     ];
 
     public static function fromSlug(string $slug, ?PDO $db = null): array

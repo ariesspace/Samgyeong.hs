@@ -15,7 +15,18 @@ docker compose up -d --build
 ```env
 SAMGYEONG_HTTP_BIND=127.0.0.1
 SAMGYEONG_HTTP_PORT=8084
+SAMGYEONG_TALLY_SIGNING_SECRET=여기에_Tally_Signing_secret_입력
 ```
+
+## Tally 웹훅 연동
+
+Tally 제출 내용을 `입학생 기초 소양 게시판`으로 자동 등록하려면 Tally Webhook endpoint를 다음 주소로 설정합니다.
+
+```text
+https://samgyeong.site/webhooks/tally/basic-literacy
+```
+
+Tally 화면의 `Signing secret` 값은 서버 `.env`의 `SAMGYEONG_TALLY_SIGNING_SECRET`에 동일하게 넣어야 합니다.
 
 ## 기본 관리자 계정
 
@@ -35,4 +46,5 @@ SAMGYEONG_HTTP_PORT=8084
 
 ## 변경 이력
 
+- 2026-07-07: 학생 자치기구에 입학생 기초 소양 게시판을 추가하고, Tally 제출 자동 등록 웹훅을 연결했습니다.
 - 2026-07-07: 게시판 첨부 PDF 등 자료 업로드를 위해 nginx/PHP 업로드 제한을 50MB로 상향했습니다.
