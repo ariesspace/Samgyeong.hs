@@ -183,8 +183,15 @@ final class TallyWebhookController
         $aliases = [
             'question_ELopOl' => $this->ko('\uc9c0\uc6d0\uc790 \uc774\ub984'),
             'question_rV8XZo' => $this->ko('\uc9c0\uc6d0\ud559\ub144'),
-            'question_4LlZbr' => $this->ko('\uc9c1\uc18d\ud328 \uacbd\ud5d8 \uc5ec\ubd80'),
+            'question_4LlZbr' => $this->ko('\uc9c1\uc18d\ud338 \uacbd\ud5d8 \uc5ec\ubd80'),
             'question_jL8KVQ' => $this->ko('\ud65c\ub3d9 \uac00\ub2a5\ud55c \uc2dc\uac04\ub300'),
+            'question_2L926e' => $this->ko('\uacbd\ucc9c \ubb38\ud56d'),
+            'question_x28GWd' => $this->ko('\uacbd\uc778 \ubb38\ud56d'),
+            'question_RRqO94' => $this->ko('\ucc45\uc784 \ubb38\ud56d'),
+            'question_oo8JjO' => $this->ko('\uacf5\ub3d9\uccb4 \ubb38\ud56d'),
+            'question_GLOMPL' => $this->ko('\uc608\uc808 \ubb38\ud56d'),
+            'question_OLxRNY' => $this->ko('\uc870\uc9c1 \ubb38\ud56d'),
+            'question_VVWr6M' => $this->ko('\uc704\uae30\uc0c1\ud669 \ubb38\ud56d'),
         ];
 
         if (isset($aliases[$key])) {
