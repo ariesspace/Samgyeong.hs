@@ -85,9 +85,28 @@ final class TallyWebhookController
         }
 
         $signature = preg_replace('/^sha256=/i', '', $signature) ?? $signature;
-        $expected = hash_hmac('sha256', $rawBody, $secret);
+        $decoded = json_decode($rawBody, true);
+        $normalizedBody = is_array($decoded)
+            ? json_encode($decoded, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES)
+            : null;
 
-        return hash_equals($expected, $signature);
+        $candidates = [
+            hash_hmac('sha256', $rawBody, $secret),
+            base64_encode(hash_hmac('sha256', $rawBody, $secret, true)),
+        ];
+
+        if (is_string($normalizedBody)) {
+            $candidates[] = hash_hmac('sha256', $normalizedBody, $secret);
+            $candidates[] = base64_encode(hash_hmac('sha256', $normalizedBody, $secret, true));
+        }
+
+        foreach (array_unique($candidates) as $expected) {
+            if (hash_equals($expected, $signature)) {
+                return true;
+            }
+        }
+
+        return false;
     }
 
     private function eventId(array $payload, string $rawBody): string
