@@ -149,12 +149,16 @@ final class TallyWebhookController
                 continue;
             }
 
+            if ($this->isDerivedCheckboxField($field)) {
+                continue;
+            }
+
             $label = $this->fieldLabel($field, (int) $index);
             $value = $field['value'] ?? $field['answer'] ?? $field['text'] ?? $field['values'] ?? null;
             $answers[] = [
                 'label' => $label,
                 'value' => $value,
-                'display' => $this->displayValue($value),
+                'display' => $this->displayFieldValue($field, $value),
             ];
         }
 
@@ -163,6 +167,18 @@ final class TallyWebhookController
 
     private function fieldLabel(array $field, int $index): string
     {
+        $key = (string) ($field['key'] ?? '');
+        $aliases = [
+            'question_ELopOl' => '지원자 이름',
+            'question_rV8XZo' => '지원학년',
+            'question_4LlZbr' => '직속팸 경험 여부',
+            'question_jL8KVQ' => '활동 가능한 시간대',
+        ];
+
+        if (isset($aliases[$key])) {
+            return $aliases[$key];
+        }
+
         foreach (['label', 'title', 'question', 'name', 'key'] as $key) {
             if (isset($field[$key]) && is_string($field[$key]) && trim($field[$key]) !== '') {
                 return trim($field[$key]);
@@ -172,10 +188,60 @@ final class TallyWebhookController
         return '답변 ' . ($index + 1);
     }
 
+    private function isDerivedCheckboxField(array $field): bool
+    {
+        return ($field['type'] ?? '') === 'CHECKBOXES'
+            && is_string($field['key'] ?? null)
+            && preg_match('/^question_[A-Za-z0-9]+_[0-9a-f-]{36}$/', $field['key']) === 1;
+    }
+
+    private function displayFieldValue(array $field, mixed $value): string
+    {
+        if (is_array($value) && isset($field['options']) && is_array($field['options'])) {
+            $optionMap = [];
+            foreach ($field['options'] as $option) {
+                if (!is_array($option) || !isset($option['id'], $option['text'])) {
+                    continue;
+                }
+                $optionMap[(string) $option['id']] = $this->normalizeOptionText((string) $option['text']);
+            }
+
+            $mapped = [];
+            foreach ($value as $item) {
+                if (is_scalar($item)) {
+                    $mapped[] = $optionMap[(string) $item] ?? (string) $item;
+                }
+            }
+
+            if ($mapped !== []) {
+                return implode(', ', array_filter($mapped));
+            }
+        }
+
+        return $this->displayValue($value);
+    }
+
+    private function normalizeOptionText(string $text): string
+    {
+        $text = trim($text);
+        return match ($text) {
+            '1俳鰍' => '1학년',
+            '2俳鰍' => '2학년',
+            '3俳鰍' => '3학년',
+            '森' => '있음',
+            '焼艦神' => '없음',
+            default => $text,
+        };
+    }
+
     private function displayValue(mixed $value): string
     {
         if ($value === null || $value === '') {
             return '';
+        }
+
+        if (is_bool($value)) {
+            return $value ? '예' : '아니오';
         }
 
         if (is_scalar($value)) {
@@ -266,8 +332,8 @@ final class TallyWebhookController
         $date = substr((string) ($payload['createdAt'] ?? $payload['data']['createdAt'] ?? date('Y-m-d')), 0, 10);
 
         if ($name !== '') {
-            $prefix = $grade !== '' ? $grade . ' ' : '';
-            return $prefix . $name . ' 입학생 기초 소양 제출';
+            $suffix = $grade !== '' ? ' ' . $grade : '';
+            return $name . $suffix . ' 입학생 기초 소양 제출';
         }
 
         return '입학생 기초 소양 제출 - ' . $date;
