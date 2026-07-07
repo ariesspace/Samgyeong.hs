@@ -133,7 +133,19 @@ final class TallyWebhookController
         $stmt->execute([$eventId]);
         $value = $stmt->fetchColumn();
 
-        return $value === false ? null : (int) $value;
+        if ($value === false) {
+            return null;
+        }
+
+        $postId = (int) $value;
+        $stmt = $this->db->prepare('SELECT COUNT(*) FROM posts WHERE id = ? AND board = ?');
+        $stmt->execute([$postId, self::BOARD_SLUG]);
+        if ((int) $stmt->fetchColumn() > 0) {
+            return $postId;
+        }
+
+        $this->db->prepare('DELETE FROM tally_webhook_events WHERE event_id = ?')->execute([$eventId]);
+        return null;
     }
 
     private function answers(array $payload): array
