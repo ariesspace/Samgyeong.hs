@@ -4,14 +4,15 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title><?= e($title ?? '삼경고') ?></title>
-    <link rel="stylesheet" href="/styles.css?v=2026070631">
-    <link rel="stylesheet" href="/meal-compact.css?v=2026070628">
-    <link rel="stylesheet" href="/rules-document.css?v=2026070544">
+    <link rel="stylesheet" href="/styles.css?v=2026070643">
+    <link rel="stylesheet" href="/meal-compact.css?v=2026070632">
+    <link rel="stylesheet" href="/rules-document.css?v=2026070633">
     <link rel="stylesheet" href="/post-files.css?v=2026070538">
     <link rel="stylesheet" href="/point-rules.css?v=2026070615">
     <link rel="stylesheet" href="/discipline-awards.css?v=2026070616">
     <link rel="stylesheet" href="/board-tags.css?v=2026070542">
-    <link rel="stylesheet" href="/admin-point-rules.css?v=2026070541">
+    <link rel="stylesheet" href="/admin-point-rules.css?v=2026070642">
+    <link rel="stylesheet" href="/admin-hall-activities.css?v=2026070634">
 </head>
 <body>
     <?php
@@ -40,7 +41,7 @@
 
     <header class="site-header">
         <a class="brand-block" href="/">
-            <img src="/assets/samgyeong-emblem.png" alt="삼경인문고등학교 교표">
+            <img src="/assets/samgyeong-emblem2.png?v=2026070637" alt="삼경인문고등학교 교표">
             <span>
                 <strong>삼경인문고등학교</strong>
                 <em>SAMGYEONG HUMANITIES HIGH SCHOOL</em>
@@ -118,7 +119,7 @@
     <?php endif; ?>
 
     <footer class="site-footer">
-        <img src="/assets/samgyeong-emblem.png" alt="">
+        <img src="/assets/samgyeong-emblem2.png?v=2026070637" alt="">
         <strong>삼경인문고등학교</strong>
         <span>SAMGYEONG HUMANITIES HIGH SCHOOL</span>
         <p>서울특별시 삼경구 삼경로 1 · 교무실 02-123-4567 · 행정실 02-123-4568</p>

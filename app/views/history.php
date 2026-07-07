@@ -10,31 +10,52 @@
     <table class="history-simple-table">
         <tbody>
             <tr>
-                <th scope="row">2027</th>
+                <th scope="row">2026.07.06</th>
                 <td>
-                    <strong>삼경인문고등학교 신입생 모집 준비</strong>
-                    <span>신입생 모집요강 및 입학 안내 체계 정비, 온라인 학교 정보 제공 확대</span>
+                    <strong>학교 운영 시스템 고도화</strong>
+                    <span>식단표 관리 기능, 삼경몰 상품 관리, 상벌점 히스토리 및 모바일 관리 화면 정비</span>
                 </td>
             </tr>
             <tr>
-                <th scope="row">2026</th>
+                <th scope="row">2026.07.05</th>
                 <td>
-                    <strong>삼경 교육과정 및 생활 공동체 기반 구축</strong>
-                    <span>경천관, 경인관, 경물관 중심의 생활 운영 체계와 학생 자치활동 기반 마련</span>
+                    <strong>학칙 및 학교생활규정 체계 정비</strong>
+                    <span>삼경인문고등학교 학칙, 학교생활규정, 상벌점 기준과 자료실 문서 운영 체계 정리</span>
                 </td>
             </tr>
             <tr>
-                <th scope="row">2025</th>
+                <th scope="row">2026.07.02</th>
                 <td>
-                    <strong>삼경 정신 기반 학교 운영안 수립</strong>
-                    <span>예절 교육, 자기주도학습, 공동체 활동 중심의 운영 방향 정립</span>
+                    <strong>신입생 모집 및 가입 신청 안내 정비</strong>
+                    <span>모집요강, 가입 신청 바로가기, 게시판 공지 표시와 작성자 정보 표시 방식 개선</span>
                 </td>
             </tr>
             <tr>
-                <th scope="row">2024</th>
+                <th scope="row">2026.07.01</th>
                 <td>
-                    <strong>삼경인문고등학교 설립 구상</strong>
-                    <span>인문 교육과 생활 공동체를 결합한 학교 모델 기획</span>
+                    <strong>삼경인문고등학교 학칙 제정</strong>
+                    <span>경천, 경인, 경물의 정신을 바탕으로 한 학칙과 학생 자치기구 운영 방향 수립</span>
+                </td>
+            </tr>
+            <tr>
+                <th scope="row">2026.06.25</th>
+                <td>
+                    <strong>학사 운영 안내 기반 마련</strong>
+                    <span>기말고사 시행 안내와 경천관, 경인관, 경물관 중심의 자습실 운영 정보 정리</span>
+                </td>
+            </tr>
+            <tr>
+                <th scope="row">2026.06.10</th>
+                <td>
+                    <strong>전통 예절 교육 주간 운영 안내</strong>
+                    <span>삼경의 예절 교육 방향과 학생 생활 문화 안내를 위한 공지 체계 마련</span>
+                </td>
+            </tr>
+            <tr>
+                <th scope="row">2026.06.01</th>
+                <td>
+                    <strong>삼경인문고등학교 온라인 공간 구축 착수</strong>
+                    <span>학교소개, 게시판, 학생마당, 관리자 기능을 포함한 홈페이지 운영 기반 조성</span>
                 </td>
             </tr>
         </tbody>

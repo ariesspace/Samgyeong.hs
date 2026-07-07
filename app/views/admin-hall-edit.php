@@ -10,7 +10,7 @@
 
         <div class="hall-edit-photo">
             <div class="hall-photo-preview">
-                <img src="<?= !empty($member['photo_path']) ? '/uploads/' . e($member['photo_path']) : '/assets/samgyeong-emblem.png' ?>" alt="" onerror="this.src='/assets/samgyeong-emblem.png'">
+                <img src="<?= !empty($member['photo_path']) ? '/uploads/' . e($member['photo_path']) : '/assets/samgyeong-emblem2.png?v=2026070637' ?>" alt="" onerror="this.src='/assets/samgyeong-emblem2.png?v=2026070637'">
             </div>
             <label>
                 사진 변경

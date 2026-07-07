@@ -4,7 +4,7 @@
 
         <div class="symbol-emblem-panel">
             <div class="symbol-emblem">
-                <img src="/assets/samgyeong-emblem.png" alt="삼경인문고등학교 교표">
+                <img src="/assets/samgyeong-emblem2.png?v=2026070637" alt="삼경인문고등학교 교표">
             </div>
             <div class="symbol-copy">
                 <p>우뚝 솟은 두 개의 기둥은 변치 않는 전통과 <strong>하늘의 도리(경천 敬天)</strong>를,</p>
@@ -22,7 +22,7 @@
             <article class="symbol-card">
                 <h2>교목 : 소나무 <span>松</span></h2>
                 <figure>
-                    <img src="/assets/pine-tree.jpg" alt="소나무">
+                    <img src="/assets/pine-tree.png" alt="소나무">
                 </figure>
                 <p>
                     사시사철 푸르고 굳건한 기상을 자랑하는 소나무는 삼경인의

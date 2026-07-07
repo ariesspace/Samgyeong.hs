@@ -70,7 +70,29 @@
             <header>
                 <h2><?= e($selectedLabel) ?></h2>
                 <?php if ($selectedDate === $today): ?><span>TODAY</span><?php endif; ?>
+                <?php if (!empty($canManageMeal)): ?>
+                    <a class="meal-edit-button" href="/meal?month=<?= e($month) ?>&date=<?= e($selectedDate) ?>&edit=1" aria-label="식단 수정">✎</a>
+                <?php endif; ?>
             </header>
+
+            <?php if (!empty($canManageMeal) && !empty($editMeal)): ?>
+                <form class="meal-edit-form" method="post" action="/meal/save">
+                    <input type="hidden" name="csrf" value="<?= e(csrf_token()) ?>">
+                    <input type="hidden" name="meal_date" value="<?= e($selectedDate) ?>">
+                    <label>
+                        중식
+                        <textarea name="lunch_text" rows="4" placeholder="한 줄에 메뉴 하나씩 입력"><?= e($selectedMeal['lunch_text'] ?? '') ?></textarea>
+                    </label>
+                    <label>
+                        석식
+                        <textarea name="dinner_text" rows="4" placeholder="한 줄에 메뉴 하나씩 입력"><?= e($selectedMeal['dinner_text'] ?? '') ?></textarea>
+                    </label>
+                    <div class="meal-edit-actions">
+                        <a class="ghost-button" href="/meal?month=<?= e($month) ?>&date=<?= e($selectedDate) ?>">취소</a>
+                        <button type="submit">저장</button>
+                    </div>
+                </form>
+            <?php endif; ?>
 
             <div class="meal-block">
                 <strong>중식</strong>

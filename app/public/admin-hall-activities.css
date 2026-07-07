@@ -1,0 +1,235 @@
+.admin-hall-activities-page {
+    display: grid;
+    gap: 18px;
+}
+
+.admin-tool-head {
+    display: flex;
+    align-items: end;
+    justify-content: space-between;
+    gap: 16px;
+    padding-bottom: 18px;
+    border-bottom: 1px solid var(--line);
+}
+
+.admin-tool-head p {
+    margin: 0 0 6px;
+    color: var(--green);
+    font-size: 12px;
+    font-weight: 900;
+    letter-spacing: .14em;
+}
+
+.admin-tool-head h1 {
+    margin: 0;
+}
+
+.admin-tool-head span {
+    display: block;
+    margin-top: 8px;
+    color: #667085;
+    line-height: 1.6;
+}
+
+.admin-tool-primary {
+    white-space: nowrap;
+}
+
+.admin-hall-activity-list {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 14px;
+}
+
+.admin-hall-activity-card {
+    display: grid;
+    gap: 12px;
+    padding: 18px;
+    background: #fff;
+    border: 1px solid var(--line);
+    border-top: 4px solid #98a2b3;
+    border-radius: 4px;
+}
+
+.admin-hall-activity-card.blue {
+    border-top-color: #2f6fed;
+}
+
+.admin-hall-activity-card.gold {
+    border-top-color: #c59a3d;
+}
+
+.admin-hall-activity-card.green {
+    border-top-color: var(--green);
+}
+
+.admin-hall-activity-card-head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+}
+
+.admin-hall-activity-card-head > span {
+    display: inline-flex;
+    width: fit-content;
+    padding: 5px 9px;
+    color: #344054;
+    background: #f2f4f7;
+    border-radius: 999px;
+    font-size: 12px;
+    font-weight: 900;
+}
+
+.admin-hall-activity-card-head > div {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.admin-hall-activity-card h2 {
+    margin: 0;
+    color: #111827;
+    font-size: 19px;
+}
+
+.admin-hall-activity-card p {
+    margin: 0;
+    color: #344054;
+    line-height: 1.65;
+}
+
+.admin-hall-activity-card dl {
+    display: grid;
+    gap: 8px;
+    margin: 0;
+}
+
+.admin-hall-activity-card dl div {
+    display: grid;
+    gap: 4px;
+    padding: 10px 12px;
+    background: #f8fafc;
+    border: 1px solid #edf0f4;
+    border-radius: 4px;
+}
+
+.admin-hall-activity-card dt {
+    color: #667085;
+    font-size: 12px;
+    font-weight: 900;
+}
+
+.admin-hall-activity-card dd {
+    margin: 0;
+    color: #1f2937;
+    line-height: 1.6;
+}
+
+.admin-edit-modal[hidden] {
+    display: none;
+}
+
+.admin-edit-modal {
+    position: fixed;
+    inset: 0;
+    z-index: 80;
+    display: grid;
+    place-items: center;
+    padding: 20px;
+    background: rgba(15, 23, 42, .46);
+}
+
+.admin-edit-dialog {
+    display: grid;
+    grid-template-rows: auto minmax(0, 1fr) auto;
+    width: min(760px, 100%);
+    max-height: min(86vh, 760px);
+    overflow: hidden;
+    background: #fff;
+    border-radius: 6px;
+    box-shadow: 0 24px 80px rgba(15, 23, 42, .28);
+}
+
+.admin-edit-dialog header,
+.admin-edit-dialog footer {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    padding: 16px 18px;
+    border-bottom: 1px solid var(--line);
+}
+
+.admin-edit-dialog footer {
+    justify-content: flex-end;
+    border-top: 1px solid var(--line);
+    border-bottom: 0;
+}
+
+.admin-edit-dialog header span {
+    color: var(--green);
+    font-size: 12px;
+    font-weight: 900;
+    letter-spacing: .08em;
+}
+
+.admin-edit-dialog h2 {
+    margin: 4px 0 0;
+    color: #111827;
+    font-size: 21px;
+}
+
+.admin-edit-dialog-body {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 12px;
+    overflow: auto;
+    padding: 18px;
+}
+
+.admin-edit-dialog-body label {
+    display: grid;
+    gap: 6px;
+    color: #344054;
+    font-size: 13px;
+    font-weight: 900;
+}
+
+.admin-edit-dialog-body .wide {
+    grid-column: 1 / -1;
+}
+
+.admin-edit-dialog-body textarea {
+    resize: vertical;
+}
+
+@media (max-width: 860px) {
+    .admin-tool-head {
+        display: grid;
+        align-items: start;
+    }
+
+    .admin-tool-primary {
+        width: fit-content;
+    }
+
+    .admin-hall-activity-list,
+    .admin-edit-dialog-body {
+        grid-template-columns: 1fr;
+    }
+}
+
+@media (max-width: 560px) {
+    .admin-edit-modal {
+        padding: 10px;
+    }
+
+    .admin-edit-dialog {
+        max-height: 92vh;
+    }
+
+    .admin-hall-activity-card {
+        padding: 15px;
+    }
+}

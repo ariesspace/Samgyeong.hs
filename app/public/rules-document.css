@@ -141,6 +141,41 @@
     content: none;
 }
 
+.school-rule-chapter ol.school-rule-manual-list {
+    list-style: none;
+}
+
+.school-rule-chapter ol.school-rule-manual-list > li {
+    display: flex;
+    gap: 7px;
+    padding-left: 0;
+}
+
+.school-rule-chapter ol.school-rule-manual-list > li::before {
+    content: none;
+}
+
+.school-rule-chapter ol.school-rule-manual-list > li > span {
+    flex: 0 0 auto;
+}
+
+.school-rule-chapter ol.attendance-time-list > li {
+    display: grid;
+    grid-template-columns: 42px 120px;
+    gap: 10px;
+    align-items: baseline;
+}
+
+.school-rule-chapter ol.attendance-time-list > li > span {
+    font-weight: 800;
+}
+
+.school-rule-chapter ol.attendance-time-list > li > time {
+    color: #344054;
+    font-variant-numeric: tabular-nums;
+    white-space: nowrap;
+}
+
 .school-rule-chapter ul {
     padding-left: 22px;
 }

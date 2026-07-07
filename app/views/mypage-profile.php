@@ -26,7 +26,7 @@
             <input type="hidden" name="csrf" value="<?= e(csrf_token()) ?>">
             <div class="profile-photo-area">
                 <div class="profile-photo-frame hall-photo-preview">
-                    <img src="<?= !empty($profile['photo_path']) ? '/uploads/' . e($profile['photo_path']) : '/assets/samgyeong-emblem.png' ?>" alt="" onerror="this.src='/assets/samgyeong-emblem.png'">
+                    <img src="<?= !empty($profile['photo_path']) ? '/uploads/' . e($profile['photo_path']) : '/assets/samgyeong-emblem2.png?v=2026070637' ?>" alt="" onerror="this.src='/assets/samgyeong-emblem2.png?v=2026070637'">
                 </div>
                 <label class="profile-photo-button" title="사진 변경">
                     <span aria-hidden="true">▣</span>

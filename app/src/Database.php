@@ -193,6 +193,15 @@ final class Database
                 FOREIGN KEY(item_id) REFERENCES mall_items(id),
                 FOREIGN KEY(used_by) REFERENCES users(id)
             );
+
+            CREATE TABLE IF NOT EXISTS meal_entries (
+                meal_date TEXT PRIMARY KEY,
+                lunch_text TEXT NOT NULL DEFAULT '',
+                dinner_text TEXT NOT NULL DEFAULT '',
+                updated_by INTEGER,
+                updated_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP,
+                FOREIGN KEY(updated_by) REFERENCES users(id)
+            );
         ");
 
         $count = (int) $pdo->query('SELECT COUNT(*) FROM users')->fetchColumn();

@@ -77,12 +77,12 @@
             <article>
                 <h3>제8조(출석 제출 양식 및 시간대)</h3>
                 <p>출석 인증 댓글은 <strong>[(소속 관 이름) O학년 OOO, (출석 시간대) 출석합니다.]</strong> 의 양식을 반드시 갖추어야 하며, 시간대 기준은 다음 각 호와 같다.</p>
-                <ol>
-                    <li>새벽: 00:00 ~ 04:59</li>
-                    <li>오전: 05:00 ~ 10:59</li>
-                    <li>점심: 11:00 ~ 14:59</li>
-                    <li>오후: 15:00 ~ 17:59</li>
-                    <li>저녁: 18:00 ~ 22:59</li>
+                <ol class="attendance-time-list">
+                    <li><span>새벽</span><time>00:00 ~ 04:59</time></li>
+                    <li><span>오전</span><time>05:00 ~ 10:59</time></li>
+                    <li><span>점심</span><time>11:00 ~ 14:59</time></li>
+                    <li><span>오후</span><time>15:00 ~ 17:59</time></li>
+                    <li><span>저녁</span><time>18:00 ~ 22:59</time></li>
                 </ol>
             </article>
             <article>
@@ -96,9 +96,9 @@
             <article>
                 <h3>제10조(월간 시험 및 관 이동)</h3>
                 <p>본교 재학생은 매월 소속 관(기숙사)이 변경되기 전, 학업 및 소양 점검을 위해 월 1회 의무적으로 시험을 치러야 한다.</p>
-                <ol>
-                    <li>시험 주관: 해당 시험 자료는 학생의 직속 선배가 직접 제작하여 후배를 대상으로 실시한다.</li>
-                    <li>결과 보고: 시험이 종료된 후, 직속 선배는 그 결과를 각 관의 '관장'에게 보고하여야 한다.</li>
+                <ol class="school-rule-manual-list">
+                    <li><span aria-hidden="true">①</span>시험 주관: 해당 시험 자료는 학생의 직속 선배가 직접 제작하여 후배를 대상으로 실시한다.</li>
+                    <li><span aria-hidden="true">②</span>결과 보고: 시험이 종료된 후, 직속 선배는 그 결과를 각 관의 '관장'에게 보고하여야 한다.</li>
                 </ol>
             </article>
         </section>

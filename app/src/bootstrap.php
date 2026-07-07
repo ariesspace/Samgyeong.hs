@@ -264,7 +264,7 @@ function nav_groups(): array
             ],
             ['label' => '상벌점 기준 관리', 'href' => '/admin/point-rules'],
             ['label' => '관별 자치활동 관리', 'href' => '/admin/hall-activities'],
-            ['label' => '상벌점 초기화', 'href' => '/admin/points/reset'],
+            ['label' => '상벌점 히스토리', 'href' => '/admin/points/reset'],
             ['label' => '삼경몰 관리', 'href' => '/admin/mall'],
         ];
         if (is_superadmin_account()) {

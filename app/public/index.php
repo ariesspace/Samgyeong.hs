@@ -236,6 +236,58 @@ function meal_calendar_data(string $month): array
     return $cells;
 }
 
+function meal_items_from_text(?string $text): array
+{
+    $lines = preg_split('/\R/u', trim((string) $text)) ?: [];
+    $items = [];
+    foreach ($lines as $line) {
+        $line = trim($line);
+        if ($line !== '') {
+            $items[] = $line;
+        }
+    }
+
+    return $items;
+}
+
+function meal_saved_entries(PDO $db, string $month): array
+{
+    $stmt = $db->prepare("
+        SELECT meal_date, lunch_text, dinner_text
+        FROM meal_entries
+        WHERE meal_date LIKE ?
+        ORDER BY meal_date
+    ");
+    $stmt->execute([$month . '-%']);
+
+    $entries = [];
+    foreach ($stmt->fetchAll() as $row) {
+        $entries[$row['meal_date']] = [
+            'lunch' => meal_items_from_text($row['lunch_text'] ?? ''),
+            'dinner' => meal_items_from_text($row['dinner_text'] ?? ''),
+            'lunch_text' => (string) ($row['lunch_text'] ?? ''),
+            'dinner_text' => (string) ($row['dinner_text'] ?? ''),
+        ];
+    }
+
+    return $entries;
+}
+
+function meal_text_from_items(array $items): string
+{
+    return implode("\n", array_map('strval', $items));
+}
+
+function meal_with_text(array $meal): array
+{
+    return [
+        'lunch' => $meal['lunch'] ?? [],
+        'dinner' => $meal['dinner'] ?? [],
+        'lunch_text' => $meal['lunch_text'] ?? meal_text_from_items($meal['lunch'] ?? []),
+        'dinner_text' => $meal['dinner_text'] ?? meal_text_from_items($meal['dinner'] ?? []),
+    ];
+}
+
 if (str_starts_with($path, '/api/')) {
     require_once __DIR__ . '/../src/Api.php';
     samgyeong_api_handle_request($db, $path, $method);
@@ -358,7 +410,7 @@ $routes = [
             'activities' => $activities,
         ]);
     },
-    '/meal' => function () {
+    '/meal' => function () use ($auth, $db) {
         $today = date('Y-m-d');
         $dateParam = $_GET['date'] ?? '';
         $monthParam = $_GET['month'] ?? '';
@@ -370,6 +422,11 @@ $routes = [
         }
 
         $meals = meal_samples();
+        $savedMeals = meal_saved_entries($db, $month);
+        foreach ($savedMeals as $date => $meal) {
+            $meals[$date] = $meal;
+        }
+        $selectedMeal = meal_with_text($meals[$selectedDate] ?? ['lunch' => [], 'dinner' => []]);
 
         return view('meal', [
             'title' => '식단표',
@@ -378,7 +435,9 @@ $routes = [
             'today' => $today,
             'calendarCells' => meal_calendar_data($month),
             'meals' => $meals,
-            'selectedMeal' => $meals[$selectedDate] ?? ['lunch' => [], 'dinner' => []],
+            'selectedMeal' => $selectedMeal,
+            'canManageMeal' => $auth->hasRole(['admin']),
+            'editMeal' => ($_GET['edit'] ?? '') === '1',
             'prevMonth' => date('Y-m', strtotime($month . '-01 -1 month')),
             'nextMonth' => date('Y-m', strtotime($month . '-01 +1 month')),
         ]);
@@ -579,13 +638,19 @@ if ($path === '/samgyeong-mall/checkout' && $method === 'POST') {
 if ($path === '/admin/points/reset') {
     $auth->requireRole(['admin']);
     $resetAt = current_point_reset_at($db);
-    $activeUsers = $db->query("SELECT COUNT(*) FROM users WHERE role IN ('student', 'council')")->fetchColumn();
-    $recordCount = $db->query('SELECT COUNT(*) FROM point_records')->fetchColumn();
+    $records = $db->query('
+        SELECT point_records.*, target.display_name AS target_name, target.username AS target_username,
+               target.hall_key AS target_hall_key, target.year AS target_year,
+               issuer.display_name AS issuer_name, issuer.username AS issuer_username
+        FROM point_records
+        JOIN users AS target ON target.id = point_records.user_id
+        LEFT JOIN users AS issuer ON issuer.id = point_records.issuer_id
+        ORDER BY point_records.issued_at DESC, point_records.id DESC
+    ')->fetchAll();
     echo view('admin-points-reset', [
-        'title' => '상벌점 초기화',
+        'title' => '상벌점 전체 히스토리',
         'resetAt' => $resetAt,
-        'activeUsers' => (int) $activeUsers,
-        'recordCount' => (int) $recordCount,
+        'records' => $records,
         'saved' => ($_GET['saved'] ?? '') === '1',
     ]);
     exit;
@@ -822,6 +887,12 @@ if ($path === '/admin/users/delete' && $method === 'POST') {
         delete_upload($user['photo_path'] ?? null);
 
         $stmt = $db->prepare('DELETE FROM hall_members WHERE user_id = ?');
+        $stmt->execute([$userId]);
+
+        $stmt = $db->prepare('DELETE FROM point_records WHERE user_id = ?');
+        $stmt->execute([$userId]);
+
+        $stmt = $db->prepare('DELETE FROM mall_orders WHERE user_id = ?');
         $stmt->execute([$userId]);
 
         if ($user && trim((string) $user['display_name']) !== '' && ($user['hall_key'] ?? '') !== '' && (int) ($user['year'] ?? 0) > 0) {
@@ -1932,6 +2003,35 @@ if ($path === '/calendar/events/delete' && $method === 'POST') {
     }
 
     redirect('/calendar?month=' . $month);
+}
+
+if ($path === '/meal/save' && $method === 'POST') {
+    $auth->requireRole(['admin']);
+    $mealDate = $_POST['meal_date'] ?? '';
+    if (!preg_match('/^\d{4}-\d{2}-\d{2}$/', $mealDate)) {
+        redirect('/meal');
+    }
+
+    $lunchText = meal_text_from_items(meal_items_from_text($_POST['lunch_text'] ?? ''));
+    $dinnerText = meal_text_from_items(meal_items_from_text($_POST['dinner_text'] ?? ''));
+
+    if ($lunchText === '' && $dinnerText === '') {
+        $stmt = $db->prepare('DELETE FROM meal_entries WHERE meal_date = ?');
+        $stmt->execute([$mealDate]);
+    } else {
+        $stmt = $db->prepare('
+            INSERT INTO meal_entries (meal_date, lunch_text, dinner_text, updated_by, updated_at)
+            VALUES (?, ?, ?, ?, CURRENT_TIMESTAMP)
+            ON CONFLICT(meal_date) DO UPDATE SET
+                lunch_text = excluded.lunch_text,
+                dinner_text = excluded.dinner_text,
+                updated_by = excluded.updated_by,
+                updated_at = CURRENT_TIMESTAMP
+        ');
+        $stmt->execute([$mealDate, $lunchText, $dinnerText, $auth->user()['id']]);
+    }
+
+    redirect('/meal?month=' . substr($mealDate, 0, 7) . '&date=' . $mealDate);
 }
 
 if (preg_match('#^/board/([a-z-]+)$#', $path, $matches)) {

@@ -26,7 +26,7 @@
             <input type="hidden" name="user_id" value="<?= e((string) $account['id']) ?>">
 
             <div class="account-photo-edit">
-                <img src="<?= !empty($account['photo_path']) ? '/uploads/' . e($account['photo_path']) : '/assets/samgyeong-emblem.png' ?>" alt="" onerror="this.src='/assets/samgyeong-emblem.png'">
+                <img src="<?= !empty($account['photo_path']) ? '/uploads/' . e($account['photo_path']) : '/assets/samgyeong-emblem2.png?v=2026070637' ?>" alt="" onerror="this.src='/assets/samgyeong-emblem2.png?v=2026070637'">
                 <label>
                     사진 변경
                     <input type="file" name="photo" accept="image/*">
