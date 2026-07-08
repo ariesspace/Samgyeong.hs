@@ -130,7 +130,8 @@
         $passwordNoticeUser = $_SESSION['user'] ?? null;
         $showPasswordNotice = $passwordNoticeUser
             && (int) ($passwordNoticeUser['must_change_password'] ?? 0) === 1
-            && ($passwordNoticeUser['role'] ?? '') !== 'guest';
+            && ($passwordNoticeUser['role'] ?? '') !== 'guest'
+            && !str_starts_with($requestPath, '/mypage');
     ?>
     <?php if ($showPasswordNotice): ?>
         <div class="first-password-modal" data-first-password-modal data-user-id="<?= e((string) $passwordNoticeUser['id']) ?>">
@@ -142,7 +143,7 @@
                     안전한 이용을 위해 마이페이지에서 본인만 아는 비밀번호로 변경해 주세요.
                 </p>
                 <div class="first-password-actions">
-                    <a class="button" href="/mypage">마이페이지로 이동</a>
+                    <a class="button" href="/mypage" data-first-password-go>마이페이지로 이동</a>
                     <button type="button" class="ghost-button" data-first-password-close>닫기</button>
                 </div>
             </div>
@@ -157,6 +158,10 @@
                 return;
             }
             modal.querySelector('[data-first-password-close]')?.addEventListener('click', () => {
+                sessionStorage.setItem(key, 'closed');
+                modal.hidden = true;
+            });
+            modal.querySelector('[data-first-password-go]')?.addEventListener('click', () => {
                 sessionStorage.setItem(key, 'closed');
                 modal.hidden = true;
             });
