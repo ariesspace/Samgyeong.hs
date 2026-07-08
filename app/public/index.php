@@ -1315,10 +1315,18 @@ if ($path === '/mypage/photo' && $method === 'POST') {
 
 if ($path === '/mypage/password' && $method === 'POST') {
     require_mypage_access($auth);
+    $currentPassword = (string) ($_POST['current_password'] ?? '');
     $password = (string) ($_POST['password'] ?? '');
     $confirm = (string) ($_POST['password_confirm'] ?? '');
     if ($password === '' || $password !== $confirm) {
         redirect('/mypage?error=password');
+    }
+
+    $stmt = $db->prepare('SELECT password_hash FROM users WHERE id = ?');
+    $stmt->execute([$auth->user()['id']]);
+    $currentHash = (string) $stmt->fetchColumn();
+    if ($currentHash === '' || !password_verify($currentPassword, $currentHash)) {
+        redirect('/mypage?error=current_password');
     }
 
     $stmt = $db->prepare('UPDATE users SET password_hash = ?, must_change_password = 0 WHERE id = ?');

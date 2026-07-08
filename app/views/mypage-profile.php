@@ -16,6 +16,8 @@
         <?php endif; ?>
         <?php if ($error === 'password'): ?>
             <div class="error">새 비밀번호와 확인 값이 일치하지 않습니다.</div>
+        <?php elseif ($error === 'current_password'): ?>
+            <div class="error">현재 비밀번호가 일치하지 않습니다.</div>
         <?php elseif ($error === 'photo'): ?>
             <div class="error">사진을 저장하지 못했습니다. JPG, PNG, WEBP 파일로 다시 시도해 주세요.</div>
         <?php endif; ?>
@@ -73,6 +75,10 @@
         </div>
         <form method="post" action="/mypage/password" class="profile-password-form">
             <input type="hidden" name="csrf" value="<?= e(csrf_token()) ?>">
+            <label>
+                현재 비밀번호
+                <input type="password" name="current_password" required autocomplete="current-password" placeholder="현재 비밀번호 입력">
+            </label>
             <label>
                 새 비밀번호
                 <input type="password" name="password" required autocomplete="new-password" placeholder="새 비밀번호 입력">
