@@ -4,7 +4,7 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title><?= e($title ?? '삼경고') ?></title>
-    <link rel="stylesheet" href="/styles.css?v=2026070643">
+    <link rel="stylesheet" href="/styles.css?v=2026070801">
     <link rel="stylesheet" href="/meal-compact.css?v=2026070632">
     <link rel="stylesheet" href="/rules-document.css?v=2026070633">
     <link rel="stylesheet" href="/post-files.css?v=2026070538">
@@ -125,5 +125,43 @@
         <p>서울특별시 삼경구 삼경로 1 · 교무실 02-123-4567 · 행정실 02-123-4568</p>
         <p>Copyright Samgyeong Humanities High School. All Rights Reserved.</p>
     </footer>
+
+    <?php
+        $passwordNoticeUser = $_SESSION['user'] ?? null;
+        $showPasswordNotice = $passwordNoticeUser
+            && (int) ($passwordNoticeUser['must_change_password'] ?? 0) === 1
+            && ($passwordNoticeUser['role'] ?? '') !== 'guest';
+    ?>
+    <?php if ($showPasswordNotice): ?>
+        <div class="first-password-modal" data-first-password-modal data-user-id="<?= e((string) $passwordNoticeUser['id']) ?>">
+            <div class="first-password-dialog" role="dialog" aria-modal="true" aria-labelledby="first-password-title">
+                <span class="first-password-mark" aria-hidden="true">!</span>
+                <h2 id="first-password-title">새 비밀번호로 계정을 지켜 주세요</h2>
+                <p>
+                    현재 계정은 발급 또는 초기화된 임시 비밀번호 상태입니다.
+                    안전한 이용을 위해 마이페이지에서 본인만 아는 비밀번호로 변경해 주세요.
+                </p>
+                <div class="first-password-actions">
+                    <a class="button" href="/mypage">마이페이지로 이동</a>
+                    <button type="button" class="ghost-button" data-first-password-close>닫기</button>
+                </div>
+            </div>
+        </div>
+        <script>
+        (() => {
+            const modal = document.querySelector('[data-first-password-modal]');
+            if (!modal) return;
+            const key = `samgyeong:first-password-notice:${modal.dataset.userId || 'user'}`;
+            if (sessionStorage.getItem(key) === 'closed') {
+                modal.hidden = true;
+                return;
+            }
+            modal.querySelector('[data-first-password-close]')?.addEventListener('click', () => {
+                sessionStorage.setItem(key, 'closed');
+                modal.hidden = true;
+            });
+        })();
+        </script>
+    <?php endif; ?>
 </body>
 </html>

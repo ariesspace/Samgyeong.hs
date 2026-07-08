@@ -52,6 +52,7 @@ final class Auth
             'hall_key' => $user['hall_key'] ?? '',
             'year' => $user['year'] ?? 0,
             'photo_path' => $user['photo_path'] ?? '',
+            'must_change_password' => (int) ($user['must_change_password'] ?? 0),
         ];
 
         redirect('/');

@@ -773,8 +773,8 @@ if ($path === '/admin/users/create' && $method === 'POST') {
             $hallKey = '';
             $year = 0;
         }
-        $stmt = $db->prepare('INSERT OR IGNORE INTO users (username, password_hash, role, display_name, hall_key, year) VALUES (?, ?, ?, ?, ?, ?)');
-        $stmt->execute([$username, password_hash($password, PASSWORD_DEFAULT), $role, $displayName !== '' ? $displayName : $username, $hallKey, $year]);
+        $stmt = $db->prepare('INSERT OR IGNORE INTO users (username, password_hash, role, display_name, hall_key, year, must_change_password) VALUES (?, ?, ?, ?, ?, ?, ?)');
+        $stmt->execute([$username, password_hash($password, PASSWORD_DEFAULT), $role, $displayName !== '' ? $displayName : $username, $hallKey, $year, $role === 'guest' ? 0 : 1]);
         if ($stmt->rowCount() > 0) {
             sync_user_hall_member($db, (int) $db->lastInsertId());
         }
@@ -865,7 +865,7 @@ if ($path === '/admin/users/reset-password' && $method === 'POST') {
     }
 
     if ($userId > 1 && $userId !== (int) ($auth->user()['id'] ?? 0)) {
-        $stmt = $db->prepare('UPDATE users SET password_hash = ? WHERE id = ?');
+        $stmt = $db->prepare('UPDATE users SET password_hash = ?, must_change_password = 1 WHERE id = ?');
         $stmt->execute([password_hash('samgyeong1234', PASSWORD_DEFAULT), $userId]);
     }
 
@@ -1321,8 +1321,9 @@ if ($path === '/mypage/password' && $method === 'POST') {
         redirect('/mypage?error=password');
     }
 
-    $stmt = $db->prepare('UPDATE users SET password_hash = ? WHERE id = ?');
+    $stmt = $db->prepare('UPDATE users SET password_hash = ?, must_change_password = 0 WHERE id = ?');
     $stmt->execute([password_hash($password, PASSWORD_DEFAULT), $auth->user()['id']]);
+    $_SESSION['user']['must_change_password'] = 0;
     redirect('/mypage?saved=password');
 }
 

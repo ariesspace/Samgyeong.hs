@@ -31,6 +31,7 @@ final class Database
                 hall_key TEXT NOT NULL DEFAULT '',
                 year INTEGER NOT NULL DEFAULT 0,
                 photo_path TEXT,
+                must_change_password INTEGER NOT NULL DEFAULT 0,
                 created_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP
             );
 
@@ -234,6 +235,9 @@ final class Database
         }
         if (!in_array('photo_path', $userColumns, true)) {
             $pdo->exec('ALTER TABLE users ADD COLUMN photo_path TEXT');
+        }
+        if (!in_array('must_change_password', $userColumns, true)) {
+            $pdo->exec('ALTER TABLE users ADD COLUMN must_change_password INTEGER NOT NULL DEFAULT 0');
         }
         self::ensureGuestRole($pdo);
         self::ensureGuestAccount($pdo);
@@ -451,12 +455,13 @@ final class Database
                     hall_key TEXT NOT NULL DEFAULT '',
                     year INTEGER NOT NULL DEFAULT 0,
                     photo_path TEXT,
+                    must_change_password INTEGER NOT NULL DEFAULT 0,
                     created_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP
                 )
             ");
             $pdo->exec("
-                INSERT INTO users_new (id, username, password_hash, role, display_name, hall_key, year, photo_path, created_at)
-                SELECT id, username, password_hash, role, display_name, hall_key, year, photo_path, created_at
+                INSERT INTO users_new (id, username, password_hash, role, display_name, hall_key, year, photo_path, must_change_password, created_at)
+                SELECT id, username, password_hash, role, display_name, hall_key, year, photo_path, COALESCE(must_change_password, 0), created_at
                 FROM users
             ");
             $pdo->exec('DROP TABLE users');
@@ -475,13 +480,13 @@ final class Database
         $stmt = $pdo->prepare('SELECT id FROM users WHERE username = ?');
         $stmt->execute(['guest']);
         if ($stmt->fetchColumn()) {
-            $stmt = $pdo->prepare("UPDATE users SET role = 'guest', display_name = '게스트', hall_key = '', year = 0 WHERE username = 'guest'");
+            $stmt = $pdo->prepare("UPDATE users SET role = 'guest', display_name = '게스트', hall_key = '', year = 0, must_change_password = 0 WHERE username = 'guest'");
             $stmt->execute();
             return;
         }
 
-        $stmt = $pdo->prepare('INSERT INTO users (username, password_hash, role, display_name, hall_key, year) VALUES (?, ?, ?, ?, ?, ?)');
-        $stmt->execute(['guest', password_hash('guest1234', PASSWORD_DEFAULT), 'guest', '게스트', '', 0]);
+        $stmt = $pdo->prepare('INSERT INTO users (username, password_hash, role, display_name, hall_key, year, must_change_password) VALUES (?, ?, ?, ?, ?, ?, ?)');
+        $stmt->execute(['guest', password_hash('guest1234', PASSWORD_DEFAULT), 'guest', '게스트', '', 0, 0]);
     }
 
     private static function ensureGuestBoardReadPermissions(PDO $pdo): void

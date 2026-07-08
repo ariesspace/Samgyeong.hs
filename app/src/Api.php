@@ -1060,9 +1060,9 @@ $token = bin2hex(random_bytes(32));
 
         $stmt = $db->prepare("
             INSERT INTO users (
-                username, password_hash, role, display_name, hall_key, year, photo_path, is_active
+                username, password_hash, role, display_name, hall_key, year, photo_path, is_active, must_change_password
             )
-            VALUES (?, ?, ?, ?, ?, ?, ?, ?)
+            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
         ");
         $stmt->execute([
             $input['username'],
@@ -1073,6 +1073,7 @@ $token = bin2hex(random_bytes(32));
             $input['year'],
             $input['photo_path'],
             $input['is_active'],
+            1,
         ]);
 
         $id = (int) $db->lastInsertId();
@@ -1160,6 +1161,7 @@ $token = bin2hex(random_bytes(32));
                 }
                 $updates[] = 'password_hash = ?';
                 $params[] = password_hash($password, PASSWORD_DEFAULT);
+                $updates[] = 'must_change_password = 0';
             }
         }
 
