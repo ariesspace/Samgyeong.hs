@@ -335,6 +335,7 @@ $routes = [
                 SELECT id, title, tag, created_at
                 FROM posts
                 WHERE board = ?
+                  AND COALESCE(is_hidden, 0) = 0
                 ORDER BY CASE WHEN tag = '공지' THEN 0 ELSE 1 END, id DESC
                 LIMIT 3
             ");
