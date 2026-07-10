@@ -27,7 +27,7 @@
     <?php if (!empty($watermarkUser)): ?>
         <?php
             $watermarkId = (string) (($watermarkUser['username'] ?? '') ?: ($watermarkUser['id'] ?? 'user'));
-            $watermarkText = 'SAMGYEONG · ' . $watermarkId;
+            $watermarkText = $watermarkId;
         ?>
         <div class="user-watermark" aria-hidden="true">
             <?php for ($i = 0; $i < 24; $i++): ?>

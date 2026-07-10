@@ -1182,10 +1182,10 @@ body.copy-protected .editor-toolbar {
     z-index: 2147483000;
     display: grid;
     grid-template-columns: repeat(4, minmax(180px, 1fr));
-    gap: 58px 70px;
+    gap: 54px 68px;
     align-content: center;
     pointer-events: none;
-    opacity: .085;
+    opacity: .13;
     overflow: hidden;
     transform: rotate(-24deg);
     mix-blend-mode: multiply;
@@ -1193,9 +1193,9 @@ body.copy-protected .editor-toolbar {
 
 .user-watermark span {
     color: #1a4331;
-    font-size: 13px;
+    font-size: 18px;
     font-weight: 800;
-    letter-spacing: .14em;
+    letter-spacing: .08em;
     white-space: nowrap;
     text-align: center;
 }
@@ -1204,12 +1204,12 @@ body.copy-protected .editor-toolbar {
     .user-watermark {
         grid-template-columns: repeat(2, minmax(170px, 1fr));
         gap: 52px 42px;
-        opacity: .075;
+        opacity: .12;
     }
 
     .user-watermark span {
-        font-size: 11px;
-        letter-spacing: .1em;
+        font-size: 15px;
+        letter-spacing: .06em;
     }
 }
 
