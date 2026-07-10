@@ -1176,6 +1176,43 @@ body.copy-protected .editor-toolbar {
     -webkit-touch-callout: default;
 }
 
+.user-watermark {
+    position: fixed;
+    inset: -12vh -12vw;
+    z-index: 2147483000;
+    display: grid;
+    grid-template-columns: repeat(4, minmax(180px, 1fr));
+    gap: 58px 70px;
+    align-content: center;
+    pointer-events: none;
+    opacity: .085;
+    overflow: hidden;
+    transform: rotate(-24deg);
+    mix-blend-mode: multiply;
+}
+
+.user-watermark span {
+    color: #1a4331;
+    font-size: 13px;
+    font-weight: 800;
+    letter-spacing: .14em;
+    white-space: nowrap;
+    text-align: center;
+}
+
+@media (max-width: 700px) {
+    .user-watermark {
+        grid-template-columns: repeat(2, minmax(170px, 1fr));
+        gap: 52px 42px;
+        opacity: .075;
+    }
+
+    .user-watermark span {
+        font-size: 11px;
+        letter-spacing: .1em;
+    }
+}
+
 a {
     color: inherit;
 }

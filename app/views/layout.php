@@ -4,7 +4,7 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title><?= e($title ?? '삼경고') ?></title>
-    <link rel="stylesheet" href="/styles.css?v=2026071001">
+    <link rel="stylesheet" href="/styles.css?v=2026071002">
     <link rel="stylesheet" href="/meal-compact.css?v=2026070632">
     <link rel="stylesheet" href="/rules-document.css?v=2026070633">
     <link rel="stylesheet" href="/post-files.css?v=2026070538">
@@ -22,7 +22,19 @@
         $isHome = $requestPath === '/';
         $isStandaloneShop = str_starts_with($requestPath, '/samgyeong-mall');
         $activeGroup = $isHome ? '' : active_group($requestPath);
+        $watermarkUser = $_SESSION['user'] ?? null;
     ?>
+    <?php if (!empty($watermarkUser)): ?>
+        <?php
+            $watermarkId = (string) (($watermarkUser['username'] ?? '') ?: ($watermarkUser['id'] ?? 'user'));
+            $watermarkText = 'SAMGYEONG · ' . $watermarkId;
+        ?>
+        <div class="user-watermark" aria-hidden="true">
+            <?php for ($i = 0; $i < 24; $i++): ?>
+                <span><?= e($watermarkText) ?></span>
+            <?php endfor; ?>
+        </div>
+    <?php endif; ?>
     <div class="utility-bar">
         <span>삼경인문고등학교 공식 사이트</span>
         <div class="utility-actions">
