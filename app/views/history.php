@@ -10,6 +10,13 @@
     <table class="history-simple-table">
         <tbody>
             <tr>
+                <th scope="row">2026.07.13</th>
+                <td>
+                    <strong>삼경인문고등학교 공식 오픈</strong>
+                    <span>경천, 경인, 경물의 교육 정신을 바탕으로 학교 홈페이지와 주요 학생 운영 기능 공식 개방</span>
+                </td>
+            </tr>
+            <tr>
                 <th scope="row">2026.07.06</th>
                 <td>
                     <strong>학교 운영 시스템 고도화</strong>
