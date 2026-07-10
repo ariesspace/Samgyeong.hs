@@ -1185,7 +1185,7 @@ body.copy-protected .editor-toolbar {
     gap: 54px 68px;
     align-content: center;
     pointer-events: none;
-    opacity: .13;
+    opacity: .075;
     overflow: hidden;
     transform: rotate(-24deg);
     mix-blend-mode: multiply;
@@ -1204,7 +1204,7 @@ body.copy-protected .editor-toolbar {
     .user-watermark {
         grid-template-columns: repeat(2, minmax(170px, 1fr));
         gap: 52px 42px;
-        opacity: .12;
+        opacity: .07;
     }
 
     .user-watermark span {
