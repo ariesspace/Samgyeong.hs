@@ -18,7 +18,7 @@
         </div>
 
         <p class="admissions-note">
-            각 관별, 학년별 소수 정예로 선발하며 지원 현황과 전형 결과에 따라 최종 인원은 조정될 수 있습니다.
+            각 관별, 학년별 2~3명 규모로 선발하며 지원 현황과 전형 결과에 따라 최종 인원은 조정될 수 있습니다.
         </p>
 
         <div class="admissions-hall-grid">
@@ -29,15 +29,15 @@
                     <dl>
                         <div>
                             <dt>1학년</dt>
-                            <dd>2명</dd>
+                            <dd>2~3명</dd>
                         </div>
                         <div>
                             <dt>2학년</dt>
-                            <dd>2명</dd>
+                            <dd>2~3명</dd>
                         </div>
                         <div>
                             <dt>3학년</dt>
-                            <dd>2명</dd>
+                            <dd>2~3명</dd>
                         </div>
                     </dl>
                 </article>
@@ -46,7 +46,7 @@
 
         <div class="admissions-total">
             <span>총 모집 인원</span>
-            <strong>최대 18명</strong>
+            <strong>최대 24명</strong>
         </div>
     </section>
 
@@ -93,8 +93,7 @@
                     <span>기본 전형</span>
                 </div>
                 <ol>
-                    <li>인성 테스트</li>
-                    <li>기본 예절 면접</li>
+                    <li>기초소양평가</li>
                     <li>최종 안내</li>
                 </ol>
             </article>
@@ -104,9 +103,9 @@
                     <span>심화 전형</span>
                 </div>
                 <ol>
-                    <li>인성 테스트</li>
-                    <li>인성 면접</li>
-                    <li>삼경 심층 면접</li>
+                    <li>기초소양평가</li>
+                    <li>싱크테스트</li>
+                    <li>최종 안내</li>
                 </ol>
             </article>
             <article>
@@ -115,9 +114,9 @@
                     <span>종합 전형</span>
                 </div>
                 <ol>
-                    <li>인성 테스트</li>
-                    <li>인성 면접</li>
-                    <li>1, 2차 심층 면접</li>
+                    <li>기초소양평가</li>
+                    <li>싱크테스트</li>
+                    <li>최종 안내</li>
                 </ol>
             </article>
         </div>
