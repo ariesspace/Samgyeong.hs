@@ -4,7 +4,7 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title><?= e($title ?? '삼경고') ?></title>
-    <link rel="stylesheet" href="/styles.css?v=2026070801">
+    <link rel="stylesheet" href="/styles.css?v=2026071001">
     <link rel="stylesheet" href="/meal-compact.css?v=2026070632">
     <link rel="stylesheet" href="/rules-document.css?v=2026070633">
     <link rel="stylesheet" href="/post-files.css?v=2026070538">
@@ -168,5 +168,35 @@
         })();
         </script>
     <?php endif; ?>
+    <script>
+    (() => {
+        document.body.classList.add('copy-protected');
+
+        const isEditableTarget = (target) => Boolean(target?.closest?.(
+            'input, textarea, select, button, dialog, [contenteditable="true"], .rich-editor, .editor-toolbar'
+        ));
+
+        const preventOutsideEditable = (event) => {
+            if (!isEditableTarget(event.target)) {
+                event.preventDefault();
+            }
+        };
+
+        ['contextmenu', 'copy', 'cut', 'dragstart', 'selectstart'].forEach((eventName) => {
+            document.addEventListener(eventName, preventOutsideEditable);
+        });
+
+        document.addEventListener('keydown', (event) => {
+            if (isEditableTarget(event.target)) return;
+
+            const key = event.key.toLowerCase();
+            const isBlockedShortcut = (event.ctrlKey || event.metaKey) && ['c', 'x', 's', 'u', 'p'].includes(key);
+
+            if (isBlockedShortcut) {
+                event.preventDefault();
+            }
+        });
+    })();
+    </script>
 </body>
 </html>
