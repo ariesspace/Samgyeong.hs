@@ -34,9 +34,9 @@ final class Board
             'write_roles' => ['council', 'admin'],
         ],
         'basic-literacy' => [
-            'name' => '입학생 기초 소양 게시판',
-            'badge' => '제출',
-            'tags' => ['제출', '공지', '안내', '검토완료'],
+            'name' => '입학생 관리',
+            'badge' => '소양',
+            'tags' => ['소양', '교칙', '공지', '안내'],
             'read_roles' => ['student', 'council', 'admin'],
             'write_roles' => ['council', 'admin'],
         ],

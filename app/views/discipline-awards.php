@@ -9,10 +9,6 @@ $showRule = $activeTab === 'rule';
         <div class="discipline-policy-mark" aria-hidden="true">律</div>
         <p class="eyebrow">Samgyeong Discipline & Rewards</p>
         <h1>징계 및 포상</h1>
-        <p>
-            상벌점 기록을 바탕으로 적용되는 징계 기준과 상점 혜택을 한곳에 정리했습니다.
-            기준은 처벌보다 회복과 책임을 분명히 하기 위한 약속입니다.
-        </p>
     </header>
 
     <nav class="discipline-policy-tabs" aria-label="징계 및 포상 바로가기">
@@ -40,6 +36,34 @@ $showRule = $activeTab === 'rule';
                     </div>
                     <em>Penalties</em>
                 </div>
+
+                <details class="discipline-term-note">
+                    <summary>징계 내용 설명 보기</summary>
+                    <div>
+                        <dl>
+                            <div>
+                                <dt>삼경 정심례</dt>
+                                <dd>(차렷) (뒷짐) (엎드려) (내려가) (유지) (올라와) (일어서) (차렷) (뒷짐)</dd>
+                            </div>
+                            <div>
+                                <dt>삼경계율성찰</dt>
+                                <dd>(교복 정돈) (차렷) (공수) (무릎꿇어) (정좌) (두 눈 감아) (경천 정신 묵독) (경인 정신 묵독) (경물 정신 묵독) (오늘의 행동 성찰 내용 정리) (성찰 낭독) 성찰 내용 낭독-매회 다른 내용으로 20자 내외 낭독 (일어나) (열중쉬어) (정면 응시) 숫자</dd>
+                            </div>
+                            <div>
+                                <dt>참회록 작성</dt>
+                                <dd>위반 사유와 개선 약속을 글로 정리하여 제출하는 반성 기록입니다.</dd>
+                            </div>
+                            <div>
+                                <dt>꼬리표 부착</dt>
+                                <dd>인사, 관등, 시정을 제외하고 모든 말의 끝에 지정된 문장을 작성하여야 합니다.</dd>
+                            </div>
+                            <div>
+                                <dt>예절 교육기간</dt>
+                                <dd>현활 상태를 표시하여야 하며, 현활 상태인 경우 선배의 부름에 5분 내로 대답하지 않으면 벌점이 부과됩니다. 예절 교육기간에는 하루 일과가 끝난 후 교육일지를 제출해야 합니다.</dd>
+                            </div>
+                        </dl>
+                    </div>
+                </details>
 
                 <div class="discipline-rule-grid">
                     <?php foreach ($sections as $section): ?>

@@ -24,7 +24,7 @@
                 <p>구매한 포상 상품은 삼경원 확인 후 실제 혜택으로 적용됩니다.</p>
             </div>
             <div class="receipt-stamp" aria-hidden="true">
-                <span>PAID</span>
+                <span>결제</span>
                 <strong>완료</strong>
             </div>
         </header>

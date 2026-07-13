@@ -6,13 +6,6 @@
     <div class="board-tools">
         <p>총 <strong><?= count($posts) ?></strong>건</p>
         <div class="board-actions">
-            <?php if (($canToggleHidden ?? false)): ?>
-                <?php if ($showHidden ?? false): ?>
-                    <a class="button secondary-button board-view-toggle" href="/board/<?= e($board['slug']) ?>">숨김 제외</a>
-                <?php else: ?>
-                    <a class="button secondary-button board-view-toggle" href="/board/<?= e($board['slug']) ?>?view=all">전체 보기</a>
-                <?php endif; ?>
-            <?php endif; ?>
             <?php if ($canWrite): ?>
                 <a class="button board-write-button" href="/board/<?= e($board['slug']) ?>/new">글쓰기</a>
             <?php endif; ?>
@@ -25,6 +18,22 @@
             </form>
         </div>
     </div>
+
+    <?php if (($board['slug'] ?? '') === 'basic-literacy'): ?>
+        <?php
+            $baseHref = '/board/' . $board['slug'];
+            $filterHref = fn (array $query = []): string => $baseHref . ($query ? '?' . http_build_query($query) : '');
+        ?>
+        <nav class="board-filter-tabs" aria-label="입학생 관리 게시글 필터">
+            <a class="<?= empty($activeTag) && empty($showHidden) ? 'active' : '' ?>" href="<?= e($filterHref()) ?>">전체</a>
+            <?php foreach (($tagFilters ?? []) as $tag): ?>
+                <a class="<?= ($activeTag ?? '') === $tag && empty($showHidden) ? 'active' : '' ?>" href="<?= e($filterHref(['tag' => $tag])) ?>"><?= e($tag) ?></a>
+            <?php endforeach; ?>
+            <?php if (($canToggleHidden ?? false)): ?>
+                <a class="hidden-tab <?= ($showHidden ?? false) ? 'active' : '' ?>" href="<?= e($filterHref(['view' => 'hidden'])) ?>">숨김 게시글 보기</a>
+            <?php endif; ?>
+        </nav>
+    <?php endif; ?>
 
     <div class="board-table-wrap">
         <table class="board-table public-board-table">
@@ -54,6 +63,15 @@
                         </td>
                         <td class="board-title-cell">
                             <?php $tag = $post['tag'] ?? $board['badge']; ?>
+                            <?php
+                                $tagClass = match ($tag) {
+                                    '공지' => 'board-badge-notice',
+                                    '소양' => 'board-badge-literacy',
+                                    '교칙' => 'board-badge-rules',
+                                    default => '',
+                                };
+                            ?>
+                            <span class="board-badge board-list-badge <?= e($tagClass) ?>"><?= e($tag) ?></span>
                             <a class="board-title-link <?= $tag === '공지' ? 'is-notice-title' : '' ?>" href="/board/<?= e($board['slug']) ?>/post/<?= e((string) $post['id']) ?>">
                                 <?= e($post['title']) ?>
                             </a>
@@ -78,7 +96,8 @@
                                     <form class="board-row-hide" method="post" action="/board/<?= e($board['slug']) ?>/post/<?= e((string) $post['id']) ?>/hide">
                                         <input type="hidden" name="csrf" value="<?= e(csrf_token()) ?>">
                                         <input type="hidden" name="hidden" value="<?= !empty($post['is_hidden']) ? '0' : '1' ?>">
-                                        <input type="hidden" name="view" value="<?= ($showHidden ?? false) ? 'all' : '' ?>">
+                                        <input type="hidden" name="view" value="<?= ($showHidden ?? false) ? 'hidden' : '' ?>">
+                                        <input type="hidden" name="tag" value="<?= e($activeTag ?? '') ?>">
                                         <button type="submit" aria-label="<?= !empty($post['is_hidden']) ? '게시글 다시 보이기' : '게시글 숨기기' ?>">
                                             <?= !empty($post['is_hidden']) ? '보이기' : '숨김' ?>
                                         </button>

@@ -17,6 +17,27 @@
                 </td>
             </tr>
             <tr>
+                <th scope="row">2026.07.12</th>
+                <td>
+                    <strong>입학생 관리 체계 정비</strong>
+                    <span>Tally 교칙 테스트 자동 접수, 입학생 관리 게시판 태그 필터와 숨김 게시글 운영 구조 정비</span>
+                </td>
+            </tr>
+            <tr>
+                <th scope="row">2026.07.11</th>
+                <td>
+                    <strong>징계 용어 설명 보강</strong>
+                    <span>징계 및 포상 안내, 상점 제출 절차, 삼경밥상 상시 제안 안내와 식단제안 톡 화면, 삼경몰 표시 정비</span>
+                </td>
+            </tr>
+            <tr>
+                <th scope="row">2026.07.10</th>
+                <td>
+                    <strong>상벌점 안내 화면 가독성 개선</strong>
+                    <span>상벌점 리스트 요약 영역, 징계 설명 안내, 모바일 기준 관리 화면을 더 간결하게 정비</span>
+                </td>
+            </tr>
+            <tr>
                 <th scope="row">2026.07.06</th>
                 <td>
                     <strong>학교 운영 시스템 고도화</strong>

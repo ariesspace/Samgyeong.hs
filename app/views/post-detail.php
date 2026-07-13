@@ -6,7 +6,15 @@
             <div>
                 <dt>분류</dt>
                 <?php $tag = $post['tag'] ?? $board['badge']; ?>
-                <dd><span class="board-badge <?= $tag === '공지' ? 'board-badge-notice' : '' ?>"><?= e($tag) ?></span></dd>
+                <?php
+                    $tagClass = match ($tag) {
+                        '공지' => 'board-badge-notice',
+                        '소양' => 'board-badge-literacy',
+                        '교칙' => 'board-badge-rules',
+                        default => '',
+                    };
+                ?>
+                <dd><span class="board-badge <?= e($tagClass) ?>"><?= e($tag) ?></span></dd>
             </div>
             <div>
                 <dt>작성자</dt>

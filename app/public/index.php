@@ -294,8 +294,12 @@ if (str_starts_with($path, '/api/')) {
 }
 
 
-if ($method === 'POST') {
+if ($method === 'POST' && !str_starts_with($path, '/webhooks/tally')) {
     verify_csrf();
+}
+
+if (($path === '/webhooks/tally' || $path === '/webhooks/tally/' || $path === '/webhooks/tally/basic-literacy') && $method === 'POST') {
+    (new TallyWebhookController($db))->handle((string) file_get_contents('php://input'));
 }
 
 if ($path === '/login' && $method === 'POST') {
@@ -324,7 +328,7 @@ if ($path === '/editor/image-upload' && $method === 'POST') {
 }
 
 $routes = [
-    '/' => function () use ($db) {
+    '/' => function () use ($auth, $db) {
         $homeBoards = [];
         foreach (Board::all($db) as $slug => $board) {
             if ($slug === 'notice') {
@@ -343,7 +347,11 @@ $routes = [
             $homeBoards[] = ['slug' => $slug] + $board + ['items' => $stmt->fetchAll()];
         }
 
-        return view('home', ['title' => '삼경고', 'boards' => $homeBoards]);
+        return view('home', [
+            'title' => '삼경고',
+            'boards' => $homeBoards,
+            'showMealBoardPopup' => (bool) $auth->user(),
+        ]);
     },
     '/about' => fn () => view('about', ['title' => '학교소개 및 교훈']),
     '/symbols' => fn () => view('symbols', ['title' => '학교 상징']),
@@ -443,6 +451,33 @@ $routes = [
             'nextMonth' => date('Y-m', strtotime($month . '-01 +1 month')),
         ]);
     },
+    '/meal-board' => function () {
+        return view('meal-board', [
+            'title' => '급식 게시판',
+        ]);
+    },
+    '/meal-suggestions' => function () use ($auth, $db) {
+        if (!$auth->user()) {
+            redirect('/login');
+        }
+
+        $stmt = $db->query("
+            SELECT meal_suggestions.*,
+                   users.display_name AS author_name,
+                   users.username AS author_username
+            FROM meal_suggestions
+            JOIN users ON users.id = meal_suggestions.user_id
+            ORDER BY meal_suggestions.id DESC
+            LIMIT 50
+        ");
+        $suggestions = array_reverse($stmt->fetchAll());
+
+        return view('meal-suggestions', [
+            'title' => '식단제안',
+            'suggestions' => $suggestions,
+            'currentUser' => $auth->user(),
+        ]);
+    },
     '/samgyeong-mall' => function () use ($auth, $db) {
         $user = $auth->user();
         if (!can_access_mall($db, $user)) {
@@ -456,6 +491,10 @@ $routes = [
             fn (array $item): array => enrich_mall_item_stock($db, $item),
             $db->query('SELECT * FROM mall_items WHERE active = 1 ORDER BY sort_order, id')->fetchAll()
         );
+        $receiptOrders = [];
+        if (($_GET['receipt'] ?? '') === '1' && $user) {
+            $receiptOrders = mall_receipt_orders($db, (int) $user['id'], $_SESSION['last_mall_order_ids'] ?? []);
+        }
 
         return view('mall', [
             'title' => '삼경몰',
@@ -464,6 +503,8 @@ $routes = [
             'points' => $user ? user_mall_available_points($db, (int) $user['id']) : [],
             'saved' => $_GET['saved'] ?? '',
             'error' => $_GET['error'] ?? '',
+            'receiptOrders' => $receiptOrders,
+            'user' => $user,
         ]);
     },
     '/samgyeong-mall/receipt' => function () use ($auth, $db) {
@@ -516,6 +557,49 @@ $routes = [
 if (isset($routes[$path])) {
     echo $routes[$path]();
     exit;
+}
+
+if ($path === '/meal-suggestions/store' && $method === 'POST') {
+    $user = $auth->user();
+    if (!$user) {
+        redirect('/login');
+    }
+
+    $topic = trim((string) ($_POST['topic'] ?? ''));
+    $lunchText = trim((string) ($_POST['lunch_text'] ?? ''));
+    $dinnerText = trim((string) ($_POST['dinner_text'] ?? ''));
+    $note = trim((string) ($_POST['note'] ?? ''));
+
+    if ($topic !== '' && $lunchText !== '' && $dinnerText !== '' && $note !== '') {
+        $stmt = $db->prepare('
+            INSERT INTO meal_suggestions (user_id, topic, lunch_text, dinner_text, note)
+            VALUES (?, ?, ?, ?, ?)
+        ');
+        $stmt->execute([(int) $user['id'], $topic, $lunchText, $dinnerText, $note]);
+    }
+
+    redirect('/meal-suggestions#chat-board');
+}
+
+if ($path === '/meal-suggestions/delete' && $method === 'POST') {
+    $user = $auth->user();
+    if (!$user) {
+        redirect('/login');
+    }
+
+    $id = (int) ($_POST['id'] ?? 0);
+    if ($id > 0) {
+        $stmt = $db->prepare('SELECT user_id FROM meal_suggestions WHERE id = ?');
+        $stmt->execute([$id]);
+        $ownerId = (int) ($stmt->fetchColumn() ?: 0);
+        $canDelete = $ownerId === (int) $user['id'] || ($user['role'] ?? '') === 'admin';
+        if ($canDelete) {
+            $delete = $db->prepare('DELETE FROM meal_suggestions WHERE id = ?');
+            $delete->execute([$id]);
+        }
+    }
+
+    redirect('/meal-suggestions#chat-board');
 }
 
 if ($path === '/samgyeong-mall/cart/add' && $method === 'POST') {
@@ -629,7 +713,7 @@ if ($path === '/samgyeong-mall/checkout' && $method === 'POST') {
         $db->commit();
         $_SESSION['last_mall_order_ids'] = $orderIds;
         save_mall_cart([]);
-        redirect('/samgyeong-mall/receipt');
+        redirect('/samgyeong-mall?receipt=1');
     } catch (Throwable $exception) {
         $db->rollBack();
         redirect('/samgyeong-mall?error=checkout');
@@ -2042,10 +2126,6 @@ if ($path === '/meal/save' && $method === 'POST') {
     }
 
     redirect('/meal?month=' . substr($mealDate, 0, 7) . '&date=' . $mealDate);
-}
-
-if ($path === '/webhooks/tally/basic-literacy' && $method === 'POST') {
-    (new TallyWebhookController($db))->handle((string) file_get_contents('php://input'));
 }
 
 if (preg_match('#^/board/([a-z-]+)$#', $path, $matches)) {

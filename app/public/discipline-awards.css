@@ -217,6 +217,85 @@
     gap: 12px;
 }
 
+.discipline-term-note {
+    overflow: hidden;
+    background: #fff;
+    border: 1px solid #f0d5d2;
+    border-radius: 4px;
+}
+
+.discipline-term-note summary {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    min-height: 42px;
+    padding: 10px 14px;
+    color: #b42318;
+    background: #fff8f7;
+    cursor: pointer;
+    font-size: 14px;
+    font-weight: 900;
+    list-style: none;
+}
+
+.discipline-term-note summary::-webkit-details-marker {
+    display: none;
+}
+
+.discipline-term-note summary::after {
+    content: "+";
+    font-size: 18px;
+    line-height: 1;
+}
+
+.discipline-term-note[open] summary::after {
+    content: "-";
+}
+
+.discipline-term-note > div {
+    display: grid;
+    gap: 12px;
+    padding: 14px;
+    border-top: 1px solid #f5e5e3;
+}
+
+.discipline-term-note p {
+    margin: 0;
+    color: #475467;
+    font-size: 14px;
+    line-height: 1.65;
+    word-break: keep-all;
+}
+
+.discipline-term-note dl {
+    display: grid;
+    gap: 8px;
+    margin: 0;
+}
+
+.discipline-term-note dl > div {
+    display: grid;
+    grid-template-columns: 120px minmax(0, 1fr);
+    gap: 10px;
+    padding: 10px 0 0;
+    border-top: 1px solid #eef2f6;
+}
+
+.discipline-term-note dt {
+    color: #912018;
+    font-size: 13px;
+    font-weight: 900;
+}
+
+.discipline-term-note dd {
+    margin: 0;
+    color: #475467;
+    font-size: 13px;
+    line-height: 1.6;
+    word-break: keep-all;
+}
+
 .discipline-rule-block {
     overflow: hidden;
     background: #fff;
@@ -270,8 +349,8 @@
 .discipline-rule-item p {
     margin: 0;
     color: #344054;
-    font-size: 14px;
-    line-height: 1.68;
+    font-size: 13px;
+    line-height: 1.6;
     word-break: keep-all;
     overflow-wrap: anywhere;
 }
@@ -482,6 +561,38 @@
         padding: 14px 16px 10px;
     }
 
+    .discipline-term-note summary {
+        min-height: 38px;
+        padding: 8px 11px;
+        font-size: 13px;
+    }
+
+    .discipline-term-note > div {
+        gap: 10px;
+        padding: 11px;
+    }
+
+    .discipline-term-note p {
+        font-size: 13px;
+        line-height: 1.55;
+    }
+
+    .discipline-term-note dl {
+        gap: 6px;
+    }
+
+    .discipline-term-note dl > div {
+        grid-template-columns: 86px minmax(0, 1fr);
+        gap: 8px;
+        padding-top: 8px;
+    }
+
+    .discipline-term-note dt,
+    .discipline-term-note dd {
+        font-size: 12px;
+        line-height: 1.55;
+    }
+
     .discipline-rule-item {
         grid-template-columns: 58px minmax(0, 1fr);
         gap: 10px;
@@ -492,12 +603,16 @@
         font-size: 13px;
     }
 
-    .discipline-rule-item p,
     .reward-card ul,
     .reward-card p,
     .discipline-note-grid ul {
         font-size: 14px;
         line-height: 1.65;
+    }
+
+    .discipline-rule-item p {
+        font-size: 12px;
+        line-height: 1.55;
     }
 
     .reward-card,

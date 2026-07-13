@@ -1,6 +1,21 @@
 <?php
 $halls = hall_definitions();
 $activities = $activities ?? [];
+
+$renderActivitySummary = static function (string $summary): string {
+    $needle = '식단 게시판';
+    $escaped = e($summary);
+
+    if (!str_contains($summary, $needle)) {
+        return $escaped;
+    }
+
+    return str_replace(
+        e($needle),
+        '<a class="hall-activity-inline-link" href="/meal-board">식단 게시판</a>',
+        $escaped
+    );
+};
 ?>
 
 <section class="page hall-activities-page" data-hall-activities>
@@ -34,7 +49,7 @@ $activities = $activities ?? [];
                 </div>
                 <div class="hall-activity-body">
                     <h2><?= e($activity['title']) ?></h2>
-                    <p><?= e($activity['summary']) ?></p>
+                    <p><?= $renderActivitySummary((string) $activity['summary']) ?></p>
                     <dl>
                         <div>
                             <dt>방식</dt>

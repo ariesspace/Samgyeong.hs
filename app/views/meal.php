@@ -14,8 +14,8 @@
     <nav class="meal-tabs" aria-label="급식 메뉴">
         <span>급식사진</span>
         <strong>식단표</strong>
-        <span>급식 게시판</span>
-        <span>영양상담</span>
+        <a href="/meal-board">급식 게시판</a>
+        <a href="/meal-suggestions">식단제안</a>
     </nav>
 
     <div class="meal-layout">

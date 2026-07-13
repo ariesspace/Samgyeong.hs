@@ -205,6 +205,17 @@ final class Database
                 FOREIGN KEY(updated_by) REFERENCES users(id)
             );
 
+            CREATE TABLE IF NOT EXISTS meal_suggestions (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                user_id INTEGER NOT NULL,
+                topic TEXT NOT NULL,
+                lunch_text TEXT NOT NULL,
+                dinner_text TEXT NOT NULL,
+                note TEXT NOT NULL,
+                created_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP,
+                FOREIGN KEY(user_id) REFERENCES users(id)
+            );
+
             CREATE TABLE IF NOT EXISTS tally_webhook_events (
                 event_id TEXT PRIMARY KEY,
                 board TEXT NOT NULL,
@@ -253,6 +264,8 @@ final class Database
         if (!in_array('is_hidden', $postColumns, true)) {
             $pdo->exec('ALTER TABLE posts ADD COLUMN is_hidden INTEGER NOT NULL DEFAULT 0');
         }
+        $pdo->exec("UPDATE posts SET tag = '소양' WHERE board = 'basic-literacy' AND tag IN ('제출', '검토완료', '소양 테스트')");
+        $pdo->exec("UPDATE posts SET tag = '교칙' WHERE board = 'basic-literacy' AND tag = '교칙 테스트'");
 
         $pdo->exec('CREATE INDEX IF NOT EXISTS idx_post_files_post_id ON post_files(post_id)');
         $pdo->exec('CREATE INDEX IF NOT EXISTS idx_post_likes_post_id ON post_likes(post_id)');
@@ -422,6 +435,7 @@ final class Database
                 ['submit', '', '모든 상점 제출물은 성의 있게 작성되어야 하며, 삼경원 과반수 동의 시 기각될 수 있다.', 10],
                 ['submit', '', '상점 제출은 삼경원 개인 채팅방으로 하며, 사진 첨부를 통해 얻는 모든 상점은 상단 또는 하단에 "2026.OO.OO (관명) O학년 OOO"을 작성하고 그 위에 형광펜으로 표시해야 인정된다.', 20],
                 ['submit', '', '상점 제출 시, [(관명) O학년 OOO, (상점 사유) + O점]의 양식을 갖춰야 한다.', 30],
+                ['submit', '', '필사가 필요한 모든 제출물은 종이 위에서 작성되어야 한다. 태블릿, 노트북을 비롯한 전자기기 사용을 금지한다.', 40],
             ];
 
             $stmt = $pdo->prepare('

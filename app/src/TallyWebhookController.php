@@ -39,6 +39,7 @@ final class TallyWebhookController
         $adminId = $this->adminUserId();
         $title = $this->postTitle($payload, $answers);
         $body = $this->postBody($payload, $answers);
+        $tag = $this->postTag($payload);
 
         $this->db->beginTransaction();
         try {
@@ -49,7 +50,7 @@ final class TallyWebhookController
             $firstFile = $files[0] ?? ['name' => null, 'path' => null];
             $stmt->execute([
                 self::BOARD_SLUG,
-                $this->ko('\uc81c\ucd9c'),
+                $tag,
                 $title,
                 $body,
                 $firstFile['name'],
@@ -74,8 +75,8 @@ final class TallyWebhookController
 
     private function verifySignature(string $rawBody): bool
     {
-        $secret = trim((string) getenv('SAMGYEONG_TALLY_SIGNING_SECRET'));
-        if ($secret === '') {
+        $secrets = $this->signingSecrets();
+        if ($secrets === []) {
             return false;
         }
 
@@ -90,14 +91,15 @@ final class TallyWebhookController
             ? json_encode($decoded, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES)
             : null;
 
-        $candidates = [
-            hash_hmac('sha256', $rawBody, $secret),
-            base64_encode(hash_hmac('sha256', $rawBody, $secret, true)),
-        ];
+        $candidates = [];
+        foreach ($secrets as $secret) {
+            $candidates[] = hash_hmac('sha256', $rawBody, $secret);
+            $candidates[] = base64_encode(hash_hmac('sha256', $rawBody, $secret, true));
 
-        if (is_string($normalizedBody)) {
-            $candidates[] = hash_hmac('sha256', $normalizedBody, $secret);
-            $candidates[] = base64_encode(hash_hmac('sha256', $normalizedBody, $secret, true));
+            if (is_string($normalizedBody)) {
+                $candidates[] = hash_hmac('sha256', $normalizedBody, $secret);
+                $candidates[] = base64_encode(hash_hmac('sha256', $normalizedBody, $secret, true));
+            }
         }
 
         foreach (array_unique($candidates) as $expected) {
@@ -107,6 +109,20 @@ final class TallyWebhookController
         }
 
         return false;
+    }
+
+    private function signingSecrets(): array
+    {
+        $raw = implode("\n", [
+            (string) getenv('SAMGYEONG_TALLY_SIGNING_SECRET'),
+            (string) getenv('SAMGYEONG_TALLY_SIGNING_SECRETS'),
+        ]);
+        $parts = preg_split('/[\s,;]+/', $raw) ?: [];
+
+        return array_values(array_unique(array_filter(array_map(
+            static fn (string $secret): string => trim($secret),
+            $parts,
+        ))));
     }
 
     private function eventId(array $payload, string $rawBody): string
@@ -346,6 +362,18 @@ final class TallyWebhookController
         return $storedFiles;
     }
 
+    private function postTag(array $payload): string
+    {
+        $formName = (string) (
+            $payload['data']['formName']
+            ?? $payload['formName']
+            ?? $payload['data']['form']['name']
+            ?? ''
+        );
+
+        return str_contains($formName, '교칙') ? '교칙' : '소양';
+    }
+
     private function postTitle(array $payload, array $answers): string
     {
         $fields = is_array($payload['data']['fields'] ?? null) ? $payload['data']['fields'] : [];
@@ -354,20 +382,46 @@ final class TallyWebhookController
         $grade = $gradeField ? $this->displayFieldValue($gradeField, $gradeField['value'] ?? null) : '';
 
         if ($name === '') {
-            $name = $this->answerByLabel($answers, ['이름', '성명', '학생 이름', '지원자 이름', '제출자']);
+            $name = $this->answerByLabel($answers, ['지원자 정보', '지원자 이름', '이름', '성명', '학생 이름', '제출자']);
         }
         if ($grade === '') {
             $grade = $this->answerByLabel($answers, ['학년', '지원 학년']);
         }
 
-        $date = substr((string) ($payload['createdAt'] ?? $payload['data']['createdAt'] ?? date('Y-m-d')), 0, 10);
-
         if ($name !== '') {
-            $prefix = $grade !== '' ? $grade . ' ' : '';
-            return $prefix . $name . ' ' . $this->ko('\uc785\ud559\uc0dd \uae30\ucd08 \uc18c\uc591 \uc81c\ucd9c');
+            $title = $this->applicantTitle($name, $grade);
+            if ($title !== '') {
+                return $title;
+            }
         }
 
-        return $this->ko('\uc785\ud559\uc0dd \uae30\ucd08 \uc18c\uc591 \uc81c\ucd9c') . ' - ' . $date;
+        return '지원자 미기재';
+    }
+
+    private function applicantTitle(string $name, string $grade = ''): string
+    {
+        $name = trim(preg_replace('/\s+/u', ' ', $name) ?? $name);
+        $name = preg_replace('/^\[교칙 테스트\]\s*/u', '', $name) ?? $name;
+        $name = preg_replace('/\s*입학생 기초 소양 제출$/u', '', $name) ?? $name;
+        $name = preg_replace('/\s*\/\s*\d{4}-\d{2}-\d{2}$/u', '', $name) ?? $name;
+        $grade = trim(preg_replace('/\s+/u', ' ', $grade) ?? $grade);
+
+        if (preg_match('/^(?:[가-힣]+관\s+)?([1-3]학년)\s+(.+)$/u', $name, $matches) === 1) {
+            if ($grade === '') {
+                $grade = $matches[1];
+            }
+            $name = trim($matches[2]);
+        }
+
+        if (preg_match('/^[A-Za-z]$/', $name) === 1) {
+            return '';
+        }
+
+        if ($grade !== '') {
+            return $grade . ' 지원자 ' . $name;
+        }
+
+        return $name;
     }
 
     private function fieldByKey(array $fields, string $key): ?array
@@ -526,16 +580,54 @@ final class TallyWebhookController
         $lines[] = '<p><strong>' . e($title) . '</strong></p>';
         $lines[] = '<ul>';
         foreach ($items as $answer) {
-            $prompt = $this->questionPrompt((string) ($answer['key'] ?? ''));
+            $key = (string) ($answer['key'] ?? '');
+            $prompt = $this->questionPrompt($key);
+            $correctAnswer = $this->correctAnswer($key, (string) ($answer['label'] ?? ''));
             $question = $prompt !== ''
                 ? '<br><span style="font-size: 14px">' . nl2br(e($prompt)) . '</span>'
                 : '';
-            $answerPrefix = $prompt !== ''
-                ? '<br><strong>' . e($this->ko('\ub2f5\ubcc0')) . ':</strong> '
-                : '<br>';
-            $lines[] = '<li><strong>' . e($answer['label']) . '</strong>' . $question . $answerPrefix . nl2br(e($answer['display'])) . '</li>';
+            $answerLabel = $correctAnswer !== '' ? '작성 답변' : $this->ko('\ub2f5\ubcc0');
+            $answerLine = '<br><strong>' . e($answerLabel) . ':</strong> ' . nl2br(e($answer['display']));
+            $correctLine = $correctAnswer !== ''
+                ? '<br><strong>정답:</strong> ' . e($correctAnswer)
+                : '';
+            $lines[] = '<li><strong>' . e($answer['label']) . '</strong>' . $question . $answerLine . $correctLine . '</li>';
         }
         $lines[] = '</ul>';
+    }
+
+    private function correctAnswer(string $key, string $label): string
+    {
+        $answers = [
+            'question_Plol4x' => '사람',
+            'question_ELpLA2' => '만물',
+            'question_rVXVgX' => '경천',
+            'question_D5LdG5' => '식사하셨습니까 선배님은 규정상 옳다.',
+            'question_lLpdEW' => '본인 마지막 말 기준 10분',
+            'question_RRO59J' => 'B',
+            'question_RROBLp' => '상급자가 “야, 확인했어?”라고 본인을 향해 말한 경우, 본인이 포함된 멘션이 올라온 경우, “경물관 전원 확인”라고 지시받은 경우',
+            'question_ooJVOX' => '인사, 관등, 시정, 대답, 할 말',
+            'question_MLoeM0' => '삼경의 이름으로 1학년 김인문입니다.',
+            'question_JL59M7' => '삼경, 경물관 선배님들 1학년 김인문입니다.',
+            'question_gLKDvK' => '삼경, 경물관 1학년 김인문입니다. 출입해도 되겠습니까?',
+            'question_VV2LxN' => '(사유)한 용건으로 급히 출입하였습니다. 양해 부탁드립니다.',
+            'question_9ObqgE' => '3회',
+            'question_5LW1ZE' => '예 선배님, 확인했습니다.',
+            'question_dlBx9K' => '아닙니다 선배님. 시정하겠습니다. (예, 단독 대답이나 도치법 주의해서 교관이 알아서 채점할 것)',
+        ];
+
+        if (isset($answers[$key])) {
+            return $answers[$key];
+        }
+
+        if (str_contains($label, '경인') && str_contains($label, '의미하는 대상')) {
+            return '사람';
+        }
+        if (str_contains($label, '경물') && str_contains($label, '의미하는 대상')) {
+            return '만물';
+        }
+
+        return '';
     }
 
     private function questionPrompt(string $key): string

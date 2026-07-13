@@ -4,6 +4,18 @@
     border: 1px solid #fecdca;
 }
 
+.board-badge-literacy {
+    color: #12613f;
+    background: #e9f8ef;
+    border: 1px solid #b9e7c8;
+}
+
+.board-badge-rules {
+    color: #1d4b8f;
+    background: #edf4ff;
+    border: 1px solid #bfdbfe;
+}
+
 .board-title-link.is-notice-title {
     color: #b42318;
     font-weight: 800;

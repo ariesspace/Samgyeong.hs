@@ -20,14 +20,28 @@ final class BoardController
         }
 
         $keyword = trim($_GET['q'] ?? '');
+        $filterTags = $board['slug'] === 'basic-literacy' ? ['소양', '교칙'] : [];
+        $activeTag = trim((string) ($_GET['tag'] ?? ''));
+        if (!in_array($activeTag, $filterTags, true)) {
+            $activeTag = '';
+        }
         $showHidden = $board['slug'] === 'basic-literacy'
-            && ($_GET['view'] ?? '') === 'all'
+            && in_array(($_GET['view'] ?? ''), ['hidden', 'all'], true)
             && $this->auth->hasRole($board['write_roles']);
         $where = 'WHERE board = ?';
         $params = [$board['slug']];
 
-        if ($board['slug'] === 'basic-literacy' && !$showHidden) {
-            $where .= ' AND COALESCE(posts.is_hidden, 0) = 0';
+        if ($board['slug'] === 'basic-literacy') {
+            if ($showHidden && ($_GET['view'] ?? '') === 'hidden') {
+                $where .= ' AND COALESCE(posts.is_hidden, 0) = 1';
+            } elseif (!$showHidden) {
+                $where .= ' AND COALESCE(posts.is_hidden, 0) = 0';
+            }
+        }
+
+        if ($activeTag !== '' && !$showHidden) {
+            $where .= ' AND posts.tag = ?';
+            $params[] = $activeTag;
         }
 
         if ($keyword !== '') {
@@ -61,6 +75,8 @@ final class BoardController
             'board' => $board,
             'posts' => $posts,
             'keyword' => $keyword,
+            'activeTag' => $activeTag,
+            'tagFilters' => $filterTags,
             'showHidden' => $showHidden,
             'canToggleHidden' => $board['slug'] === 'basic-literacy' && $this->auth->hasRole($board['write_roles']),
             'canWrite' => $this->auth->hasRole($board['write_roles']),
@@ -247,7 +263,15 @@ final class BoardController
         $stmt = $this->db->prepare('UPDATE posts SET is_hidden = ? WHERE board = ? AND id = ?');
         $stmt->execute([$nextHidden, $board['slug'], (int) $post['id']]);
 
-        $suffix = ($_POST['view'] ?? '') === 'all' ? '?view=all' : '';
+        $query = [];
+        if (($_POST['view'] ?? '') === 'hidden') {
+            $query['view'] = 'hidden';
+        }
+        $tag = trim((string) ($_POST['tag'] ?? ''));
+        if ($tag !== '') {
+            $query['tag'] = $tag;
+        }
+        $suffix = $query ? '?' . http_build_query($query) : '';
         redirect('/board/' . $board['slug'] . $suffix);
     }
 

@@ -25,6 +25,13 @@
                 <strong>삼경 식단표</strong>
                 <em>오늘의 중식과 월별 급식 일정을 확인하세요.</em>
             </a>
+            <?php if (!empty($showMealBoardPopup)): ?>
+                <a class="popup-card meal-board-popup" href="/meal-board">
+                    <span>삼경밥상</span>
+                    <strong>급식 식단표 제작 안내</strong>
+                    <em>식단은 언제든지 제안하고, 선정은 매주 금요일에 확인하세요.</em>
+                </a>
+            <?php endif; ?>
         </div>
     </section>
 
