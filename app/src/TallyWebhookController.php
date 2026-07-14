@@ -413,6 +413,8 @@ final class TallyWebhookController
             $name = trim($matches[2]);
         }
 
+        $name = preg_replace('/^지원자\s+/u', '', $name) ?? $name;
+
         if (preg_match('/^[A-Za-z]$/', $name) === 1) {
             return '';
         }
