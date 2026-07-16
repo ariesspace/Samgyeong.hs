@@ -7606,10 +7606,11 @@ select {
 
 .mall-admin-list-row {
     display: grid;
-    grid-template-columns: minmax(240px, 1fr) minmax(260px, auto) auto;
+    grid-template-columns: minmax(0, 1fr) auto;
     align-items: center;
-    gap: 14px;
-    padding: 14px 0;
+    gap: 12px;
+    min-height: 58px;
+    padding: 10px 0;
     border-bottom: 1px solid var(--line);
 }
 
@@ -7621,7 +7622,8 @@ select {
     display: grid;
     grid-template-columns: 34px minmax(0, 1fr);
     gap: 12px;
-    align-items: start;
+    align-items: center;
+    min-width: 0;
 }
 
 .mall-admin-row-no {
@@ -7640,19 +7642,12 @@ select {
 
 .mall-admin-row-main strong {
     display: block;
+    overflow: hidden;
     color: var(--ink);
     font-size: 16px;
-}
-
-.mall-admin-row-main p {
-    display: -webkit-box;
-    margin: 4px 0 0;
-    overflow: hidden;
-    color: #667085;
-    font-size: 13px;
-    line-height: 1.45;
-    -webkit-box-orient: vertical;
-    -webkit-line-clamp: 2;
+    line-height: 1.35;
+    text-overflow: ellipsis;
+    white-space: nowrap;
 }
 
 .mall-admin-row-meta {
@@ -7686,6 +7681,54 @@ select {
     align-items: center;
     justify-content: flex-end;
     gap: 8px;
+}
+
+.mall-admin-row-actions .icon-button {
+    flex: 0 0 auto;
+}
+
+.mall-admin-modal-backdrop {
+    position: fixed;
+    inset: 0;
+    z-index: 1000;
+    display: grid;
+    place-items: center;
+    padding: 18px;
+    background: rgba(15, 23, 42, .42);
+}
+
+.mall-admin-modal-backdrop[hidden] {
+    display: none;
+}
+
+.mall-admin-modal {
+    position: relative;
+    display: grid;
+    gap: 14px;
+    width: min(720px, 100%);
+    max-height: min(760px, calc(100vh - 36px));
+    overflow: auto;
+    padding: 22px;
+    background: #fff;
+    border: 1px solid var(--line);
+    border-top: 4px solid var(--green);
+    border-radius: 6px;
+    box-shadow: 0 24px 60px rgba(15, 23, 42, .22);
+}
+
+.mall-admin-modal-close {
+    position: absolute;
+    top: 12px;
+    right: 12px;
+    width: 34px;
+    min-height: 34px;
+    padding: 0;
+    color: #475467;
+    background: #fff;
+    border: 1px solid var(--line);
+    border-radius: 999px;
+    font-size: 20px;
+    line-height: 1;
 }
 
 .mall-admin-edit-page .admin-history-head {
@@ -8026,9 +8069,10 @@ select {
     }
 
     .mall-admin-list-row {
-        grid-template-columns: 1fr;
-        gap: 10px;
-        padding: 12px;
+        grid-template-columns: minmax(0, 1fr) auto;
+        gap: 8px;
+        min-height: 52px;
+        padding: 8px 10px;
         background: #fff;
         border: 1px solid var(--line);
         border-radius: 4px;
@@ -8037,19 +8081,14 @@ select {
     .mall-admin-row-main {
         grid-template-columns: 28px minmax(0, 1fr);
         gap: 9px;
+        align-items: center;
     }
 
     .mall-admin-row-main strong {
         font-size: 15px;
         line-height: 1.25;
-        word-break: keep-all;
-        overflow-wrap: anywhere;
-    }
-
-    .mall-admin-row-main p {
-        font-size: 12px;
-        line-height: 1.4;
-        -webkit-line-clamp: 2;
+        text-overflow: ellipsis;
+        white-space: nowrap;
     }
 
     .mall-admin-row-meta {
@@ -8067,13 +8106,17 @@ select {
     }
 
     .mall-admin-row-actions {
-        justify-content: space-between;
-        width: 100%;
+        justify-content: flex-end;
+        width: auto;
     }
 
     .mall-admin-row-actions .icon-button {
-        width: 38px;
+        width: 34px;
         height: 34px;
+    }
+
+    .mall-admin-table-list .mall-admin-badges {
+        display: none;
     }
 
     .mall-admin-item-card header {
@@ -8239,6 +8282,26 @@ select {
 
     .mall-item-switches {
         grid-template-columns: 1fr;
+    }
+
+    .mall-admin-modal-backdrop {
+        align-items: end;
+        padding: 10px;
+    }
+
+    .mall-admin-modal {
+        width: 100%;
+        max-height: calc(100vh - 20px);
+        padding: 18px 14px 14px;
+        border-radius: 8px 8px 0 0;
+    }
+
+    .mall-admin-modal .mall-item-edit-summary {
+        padding-right: 42px;
+    }
+
+    .mall-admin-modal .admin-create-actions {
+        grid-template-columns: 1fr 1fr;
     }
 
     .admin-history-table {

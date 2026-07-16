@@ -31,10 +31,11 @@
                 </div>
             </div>
 
-            <div class="mall-admin-simple-list">
+            <div class="mall-admin-simple-list mall-admin-table-list">
                 <?php foreach ($items as $index => $item): ?>
                     <?php
                         $isActive = (int) ($item['active'] ?? 0) === 1;
+                        $isForcedSoldOut = (int) ($item['force_sold_out'] ?? 0) === 1;
                         $isSoldOut = !empty($item['sold_out']);
                         $stockLimit = $item['stock_limit'] ?? null;
                         $remaining = $item['remaining_stock'] ?? null;
@@ -44,15 +45,7 @@
                             <span class="mall-admin-row-no"><?= e((string) ($index + 1)) ?></span>
                             <div>
                                 <strong><?= e($item['name']) ?></strong>
-                                <p><?= e($item['description']) ?></p>
                             </div>
-                        </div>
-
-                        <div class="mall-admin-row-meta">
-                            <span><?= e((string) $item['price']) ?>점</span>
-                            <span>판매 <?= e((string) ($item['sold_quantity'] ?? 0)) ?>개</span>
-                            <span><?= $stockLimit === null || $stockLimit === '' ? '재고 제한 없음' : '총 ' . e((string) $stockLimit) . '개' ?></span>
-                            <strong><?= $remaining === null ? '구매 가능' : '잔여 ' . e((string) $remaining) . '개' ?></strong>
                         </div>
 
                         <div class="mall-admin-row-actions">
@@ -60,9 +53,72 @@
                                 <em class="<?= $isActive ? 'good' : 'neutral' ?>"><?= $isActive ? '판매중' : '숨김' ?></em>
                                 <?php if ($isSoldOut): ?><em class="danger">품절</em><?php endif; ?>
                             </div>
-                            <a class="icon-button" href="/admin/mall/items/edit?id=<?= e((string) $item['id']) ?>" title="상품 수정" aria-label="상품 수정">✎</a>
+                            <button class="icon-button" type="button" data-mall-modal-open="mall-item-modal-<?= e((string) $item['id']) ?>" title="상품 수정" aria-label="상품 수정">✎</button>
                         </div>
                     </article>
+
+                    <div class="mall-admin-modal-backdrop" id="mall-item-modal-<?= e((string) $item['id']) ?>" hidden>
+                        <section class="mall-admin-modal" role="dialog" aria-modal="true" aria-labelledby="mall-item-title-<?= e((string) $item['id']) ?>">
+                            <button type="button" class="mall-admin-modal-close" data-mall-modal-close aria-label="닫기">×</button>
+                            <div class="mall-item-edit-summary">
+                                <div>
+                                    <span>상품 수정</span>
+                                    <strong id="mall-item-title-<?= e((string) $item['id']) ?>"><?= e($item['name']) ?></strong>
+                                </div>
+                                <div class="mall-admin-badges">
+                                    <em class="<?= $isActive ? 'good' : 'neutral' ?>"><?= $isActive ? '판매중' : '숨김' ?></em>
+                                    <?php if ($isSoldOut): ?><em class="danger">품절</em><?php endif; ?>
+                                </div>
+                            </div>
+
+                            <div class="mall-stock-summary edit-summary">
+                                <span>판매 <?= e((string) ($item['sold_quantity'] ?? 0)) ?>개</span>
+                                <span><?= $stockLimit === null || $stockLimit === '' ? '재고 제한 없음' : '총 재고 ' . e((string) $stockLimit) . '개' ?></span>
+                                <strong><?= $remaining === null ? '구매 가능' : '잔여 ' . e((string) $remaining) . '개' ?></strong>
+                            </div>
+
+                            <form method="post" action="/admin/mall/items/update" class="admin-create-form mall-item-edit-form">
+                                <input type="hidden" name="csrf" value="<?= e(csrf_token()) ?>">
+                                <input type="hidden" name="id" value="<?= e((string) $item['id']) ?>">
+
+                                <label>
+                                    상품명
+                                    <input name="name" value="<?= e($item['name']) ?>" required>
+                                </label>
+
+                                <label>
+                                    필요 상점
+                                    <input type="number" name="price" min="1" max="999" value="<?= e((string) $item['price']) ?>" required>
+                                </label>
+
+                                <label>
+                                    총 재고
+                                    <input type="number" name="stock_limit" min="1" max="999" value="<?= e($stockLimit === null ? '' : (string) $stockLimit) ?>" placeholder="비우면 무제한">
+                                </label>
+
+                                <label class="wide-field">
+                                    설명
+                                    <textarea name="description" rows="5" required><?= e($item['description']) ?></textarea>
+                                </label>
+
+                                <div class="mall-item-switches">
+                                    <label class="mall-switch-toggle">
+                                        <input type="checkbox" name="active" value="1" <?= $isActive ? 'checked' : '' ?>>
+                                        <span>판매 노출</span>
+                                    </label>
+                                    <label class="mall-switch-toggle soldout-toggle">
+                                        <input type="checkbox" name="force_sold_out" value="1" <?= $isForcedSoldOut ? 'checked' : '' ?>>
+                                        <span>수동 품절</span>
+                                    </label>
+                                </div>
+
+                                <div class="admin-create-actions">
+                                    <button type="button" class="button secondary" data-mall-modal-close>취소</button>
+                                    <button type="submit">저장</button>
+                                </div>
+                            </form>
+                        </section>
+                    </div>
                 <?php endforeach; ?>
             </div>
         </section>
@@ -92,3 +148,35 @@
         </aside>
     </div>
 </section>
+
+<script>
+document.addEventListener('click', function (event) {
+    const openButton = event.target.closest('[data-mall-modal-open]');
+    if (openButton) {
+        const modal = document.getElementById(openButton.getAttribute('data-mall-modal-open'));
+        if (modal) {
+            modal.hidden = false;
+            document.body.classList.add('modal-open');
+        }
+        return;
+    }
+
+    const closeButton = event.target.closest('[data-mall-modal-close]');
+    const backdrop = event.target.classList && event.target.classList.contains('mall-admin-modal-backdrop') ? event.target : null;
+    if (closeButton || backdrop) {
+        const modal = (closeButton || backdrop).closest('.mall-admin-modal-backdrop');
+        if (modal) {
+            modal.hidden = true;
+            document.body.classList.remove('modal-open');
+        }
+    }
+});
+
+document.addEventListener('keydown', function (event) {
+    if (event.key !== 'Escape') return;
+    document.querySelectorAll('.mall-admin-modal-backdrop:not([hidden])').forEach(function (modal) {
+        modal.hidden = true;
+    });
+    document.body.classList.remove('modal-open');
+});
+</script>
