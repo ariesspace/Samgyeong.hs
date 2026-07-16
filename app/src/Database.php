@@ -557,16 +557,7 @@ final class Database
             json_encode(['council', 'admin'], JSON_UNESCAPED_UNICODE),
         ]);
 
-        $stmt = $pdo->prepare('SELECT read_roles FROM board_permissions WHERE board_slug = ?');
-        $stmt->execute(['basic-literacy']);
-        $roles = json_decode((string) $stmt->fetchColumn(), true);
-        if (!is_array($roles)) {
-            $roles = [];
-        }
-
-        $roles = array_values(array_diff(array_unique(array_merge($roles, ['student', 'council', 'admin'])), ['guest']));
-        $stmt = $pdo->prepare('UPDATE board_permissions SET read_roles = ?, updated_at = CURRENT_TIMESTAMP WHERE board_slug = ?');
-        $stmt->execute([json_encode($roles, JSON_UNESCAPED_UNICODE), 'basic-literacy']);
+        // Keep administrator-selected permissions intact after the initial default row is created.
     }
 
     private static function ensureMallDefaults(PDO $pdo): void
