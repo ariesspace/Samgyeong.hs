@@ -777,6 +777,46 @@ if ($path === '/admin/mall') {
     exit;
 }
 
+if ($path === '/admin/mall/items/edit') {
+    $auth->requireRole(['admin']);
+    $id = max(0, (int) ($_GET['id'] ?? 0));
+    $stmt = $db->prepare('SELECT * FROM mall_items WHERE id = ?');
+    $stmt->execute([$id]);
+    $item = $stmt->fetch();
+    if (!$item) {
+        redirect('/admin/mall');
+    }
+
+    echo view('admin-mall-edit', [
+        'title' => '삼경몰 상품 수정',
+        'item' => enrich_mall_item_stock($db, $item),
+    ]);
+    exit;
+}
+
+if ($path === '/admin/mall/items/update' && $method === 'POST') {
+    $auth->requireRole(['admin']);
+    $id = max(0, (int) ($_POST['id'] ?? 0));
+    $name = trim((string) ($_POST['name'] ?? ''));
+    $description = trim((string) ($_POST['description'] ?? ''));
+    $price = max(1, (int) ($_POST['price'] ?? 0));
+    $stockRaw = trim((string) ($_POST['stock_limit'] ?? ''));
+    $stockLimit = $stockRaw === '' ? null : max(1, (int) $stockRaw);
+    $active = isset($_POST['active']) ? 1 : 0;
+    $forceSoldOut = isset($_POST['force_sold_out']) ? 1 : 0;
+
+    if ($id > 0 && $name !== '' && $description !== '') {
+        $stmt = $db->prepare('
+            UPDATE mall_items
+            SET name = ?, description = ?, price = ?, active = ?, stock_limit = ?, force_sold_out = ?, updated_at = CURRENT_TIMESTAMP
+            WHERE id = ?
+        ');
+        $stmt->execute([$name, $description, $price, $active, $stockLimit, $forceSoldOut, $id]);
+    }
+
+    redirect('/admin/mall?saved=items');
+}
+
 if ($path === '/admin/mall/items' && $method === 'POST') {
     $auth->requireRole(['admin']);
     $ids = $_POST['id'] ?? [];
