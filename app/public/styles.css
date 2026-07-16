@@ -7350,6 +7350,10 @@ select {
     align-items: start;
 }
 
+.mall-admin-layout.mall-admin-list-only {
+    grid-template-columns: 1fr;
+}
+
 .mall-items-editor {
     display: grid;
     gap: 12px;
@@ -7685,6 +7689,49 @@ select {
 
 .mall-admin-row-actions .icon-button {
     flex: 0 0 auto;
+}
+
+.mall-admin-add-row {
+    padding: 0;
+    border-bottom: 0;
+}
+
+.mall-add-inline-button {
+    display: grid;
+    grid-template-columns: 34px minmax(0, 1fr);
+    align-items: center;
+    gap: 12px;
+    width: 100%;
+    min-height: 58px;
+    padding: 10px 0;
+    color: var(--green);
+    background: #fff;
+    border: 0;
+    border-bottom: 1px solid var(--line);
+    text-align: left;
+}
+
+.mall-add-inline-button span {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 28px;
+    height: 28px;
+    color: #fff;
+    background: var(--green);
+    border-radius: 999px;
+    font-size: 20px;
+    font-weight: 900;
+    line-height: 1;
+}
+
+.mall-add-inline-button strong {
+    color: var(--green);
+    font-size: 16px;
+}
+
+.mall-add-inline-button:hover {
+    background: #f8fafc;
 }
 
 .mall-admin-modal-backdrop {
@@ -8113,6 +8160,25 @@ select {
     .mall-admin-row-actions .icon-button {
         width: 34px;
         height: 34px;
+    }
+
+    .mall-admin-add-row {
+        padding: 0;
+        background: transparent;
+        border: 0;
+    }
+
+    .mall-add-inline-button {
+        grid-template-columns: 28px minmax(0, 1fr);
+        gap: 9px;
+        min-height: 52px;
+        padding: 8px 10px;
+        border: 1px solid var(--line);
+        border-radius: 4px;
+    }
+
+    .mall-add-inline-button strong {
+        font-size: 15px;
     }
 
     .mall-admin-table-list .mall-admin-badges {

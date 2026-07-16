@@ -9,7 +9,7 @@
         <div>
             <p class="eyebrow">SAMGYEONG MALL ADMIN</p>
             <h1>삼경몰 관리</h1>
-            <p class="muted">목록에서는 상품 상태만 확인하고, 세부 설정은 수정 화면에서 관리합니다.</p>
+            <p class="muted">목록에서는 상품명만 간단히 확인하고, 수정과 추가는 팝업에서 처리합니다.</p>
         </div>
         <div class="mall-admin-counts" aria-label="상품 현황">
             <span>전체 <?= e((string) count($items)) ?>개</span>
@@ -22,12 +22,12 @@
         <div class="notice success">삼경몰 설정이 저장되었습니다.</div>
     <?php endif; ?>
 
-    <div class="mall-admin-layout">
+    <div class="mall-admin-layout mall-admin-list-only">
         <section class="mall-admin-panel mall-items-editor">
             <div class="section-title-row">
                 <div>
                     <h2>상품 목록</h2>
-                    <p class="muted">품절 상품은 총 재고를 늘리거나 수동 품절을 해제하면 다시 구매 가능해집니다.</p>
+                    <p class="muted">수정 버튼을 누르면 상품명, 설명, 재고, 품절 상태를 변경할 수 있습니다.</p>
                 </div>
             </div>
 
@@ -120,34 +120,58 @@
                         </section>
                     </div>
                 <?php endforeach; ?>
+
+                <article class="mall-admin-list-row mall-admin-add-row">
+                    <button class="mall-add-inline-button" type="button" data-mall-modal-open="mall-item-add-modal" aria-label="새 상품 추가">
+                        <span>+</span>
+                        <strong>새 상품 추가</strong>
+                    </button>
+                </article>
             </div>
         </section>
-
-        <aside class="mall-admin-side">
-            <form method="post" action="/admin/mall/items/add" class="mall-add-form mall-add-card">
-                <input type="hidden" name="csrf" value="<?= e(csrf_token()) ?>">
-                <h2>새 상품 추가</h2>
-                <label>
-                    상품명
-                    <input name="name" placeholder="예: 특별 면제권" required>
-                </label>
-                <label>
-                    필요 상점
-                    <input type="number" name="price" min="1" max="999" placeholder="10" required>
-                </label>
-                <label>
-                    총 재고
-                    <input type="number" name="stock_limit" min="1" max="999" placeholder="비우면 무제한">
-                </label>
-                <label>
-                    설명
-                    <textarea name="description" rows="4" placeholder="학생 화면에 표시할 설명을 입력해 주세요." required></textarea>
-                </label>
-                <button type="submit">상품 추가</button>
-            </form>
-        </aside>
     </div>
 </section>
+
+<div class="mall-admin-modal-backdrop" id="mall-item-add-modal" hidden>
+    <section class="mall-admin-modal" role="dialog" aria-modal="true" aria-labelledby="mall-item-add-title">
+        <button type="button" class="mall-admin-modal-close" data-mall-modal-close aria-label="닫기">×</button>
+        <div class="mall-item-edit-summary">
+            <div>
+                <span>상품 추가</span>
+                <strong id="mall-item-add-title">새 상품</strong>
+            </div>
+        </div>
+
+        <form method="post" action="/admin/mall/items/add" class="admin-create-form mall-item-edit-form">
+            <input type="hidden" name="csrf" value="<?= e(csrf_token()) ?>">
+
+            <label>
+                상품명
+                <input name="name" placeholder="예: 특별 면제권" required>
+            </label>
+
+            <label>
+                필요 상점
+                <input type="number" name="price" min="1" max="999" placeholder="10" required>
+            </label>
+
+            <label>
+                총 재고
+                <input type="number" name="stock_limit" min="1" max="999" placeholder="비우면 무제한">
+            </label>
+
+            <label class="wide-field">
+                설명
+                <textarea name="description" rows="5" placeholder="학생 화면에 표시할 설명을 입력해 주세요." required></textarea>
+            </label>
+
+            <div class="admin-create-actions">
+                <button type="button" class="button secondary" data-mall-modal-close>취소</button>
+                <button type="submit">추가</button>
+            </div>
+        </form>
+    </section>
+</div>
 
 <script>
 document.addEventListener('click', function (event) {
