@@ -7832,9 +7832,21 @@ select {
     }
 
     .mall-admin-counts {
-        width: fit-content;
+        width: 100%;
+        justify-content: flex-start;
+        gap: 6px;
         border-radius: 4px;
         white-space: normal;
+    }
+
+    .mall-admin-head .eyebrow {
+        font-size: 10px;
+        letter-spacing: .1em;
+    }
+
+    .mall-admin-head h1 {
+        font-size: 32px;
+        line-height: 1.25;
     }
 
     .mall-admin-refined-page {
@@ -7889,8 +7901,10 @@ select {
         color: #1f2937;
         font-size: 14px;
         line-height: 1.25;
-        text-overflow: ellipsis;
-        white-space: nowrap;
+        text-overflow: clip;
+        white-space: normal;
+        word-break: keep-all;
+        overflow-wrap: anywhere;
     }
 
     .mall-sale-toggle {
@@ -7908,12 +7922,14 @@ select {
     .mall-admin-badges {
         justify-content: flex-end;
         gap: 4px;
+        max-width: 92px;
     }
 
     .mall-admin-badges em {
         min-height: 23px;
         padding: 3px 7px;
         font-size: 10px;
+        line-height: 1.1;
     }
 
     .mall-admin-status-row {
@@ -7944,12 +7960,19 @@ select {
         min-height: 24px;
         padding: 3px 7px;
         font-size: 11px;
+        line-height: 1.2;
+        white-space: normal;
     }
 
     .mall-item-field-grid {
-        grid-template-columns: minmax(0, 1fr) 76px 76px;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
         gap: 8px;
         padding: 10px;
+    }
+
+    .mall-item-field-grid label:first-child,
+    .mall-item-field-grid .wide-field {
+        grid-column: 1 / -1;
     }
 
     .mall-item-field-grid label,
@@ -7963,6 +7986,7 @@ select {
         min-height: 34px;
         padding: 7px 9px;
         font-size: 13px;
+        width: 100%;
     }
 
     .mall-item-field-grid textarea,
