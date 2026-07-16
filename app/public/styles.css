@@ -7469,26 +7469,34 @@ select {
     display: flex;
     align-items: center;
     justify-content: center;
-    gap: 8px;
-    min-height: 38px;
-    padding: 8px 10px;
+    gap: 6px;
+    min-height: 30px;
+    padding: 5px 9px;
     color: #12633d;
-    background: #edfdf4;
+    background: #fff;
     border: 1px solid #b9ebcf;
-    border-radius: 4px;
-    font-size: 13px;
+    border-radius: 999px;
+    font-size: 12px;
     font-weight: 900;
+    line-height: 1;
+    white-space: nowrap;
 }
 
 .mall-switch-toggle input {
-    width: 16px;
-    height: 16px;
+    width: 14px;
+    height: 14px;
+    margin: 0;
+    accent-color: var(--green);
 }
 
 .mall-switch-toggle.soldout-toggle {
     color: #9a3412;
-    background: #fff7ed;
+    background: #fff;
     border-color: #fed7aa;
+}
+
+.mall-switch-toggle.soldout-toggle input {
+    accent-color: #c2410c;
 }
 
 .mall-stock-summary {
@@ -7823,9 +7831,22 @@ select {
 
 .mall-item-switches {
     grid-column: 1 / -1;
-    display: grid;
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-    gap: 10px;
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 8px;
+    padding: 8px 10px;
+    background: #f8fafc;
+    border: 1px solid #e4e7ec;
+    border-radius: 4px;
+}
+
+.mall-item-switch-title {
+    margin-right: 2px;
+    color: #667085;
+    font-size: 12px;
+    font-weight: 900;
+    white-space: nowrap;
 }
 
 .mall-hero {
@@ -8243,9 +8264,8 @@ select {
     }
 
     .mall-switch-toggle {
-        min-height: 34px;
-        padding: 6px 8px;
-        gap: 6px;
+        min-height: 28px;
+        padding: 5px 8px;
         font-size: 12px;
     }
 
@@ -8347,7 +8367,8 @@ select {
     }
 
     .mall-item-switches {
-        grid-template-columns: 1fr;
+        gap: 6px;
+        padding: 7px 8px;
     }
 
     .mall-admin-modal-backdrop {

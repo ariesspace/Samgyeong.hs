@@ -101,7 +101,8 @@
                                     <textarea name="description" rows="5" required><?= e($item['description']) ?></textarea>
                                 </label>
 
-                                <div class="mall-item-switches">
+                                <div class="mall-item-switches" aria-label="상품 상태 설정">
+                                    <span class="mall-item-switch-title">상태 설정</span>
                                     <label class="mall-switch-toggle">
                                         <input type="checkbox" name="active" value="1" <?= $isActive ? 'checked' : '' ?>>
                                         <span>판매 노출</span>
