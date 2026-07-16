@@ -175,6 +175,8 @@ final class Database
                 description TEXT NOT NULL,
                 price INTEGER NOT NULL CHECK(price > 0),
                 active INTEGER NOT NULL DEFAULT 1,
+                stock_limit INTEGER,
+                force_sold_out INTEGER NOT NULL DEFAULT 0,
                 sort_order INTEGER NOT NULL DEFAULT 0,
                 created_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP,
                 updated_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP
@@ -304,6 +306,16 @@ final class Database
         if (!in_array('used_by', $mallOrderColumns, true)) {
             $pdo->exec('ALTER TABLE mall_orders ADD COLUMN used_by INTEGER');
         }
+
+        $columns = $pdo->query("PRAGMA table_info(mall_items)")->fetchAll();
+        $mallItemColumns = array_column($columns, 'name');
+        if (!in_array('stock_limit', $mallItemColumns, true)) {
+            $pdo->exec('ALTER TABLE mall_items ADD COLUMN stock_limit INTEGER');
+        }
+        if (!in_array('force_sold_out', $mallItemColumns, true)) {
+            $pdo->exec('ALTER TABLE mall_items ADD COLUMN force_sold_out INTEGER NOT NULL DEFAULT 0');
+        }
+        $pdo->exec("UPDATE mall_items SET stock_limit = 1 WHERE name IN ('치킨 기프티콘 변경권', '피자 기프티콘 변경권') AND stock_limit IS NULL");
 
         $columns = $pdo->query("PRAGMA table_info(hall_members)")->fetchAll();
         $hallColumns = array_column($columns, 'name');

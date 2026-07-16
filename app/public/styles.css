@@ -7339,6 +7339,10 @@ select {
     color: var(--green);
 }
 
+.mall-admin-counts b {
+    color: #b42318;
+}
+
 .mall-admin-layout {
     display: grid;
     grid-template-columns: minmax(0, 1fr) 320px;
@@ -7367,6 +7371,10 @@ select {
     background: #fbfcfd;
 }
 
+.mall-admin-item-card.is-sold-out {
+    border-color: #f2c9c4;
+}
+
 .mall-admin-item-card header {
     display: flex;
     align-items: center;
@@ -7390,6 +7398,43 @@ select {
     font-size: 17px;
 }
 
+.mall-admin-badges {
+    display: inline-flex;
+    flex-wrap: wrap;
+    justify-content: flex-end;
+    gap: 6px;
+}
+
+.mall-admin-badges em {
+    display: inline-flex;
+    align-items: center;
+    min-height: 26px;
+    padding: 4px 9px;
+    border-radius: 999px;
+    font-size: 12px;
+    font-style: normal;
+    font-weight: 900;
+    white-space: nowrap;
+}
+
+.mall-admin-badges .good {
+    color: #12633d;
+    background: #edfdf4;
+    border: 1px solid #b9ebcf;
+}
+
+.mall-admin-badges .neutral {
+    color: #667085;
+    background: #eef2f6;
+    border: 1px solid #d9dee8;
+}
+
+.mall-admin-badges .danger {
+    color: #b42318;
+    background: #fff1f0;
+    border: 1px solid #f2c9c4;
+}
+
 .mall-sale-toggle {
     display: inline-flex;
     align-items: center;
@@ -7409,6 +7454,65 @@ select {
     height: 16px;
 }
 
+.mall-admin-status-row {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 8px;
+    padding: 12px 16px 0;
+}
+
+.mall-switch-toggle {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    min-height: 38px;
+    padding: 8px 10px;
+    color: #12633d;
+    background: #edfdf4;
+    border: 1px solid #b9ebcf;
+    border-radius: 4px;
+    font-size: 13px;
+    font-weight: 900;
+}
+
+.mall-switch-toggle input {
+    width: 16px;
+    height: 16px;
+}
+
+.mall-switch-toggle.soldout-toggle {
+    color: #9a3412;
+    background: #fff7ed;
+    border-color: #fed7aa;
+}
+
+.mall-stock-summary {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    padding: 10px 16px 0;
+}
+
+.mall-stock-summary span,
+.mall-stock-summary strong {
+    display: inline-flex;
+    align-items: center;
+    min-height: 28px;
+    padding: 4px 9px;
+    color: #475467;
+    background: #f8fafc;
+    border: 1px solid #e4e7ec;
+    border-radius: 999px;
+    font-size: 12px;
+    font-weight: 900;
+}
+
+.mall-stock-summary strong {
+    color: var(--green);
+    background: #fff;
+}
+
 .mall-admin-item-card.is-paused .mall-sale-toggle {
     color: #667085;
     background: #eef2f6;
@@ -7417,7 +7521,7 @@ select {
 
 .mall-item-field-grid {
     display: grid;
-    grid-template-columns: minmax(180px, 1fr) 120px;
+    grid-template-columns: minmax(180px, 1fr) 110px 110px;
     gap: 12px;
     padding: 16px;
 }
@@ -7766,8 +7870,9 @@ select {
     }
 
     .mall-admin-item-card header {
-        display: flex;
-        align-items: center;
+        display: grid;
+        grid-template-columns: minmax(0, 1fr) auto;
+        align-items: start;
         padding: 9px 10px;
         gap: 8px;
     }
@@ -7779,7 +7884,7 @@ select {
 
     .mall-admin-item-card header strong {
         display: block;
-        max-width: 190px;
+        max-width: none;
         overflow: hidden;
         color: #1f2937;
         font-size: 14px;
@@ -7800,8 +7905,49 @@ select {
         height: 14px;
     }
 
+    .mall-admin-badges {
+        justify-content: flex-end;
+        gap: 4px;
+    }
+
+    .mall-admin-badges em {
+        min-height: 23px;
+        padding: 3px 7px;
+        font-size: 10px;
+    }
+
+    .mall-admin-status-row {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 6px;
+        padding: 8px 10px 0;
+    }
+
+    .mall-switch-toggle {
+        min-height: 34px;
+        padding: 6px 8px;
+        gap: 6px;
+        font-size: 12px;
+    }
+
+    .mall-switch-toggle input {
+        width: 14px;
+        height: 14px;
+    }
+
+    .mall-stock-summary {
+        gap: 5px;
+        padding: 8px 10px 0;
+    }
+
+    .mall-stock-summary span,
+    .mall-stock-summary strong {
+        min-height: 24px;
+        padding: 3px 7px;
+        font-size: 11px;
+    }
+
     .mall-item-field-grid {
-        grid-template-columns: minmax(0, 1fr) 86px;
+        grid-template-columns: minmax(0, 1fr) 76px 76px;
         gap: 8px;
         padding: 10px;
     }

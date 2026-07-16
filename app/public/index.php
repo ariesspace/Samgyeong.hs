@@ -65,6 +65,15 @@ function mall_limited_stock_items(): array
 
 function mall_item_stock_limit(array $item): ?int
 {
+    if (array_key_exists('stock_limit', $item)) {
+        $limit = $item['stock_limit'];
+        if ($limit !== null && $limit !== '' && (int) $limit > 0) {
+            return (int) $limit;
+        }
+
+        return null;
+    }
+
     $limits = mall_limited_stock_items();
     $name = (string) ($item['name'] ?? $item['item_name'] ?? '');
     return $limits[$name] ?? null;
@@ -79,6 +88,10 @@ function mall_item_sold_quantity(PDO $db, int $itemId): int
 
 function mall_item_remaining_stock(PDO $db, array $item): ?int
 {
+    if ((int) ($item['force_sold_out'] ?? 0) === 1) {
+        return 0;
+    }
+
     $limit = mall_item_stock_limit($item);
     if ($limit === null) {
         return null;
@@ -93,6 +106,7 @@ function enrich_mall_item_stock(PDO $db, array $item): array
     return $item + [
         'stock_limit' => mall_item_stock_limit($item),
         'remaining_stock' => $remaining,
+        'sold_quantity' => mall_item_sold_quantity($db, (int) $item['id']),
         'sold_out' => $remaining !== null && $remaining <= 0,
     ];
 }
@@ -754,7 +768,10 @@ if ($path === '/admin/mall') {
     $auth->requireRole(['admin']);
     echo view('admin-mall', [
         'title' => '삼경몰 관리',
-        'items' => $db->query('SELECT * FROM mall_items ORDER BY sort_order, id')->fetchAll(),
+        'items' => array_map(
+            fn (array $item): array => enrich_mall_item_stock($db, $item),
+            $db->query('SELECT * FROM mall_items ORDER BY sort_order, id')->fetchAll()
+        ),
         'saved' => ($_GET['saved'] ?? ''),
     ]);
     exit;
@@ -766,12 +783,14 @@ if ($path === '/admin/mall/items' && $method === 'POST') {
     $names = $_POST['name'] ?? [];
     $descriptions = $_POST['description'] ?? [];
     $prices = $_POST['price'] ?? [];
+    $stockLimits = $_POST['stock_limit'] ?? [];
     $activeIds = array_map('intval', $_POST['active'] ?? []);
+    $soldOutIds = array_map('intval', $_POST['force_sold_out'] ?? []);
 
-    if (is_array($ids) && is_array($names) && is_array($descriptions) && is_array($prices)) {
+    if (is_array($ids) && is_array($names) && is_array($descriptions) && is_array($prices) && is_array($stockLimits)) {
         $stmt = $db->prepare('
             UPDATE mall_items
-            SET name = ?, description = ?, price = ?, active = ?, sort_order = ?, updated_at = CURRENT_TIMESTAMP
+            SET name = ?, description = ?, price = ?, active = ?, stock_limit = ?, force_sold_out = ?, sort_order = ?, updated_at = CURRENT_TIMESTAMP
             WHERE id = ?
         ');
         $count = min(count($ids), count($names), count($descriptions), count($prices));
@@ -780,8 +799,19 @@ if ($path === '/admin/mall/items' && $method === 'POST') {
             $name = trim((string) $names[$i]);
             $description = trim((string) $descriptions[$i]);
             $price = max(1, (int) $prices[$i]);
+            $stockRaw = trim((string) ($stockLimits[$i] ?? ''));
+            $stockLimit = $stockRaw === '' ? null : max(1, (int) $stockRaw);
             if ($id > 0 && $name !== '' && $description !== '') {
-                $stmt->execute([$name, $description, $price, in_array($id, $activeIds, true) ? 1 : 0, ($i + 1) * 10, $id]);
+                $stmt->execute([
+                    $name,
+                    $description,
+                    $price,
+                    in_array($id, $activeIds, true) ? 1 : 0,
+                    $stockLimit,
+                    in_array($id, $soldOutIds, true) ? 1 : 0,
+                    ($i + 1) * 10,
+                    $id,
+                ]);
             }
         }
     }
@@ -796,8 +826,10 @@ if ($path === '/admin/mall/items/add' && $method === 'POST') {
     $price = max(1, (int) ($_POST['price'] ?? 0));
     if ($name !== '' && $description !== '') {
         $sortOrder = (int) $db->query('SELECT COALESCE(MAX(sort_order), 0) + 10 FROM mall_items')->fetchColumn();
-        $stmt = $db->prepare('INSERT INTO mall_items (name, description, price, sort_order) VALUES (?, ?, ?, ?)');
-        $stmt->execute([$name, $description, $price, $sortOrder]);
+        $stockRaw = trim((string) ($_POST['stock_limit'] ?? ''));
+        $stockLimit = $stockRaw === '' ? null : max(1, (int) $stockRaw);
+        $stmt = $db->prepare('INSERT INTO mall_items (name, description, price, stock_limit, sort_order) VALUES (?, ?, ?, ?, ?)');
+        $stmt->execute([$name, $description, $price, $stockLimit, $sortOrder]);
     }
 
     redirect('/admin/mall?saved=items');
