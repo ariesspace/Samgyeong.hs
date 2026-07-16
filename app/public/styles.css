@@ -7849,6 +7849,43 @@ select {
     white-space: nowrap;
 }
 
+.admin-create-form label.mall-switch-toggle {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: auto;
+    min-height: 30px;
+    gap: 6px;
+    padding: 5px 9px;
+    color: #12633d;
+    background: #fff;
+    border: 1px solid #b9ebcf;
+    border-radius: 999px;
+    font-size: 12px;
+    font-weight: 900;
+    line-height: 1;
+    white-space: nowrap;
+}
+
+.admin-create-form label.mall-switch-toggle input[type="checkbox"] {
+    width: 14px;
+    min-width: 14px;
+    height: 14px;
+    min-height: 14px;
+    padding: 0;
+    margin: 0;
+    accent-color: var(--green);
+}
+
+.admin-create-form label.mall-switch-toggle.soldout-toggle {
+    color: #9a3412;
+    border-color: #fed7aa;
+}
+
+.admin-create-form label.mall-switch-toggle.soldout-toggle input[type="checkbox"] {
+    accent-color: #c2410c;
+}
+
 .mall-hero {
     display: grid;
     gap: 10px;
