@@ -22,6 +22,34 @@
         ],
     ];
     $items = $suggestions ?: $samples;
+    $archiveCutoff = new DateTimeImmutable('2026-07-17 00:00:00', new DateTimeZone('Asia/Seoul'));
+    $createdAtToLocal = function (?string $value): ?DateTimeImmutable {
+        $value = trim((string) $value);
+        if ($value === '') {
+            return null;
+        }
+
+        try {
+            return (new DateTimeImmutable($value, new DateTimeZone('UTC')))
+                ->setTimezone(new DateTimeZone('Asia/Seoul'));
+        } catch (Throwable) {
+            return null;
+        }
+    };
+    $archivedItems = [];
+    $currentItems = [];
+    foreach ($items as $item) {
+        $createdAt = $createdAtToLocal($item['created_at'] ?? null);
+        if (empty($item['is_sample']) && $createdAt !== null && $createdAt < $archiveCutoff) {
+            $archivedItems[] = $item;
+            continue;
+        }
+
+        $currentItems[] = $item;
+    }
+    $weekStart = new DateTimeImmutable('monday this week', new DateTimeZone('Asia/Seoul'));
+    $weekEnd = $weekStart->modify('+6 days');
+    $weekLabel = $weekStart->format('n월 j일') . ' - ' . $weekEnd->format('n월 j일');
     $topicIcon = function (string $topic): string {
         return match (trim($topic)) {
             '환경' => '🌱',
@@ -31,15 +59,17 @@
             default => '🍽️',
         };
     };
-    $formatSuggestionTime = function (?string $value): string {
+    $formatSuggestionTime = function (?string $value) use ($createdAtToLocal): string {
         $value = trim((string) $value);
         if ($value === '') {
             return '';
         }
 
         try {
-            $createdAt = new DateTimeImmutable($value, new DateTimeZone('UTC'));
-            $createdAt = $createdAt->setTimezone(new DateTimeZone('Asia/Seoul'));
+            $createdAt = $createdAtToLocal($value);
+            if ($createdAt === null) {
+                return '';
+            }
             $now = new DateTimeImmutable('now', new DateTimeZone('Asia/Seoul'));
 
             return $createdAt->format($createdAt->format('Y') === $now->format('Y') ? 'n월 j일 H:i' : 'Y.n.j H:i');
@@ -68,74 +98,34 @@
                 <span aria-hidden="true">💬</span>
                 <h2>실시간 삼경밥상 제안 톡</h2>
             </div>
-            <strong><i></i>참여 중</strong>
+            <strong><i></i>이번 주차 접수 중</strong>
         </header>
 
         <div class="meal-suggestion-feed">
             <div class="meal-suggestion-date"><?= e(date('Y년 n월 j일')) ?></div>
 
-            <?php foreach ($items as $item): ?>
-                <?php
-                    $author = trim((string) (($item['author_name'] ?? '') ?: ($item['author_username'] ?? '익명의 학우')));
-                    $topic = trim((string) ($item['topic'] ?? ''));
-                    $lunchText = (string) ($item['lunch_text'] ?? '');
-                    $dinnerText = (string) ($item['dinner_text'] ?? '');
-                    $noteText = (string) ($item['note'] ?? '');
-                    $combinedText = trim($topic . ' ' . $lunchText . ' ' . $dinnerText . ' ' . $noteText);
-                    $isLongSuggestion = mb_strlen($combinedText) > 140 || substr_count($combinedText, "\n") > 5;
-                    $icon = (string) ($item['icon'] ?? $topicIcon($topic));
-                    $createdAtRaw = (string) ($item['created_at'] ?? '');
-                    $createdAtLabel = $formatSuggestionTime($createdAtRaw);
-                    $canDelete = empty($item['is_sample'])
-                        && !empty($currentUser)
-                        && ((int) ($item['user_id'] ?? 0) === (int) ($currentUser['id'] ?? 0) || ($currentUser['role'] ?? '') === 'admin');
-                ?>
-                <article class="meal-suggestion-message <?= !empty($item['is_sample']) ? 'is-sample' : '' ?>">
-                    <div class="meal-suggestion-avatar" aria-hidden="true"><?= e($icon) ?></div>
-                    <div class="meal-suggestion-content">
-                        <span class="meal-suggestion-author">
-                            <?= e($author) ?><?= $topic !== '' ? ' (주제: ' . e($topic) . ')' : '' ?>
-                            <?php if (!empty($item['is_sample'])): ?><em>예시</em><?php endif; ?>
-                            <?php if ($createdAtLabel !== ''): ?><time class="meal-suggestion-time" datetime="<?= e($createdAtRaw) ?>"><?= e($createdAtLabel) ?></time><?php endif; ?>
-                        </span>
-                        <div class="meal-suggestion-bubble">
-                            <?php if ($isLongSuggestion): ?>
-                                <details class="meal-suggestion-details">
-                                    <summary>
-                                        <div class="meal-suggestion-preview">
-                                            <?php if ($topic !== ''): ?><p><strong>주제:</strong> <?= e($topic) ?></p><?php endif; ?>
-                                            <p><strong>중식:</strong> <?= nl2br(e($lunchText)) ?></p>
-                                            <p><strong>석식:</strong> <?= nl2br(e($dinnerText)) ?></p>
-                                            <p class="meal-suggestion-note"><?= nl2br(e($noteText)) ?></p>
-                                        </div>
-                                        <span class="meal-suggestion-more-text">
-                                            <b class="more">더보기</b>
-                                            <b class="less">접기</b>
-                                        </span>
-                                    </summary>
-                                    <div class="meal-suggestion-full">
-                                        <?php if ($topic !== ''): ?><p><strong>주제:</strong> <?= e($topic) ?></p><?php endif; ?>
-                                        <p><strong>중식:</strong> <?= nl2br(e($lunchText)) ?></p>
-                                        <p><strong>석식:</strong> <?= nl2br(e($dinnerText)) ?></p>
-                                        <p class="meal-suggestion-note"><?= nl2br(e($noteText)) ?></p>
-                                    </div>
-                                </details>
-                            <?php else: ?>
-                                <?php if ($topic !== ''): ?><p><strong>주제:</strong> <?= e($topic) ?></p><?php endif; ?>
-                                <p><strong>중식:</strong> <?= nl2br(e($lunchText)) ?></p>
-                                <p><strong>석식:</strong> <?= nl2br(e($dinnerText)) ?></p>
-                                <p class="meal-suggestion-note"><?= nl2br(e($noteText)) ?></p>
-                            <?php endif; ?>
-                        </div>
-                        <?php if ($canDelete): ?>
-                            <form class="meal-suggestion-delete" method="post" action="/meal-suggestions/delete" onsubmit="return confirm('이 식단 제안을 삭제할까요?');">
-                                <input type="hidden" name="csrf" value="<?= e(csrf_token()) ?>">
-                                <input type="hidden" name="id" value="<?= e((string) $item['id']) ?>">
-                                <button type="submit">삭제</button>
-                            </form>
-                        <?php endif; ?>
+            <?php if ($archivedItems !== []): ?>
+                <details class="meal-suggestion-archive">
+                    <summary>
+                        <span>7월 17일 이전 제안 <?= e((string) count($archivedItems)) ?>건 보기</span>
+                        <b>더보기</b>
+                    </summary>
+                    <div class="meal-suggestion-archive-list">
+                        <?php foreach ($archivedItems as $item): ?>
+                            <?php require __DIR__ . '/partials/meal-suggestion-message.php'; ?>
+                        <?php endforeach; ?>
                     </div>
-                </article>
+                </details>
+            <?php endif; ?>
+
+            <div class="meal-suggestion-date">이번 주차 제안 접수 <?= e($weekLabel) ?></div>
+
+            <?php if ($currentItems === []): ?>
+                <div class="meal-suggestion-empty">이번 주차에 새로 올라온 식단 제안이 없습니다.</div>
+            <?php endif; ?>
+
+            <?php foreach ($currentItems as $item): ?>
+                <?php require __DIR__ . '/partials/meal-suggestion-message.php'; ?>
             <?php endforeach; ?>
         </div>
 
