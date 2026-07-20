@@ -31,6 +31,22 @@
             default => '🍽️',
         };
     };
+    $formatSuggestionTime = function (?string $value): string {
+        $value = trim((string) $value);
+        if ($value === '') {
+            return '';
+        }
+
+        try {
+            $createdAt = new DateTimeImmutable($value, new DateTimeZone('UTC'));
+            $createdAt = $createdAt->setTimezone(new DateTimeZone('Asia/Seoul'));
+            $now = new DateTimeImmutable('now', new DateTimeZone('Asia/Seoul'));
+
+            return $createdAt->format($createdAt->format('Y') === $now->format('Y') ? 'n월 j일 H:i' : 'Y.n.j H:i');
+        } catch (Throwable) {
+            return str_replace('-', '.', substr($value, 0, 16));
+        }
+    };
 ?>
 <section class="page meal-page meal-suggestions-page">
     <header class="page-main-head">
@@ -68,6 +84,8 @@
                     $combinedText = trim($topic . ' ' . $lunchText . ' ' . $dinnerText . ' ' . $noteText);
                     $isLongSuggestion = mb_strlen($combinedText) > 140 || substr_count($combinedText, "\n") > 5;
                     $icon = (string) ($item['icon'] ?? $topicIcon($topic));
+                    $createdAtRaw = (string) ($item['created_at'] ?? '');
+                    $createdAtLabel = $formatSuggestionTime($createdAtRaw);
                     $canDelete = empty($item['is_sample'])
                         && !empty($currentUser)
                         && ((int) ($item['user_id'] ?? 0) === (int) ($currentUser['id'] ?? 0) || ($currentUser['role'] ?? '') === 'admin');
@@ -78,6 +96,7 @@
                         <span class="meal-suggestion-author">
                             <?= e($author) ?><?= $topic !== '' ? ' (주제: ' . e($topic) . ')' : '' ?>
                             <?php if (!empty($item['is_sample'])): ?><em>예시</em><?php endif; ?>
+                            <?php if ($createdAtLabel !== ''): ?><time class="meal-suggestion-time" datetime="<?= e($createdAtRaw) ?>"><?= e($createdAtLabel) ?></time><?php endif; ?>
                         </span>
                         <div class="meal-suggestion-bubble">
                             <?php if ($isLongSuggestion): ?>
